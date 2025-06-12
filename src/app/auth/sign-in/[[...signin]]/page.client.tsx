@@ -2,11 +2,11 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
 
 import { SEO_CONFIG, SYSTEM_CONFIG } from "~/app";
-import { signIn } from "~/lib/auth-client";
+import { supabaseAuth } from "~/lib/supabase-auth-client";
 import { GitHubIcon } from "~/ui/components/icons/github";
 import { GoogleIcon } from "~/ui/components/icons/google";
 import { Button } from "~/ui/primitives/button";
@@ -17,10 +17,24 @@ import { Separator } from "~/ui/primitives/separator";
 
 export function SignInPageClient() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+
+  // 检查 URL 参数中是否有错误信息
+  const errorFromParams = searchParams.get("error");
+  const registered = searchParams.get("registered");
+
+  // 如果存在错误参数，设置错误信息
+  useState(() => {
+    if (errorFromParams === "callback_error") {
+      setError("第三方登录失败，请稍后再试");
+    } else if (registered === "true") {
+      setError(""); // 清除错误
+    }
+  });
 
   const handleEmailLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -28,36 +42,41 @@ export function SignInPageClient() {
     setLoading(true);
 
     try {
-      await signIn.email({
+      const { error: signInError } = await supabaseAuth.signInWithPassword(
         email,
-        password,
-      });
+        password
+      );
+
+      if (signInError) {
+        throw signInError;
+      }
+
       router.push(SYSTEM_CONFIG.redirectAfterSignIn);
     } catch (err) {
-      setError("Invalid email or password");
+      setError("邮箱或密码无效");
       console.error(err);
     } finally {
       setLoading(false);
     }
   };
 
-  const handleGitHubLogin = () => {
+  const handleGitHubLogin = async () => {
     setLoading(true);
     try {
-      void signIn.social({ provider: "github" });
+      await supabaseAuth.signInWithOAuth("github");
     } catch (err) {
-      setError("Failed to sign in with GitHub");
+      setError("GitHub 登录失败");
       console.error(err);
       setLoading(false);
     }
   };
 
-  const handleGoogleLogin = () => {
+  const handleGoogleLogin = async () => {
     setLoading(true);
     try {
-      void signIn.social({ provider: "google" });
+      await supabaseAuth.signInWithOAuth("google");
     } catch (err) {
-      setError("Failed to sign in with Google");
+      setError("Google 登录失败");
       console.error(err);
       setLoading(false);
     }
@@ -112,23 +131,17 @@ export function SignInPageClient() {
               md:text-left
             `}
           >
-            <h2 className="text-3xl font-bold">Sign In</h2>
+            <h2 className="text-3xl font-bold">登录</h2>
             <p className="text-sm text-muted-foreground">
-              Enter your credentials to access your account
+              输入您的凭据访问您的账户
             </p>
           </div>
 
           <Card className="border-none shadow-sm">
             <CardContent className="pt-2">
-              <form
-                className="space-y-4"
-                onSubmit={(e) => {
-                  e.preventDefault();
-                  void handleEmailLogin(e);
-                }}
-              >
+              <form className="space-y-4" onSubmit={handleEmailLogin}>
                 <div className="grid gap-2">
-                  <Label htmlFor="email">Email</Label>
+                  <Label htmlFor="email">邮箱</Label>
                   <Input
                     id="email"
                     onChange={(e) => {
@@ -142,15 +155,15 @@ export function SignInPageClient() {
                 </div>
                 <div className="grid gap-2">
                   <div className="flex items-center justify-between">
-                    <Label htmlFor="password">Password</Label>
+                    <Label htmlFor="password">密码</Label>
                     <Link
                       className={`
                         text-sm text-muted-foreground
                         hover:underline
                       `}
-                      href="#"
+                      href="/auth/forgot-password"
                     >
-                      Forgot password?
+                      忘记密码?
                     </Link>
                   </div>
                   <Input
@@ -168,8 +181,13 @@ export function SignInPageClient() {
                     {error}
                   </div>
                 )}
+                {registered === "true" && (
+                  <div className="text-sm font-medium text-green-600">
+                    注册成功！请登录。
+                  </div>
+                )}
                 <Button className="w-full" disabled={loading} type="submit">
-                  {loading ? "Signing in..." : "Sign in"}
+                  {loading ? "登录中..." : "登录"}
                 </Button>
               </form>
               <div className="relative mt-6">
@@ -178,7 +196,7 @@ export function SignInPageClient() {
                 </div>
                 <div className="relative flex justify-center text-xs uppercase">
                   <span className="bg-background px-2 text-muted-foreground">
-                    Or continue with
+                    或继续使用
                   </span>
                 </div>
               </div>
@@ -203,7 +221,7 @@ export function SignInPageClient() {
                 </Button>
               </div>
               <div className="mt-6 text-center text-sm text-muted-foreground">
-                Don't have an account?{" "}
+                还没有账户?{" "}
                 <Link
                   className={`
                     text-primary underline-offset-4
@@ -211,7 +229,7 @@ export function SignInPageClient() {
                   `}
                   href="/auth/sign-up"
                 >
-                  Sign up
+                  注册
                 </Link>
               </div>
             </CardContent>

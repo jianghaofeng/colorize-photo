@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 import { SEO_CONFIG } from "~/app";
-import { signIn, signUp } from "~/lib/auth-client";
+import { supabaseAuth } from "~/lib/supabase-auth-client";
 import { GitHubIcon } from "~/ui/components/icons/github";
 import { GoogleIcon } from "~/ui/components/icons/google";
 import { Button } from "~/ui/primitives/button";
@@ -33,46 +33,56 @@ export function SignUpPageClient() {
     }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
     setLoading(true);
 
-    void signUp
-      .email({
-        email: formData.email,
-        name: formData.name,
-        password: formData.password,
-      })
-      .then(() => {
-        router.push("/auth/sign-in?registered=true");
-      })
-      .catch((err: unknown) => {
-        setError("Registration failed. Please try again.");
-        console.error(err);
-      })
-      .finally(() => {
-        setLoading(false);
-      });
+    try {
+      const { error: signUpError } = await supabaseAuth.signUpWithPassword(
+        formData.email,
+        formData.password,
+        {
+          data: {
+            name: formData.name,
+          },
+        }
+      );
+
+      if (signUpError) {
+        throw signUpError;
+      }
+
+      router.push("/auth/sign-in?registered=true");
+    } catch (err: any) {
+      if (err.message?.includes("email") || err.message?.includes("Email")) {
+        setError("该邮箱已被注册，请尝试使用其他邮箱");
+      } else {
+        setError("注册失败，请稍后再试");
+      }
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const handleGitHubSignUp = () => {
+  const handleGitHubSignUp = async () => {
     setLoading(true);
     try {
-      void signIn.social({ provider: "github" });
+      await supabaseAuth.signInWithOAuth("github");
     } catch (err) {
-      setError("Failed to sign up with GitHub");
+      setError("GitHub 注册失败");
       console.error(err);
       setLoading(false);
     }
   };
 
-  const handleGoogleSignUp = () => {
+  const handleGoogleSignUp = async () => {
     setLoading(true);
     try {
-      void signIn.social({ provider: "google" });
+      await supabaseAuth.signInWithOAuth("google");
     } catch (err) {
-      setError("Failed to sign up with Google");
+      setError("Google 注册失败");
       console.error(err);
       setLoading(false);
     }
@@ -127,9 +137,9 @@ export function SignUpPageClient() {
               md:text-left
             `}
           >
-            <h2 className="text-3xl font-bold">Create Account</h2>
+            <h2 className="text-3xl font-bold">创建账户</h2>
             <p className="text-sm text-muted-foreground">
-              Enter your details to create your account
+              输入您的详细信息创建账户
             </p>
           </div>
 
@@ -137,19 +147,19 @@ export function SignUpPageClient() {
             <CardContent className="pt-2">
               <form className="space-y-4" onSubmit={handleSubmit}>
                 <div className="grid gap-2">
-                  <Label htmlFor="name">Full Name</Label>
+                  <Label htmlFor="name">姓名</Label>
                   <Input
                     id="name"
                     name="name"
                     onChange={handleChange}
-                    placeholder="John Doe"
+                    placeholder="张三"
                     required
                     type="text"
                     value={formData.name}
                   />
                 </div>
                 <div className="grid gap-2">
-                  <Label htmlFor="email">Email</Label>
+                  <Label htmlFor="email">邮箱</Label>
                   <Input
                     id="email"
                     name="email"
@@ -161,7 +171,7 @@ export function SignUpPageClient() {
                   />
                 </div>
                 <div className="grid gap-2">
-                  <Label htmlFor="password">Password</Label>
+                  <Label htmlFor="password">密码</Label>
                   <Input
                     id="password"
                     name="password"
@@ -177,7 +187,7 @@ export function SignUpPageClient() {
                   </div>
                 )}
                 <Button className="w-full" disabled={loading} type="submit">
-                  {loading ? "Creating account..." : "Create account"}
+                  {loading ? "创建账户中..." : "创建账户"}
                 </Button>
               </form>
               <div className="relative mt-6">
@@ -186,7 +196,7 @@ export function SignUpPageClient() {
                 </div>
                 <div className="relative flex justify-center text-xs uppercase">
                   <span className="bg-background px-2 text-muted-foreground">
-                    Or continue with
+                    或继续使用
                   </span>
                 </div>
               </div>
@@ -211,7 +221,7 @@ export function SignUpPageClient() {
                 </Button>
               </div>
               <div className="mt-6 text-center text-sm text-muted-foreground">
-                Already have an account?{" "}
+                已有账户?{" "}
                 <Link
                   className={`
                     text-primary underline-offset-4
@@ -219,7 +229,7 @@ export function SignUpPageClient() {
                   `}
                   href="/auth/sign-in"
                 >
-                  Sign in
+                  登录
                 </Link>
               </div>
             </CardContent>
