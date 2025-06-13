@@ -1,11 +1,13 @@
 import type { Metadata } from "next";
 
 import { SpeedInsights } from "@vercel/speed-insights/next";
+import { NextIntlClientProvider } from 'next-intl';
+import { getMessages } from "next-intl/server";
 import { Geist, Geist_Mono } from "next/font/google";
 
 import { SEO_CONFIG } from "~/app";
-import { CartProvider } from "~/lib/hooks/use-cart";
 import "~/css/globals.css";
+import { CartProvider } from "~/lib/hooks/use-cart";
 import { Footer } from "~/ui/components/footer";
 import { Header } from "~/ui/components/header/header";
 import { ThemeProvider } from "~/ui/components/theme-provider";
@@ -26,11 +28,12 @@ export const metadata: Metadata = {
   title: `${SEO_CONFIG.fullName}`,
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const messages = await getMessages();
   return (
     <html lang="en" suppressHydrationWarning>
       <body
@@ -50,10 +53,13 @@ export default function RootLayout({
           enableSystem
         >
           <CartProvider>
-            <Header showAuth={true} />
-            <main className={`flex min-h-screen flex-col`}>{children}</main>
-            <Footer />
-            <Toaster />
+            <NextIntlClientProvider messages={messages}>
+              <Header showAuth={true} />
+              <main className={`flex min-h-screen flex-col`}>{children}</main>
+              <Footer />
+              <Toaster />
+            </NextIntlClientProvider>
+
           </CartProvider>
         </ThemeProvider>
         <SpeedInsights />

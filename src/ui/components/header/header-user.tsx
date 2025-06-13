@@ -2,8 +2,6 @@ import {
   BarChart,
   LogOut,
   Settings,
-  Shield,
-  Upload,
   UserIcon,
 } from "lucide-react";
 import Link from "next/link";
@@ -11,7 +9,6 @@ import Link from "next/link";
 import { cn } from "~/lib/utils";
 import { Avatar, AvatarFallback, AvatarImage } from "~/ui/primitives/avatar";
 import { Button } from "~/ui/primitives/button";
-
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -19,6 +16,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "~/ui/primitives/dropdown-menu";
+
 import { CurrentUserAvatar } from "../current-user-avatar";
 
 interface HeaderUserDropdownProps {

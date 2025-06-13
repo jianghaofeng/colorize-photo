@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 
-import { SignOutPageClient } from "~/app/auth/sign-out/page.client";
+import { SignOutPageClient } from "~/app/[locale]/auth/sign-out/page.client";
 import { getCurrentSupabaseUser } from "~/lib/supabase-auth";
 import {
   PageHeader,

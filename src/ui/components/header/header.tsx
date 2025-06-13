@@ -4,6 +4,7 @@ import { Menu, X } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 
 import { SEO_CONFIG } from "~/app";
 import { useSupabaseSession } from "~/lib/supabase-auth-client";
@@ -14,6 +15,7 @@ import { Skeleton } from "~/ui/primitives/skeleton";
 
 import { NotificationsWidget } from "../notifications/notifications-widget";
 import { ThemeToggle } from "../theme-toggle";
+import { LanguageSwitcher } from "../language-switcher";
 import { HeaderUserDropdown } from "./header-user";
 
 interface HeaderProps {
@@ -25,6 +27,7 @@ export function Header({ showAuth = true }: HeaderProps) {
   const pathname = usePathname();
   const { loading: isPending, user } = useSupabaseSession();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const t = useTranslations();
 
   const mainNavigation = [
     { href: "/", name: "Home" },
@@ -147,7 +150,7 @@ export function Header({ showAuth = true }: HeaderProps) {
                   <div className="flex items-center gap-2">
                     <Link href="/auth/sign-in">
                       <Button size="sm" variant="ghost">
-                        Log in
+                        {t("nav.login")}
                       </Button>
                     </Link>
                     <Link href="/auth/sign-up">
@@ -160,9 +163,15 @@ export function Header({ showAuth = true }: HeaderProps) {
 
             {!isDashboard &&
               (isPending ? (
-                <Skeleton className={`h-9 w-9 rounded-full`} />
+                <>
+                  <Skeleton className={`h-9 w-9 rounded-full`} />
+                  <Skeleton className={`h-9 w-9 rounded-full`} />
+                </>
               ) : (
-                <ThemeToggle />
+                <>
+                  <ThemeToggle />
+                  <LanguageSwitcher />
+                </>
               ))}
 
             {/* Mobile menu button */}
@@ -239,10 +248,22 @@ export function Header({ showAuth = true }: HeaderProps) {
                 href="/auth/sign-up"
                 onClick={() => setMobileMenuOpen(false)}
               >
-                Sign up
+                {t("nav.signup")}
               </Link>
             </div>
           )}
+          
+          {/* 设置选项 */}
+          <div className="space-y-1 border-b px-4 py-3">
+            <div className="flex items-center justify-between px-3 py-2">
+              <span className="text-base font-medium">{t("common.theme")}</span>
+              <ThemeToggle />
+            </div>
+            <div className="flex items-center justify-between px-3 py-2">
+              <span className="text-base font-medium">{t("common.language")}</span>
+              <LanguageSwitcher />
+            </div>
+          </div>
         </div>
       )}
     </header>
