@@ -22,31 +22,31 @@ export type DeepValue<
   P extends DeepKeys<T>,
 > = P extends `${infer K}.${infer Rest}`
   ? K extends keyof T
-    ? Rest extends DeepKeys<T[K]>
-      ? DeepValue<T[K], Rest>
-      : never
-    : never
+  ? Rest extends DeepKeys<T[K]>
+  ? DeepValue<T[K], Rest>
+  : never
+  : never
   : P extends keyof T
-    ? T[P]
-    : never;
+  ? T[P]
+  : never;
 
 export type ElementType<T> = T extends (infer U)[] ? U : T;
 
 type Join<K, P> = K extends number | string
   ? P extends number | string
-    ? `${K}${"" extends P ? "" : "."}${P}`
-    : never
+  ? `${K}${"" extends P ? "" : "."}${P}`
+  : never
   : never;
 
 type Paths<T, D extends number = 10> = [D] extends [never]
   ? never
   : T extends object
-    ? {
-        [K in keyof T]-?: K extends number | string
-          ? `${K}` | Join<K, Paths<T[K], Prev[D]>>
-          : never;
-      }[keyof T]
-    : "";
+  ? {
+    [K in keyof T]-?: K extends number | string
+    ? `${K}` | Join<K, Paths<T[K], Prev[D]>>
+    : never;
+  }[keyof T]
+  : "";
 
 type Prev = [
   never,

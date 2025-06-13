@@ -2,7 +2,7 @@
 
 import { Bell, Lock, User } from "lucide-react";
 
-import { useCurrentUser } from "~/lib/auth-client";
+import { useSupabaseSession } from "~/lib/supabase-auth-client";
 import { Button } from "~/ui/primitives/button";
 import { Card, CardContent, CardHeader, CardTitle } from "~/ui/primitives/card";
 import { Input } from "~/ui/primitives/input";
@@ -11,7 +11,7 @@ import { Switch } from "~/ui/primitives/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/ui/primitives/tabs";
 
 export function SettingsPageClient() {
-  const { user } = useCurrentUser();
+  const { user, loading: isPending } = useSupabaseSession();
 
   return (
     <div
@@ -55,7 +55,7 @@ export function SettingsPageClient() {
               <div className="grid gap-2">
                 <Label htmlFor="name">Name</Label>
                 <Input
-                  defaultValue={user?.name || ""}
+                  defaultValue={user?.user_metadata.name || ""}
                   id="name"
                   placeholder="Enter your name"
                 />

@@ -1,7 +1,7 @@
 import { type NextRequest, NextResponse } from "next/server";
 
 import { SYSTEM_CONFIG } from "~/app";
-import { createServerSupabaseClient } from "~/lib/supabase-auth";
+import { createClient } from "~/lib/supabase/server";
 
 // 处理 Supabase Auth 重定向回调
 export async function GET(request: NextRequest) {
@@ -14,7 +14,7 @@ export async function GET(request: NextRequest) {
   }
 
   try {
-    const supabase = createServerSupabaseClient();
+    const supabase = await createClient();
 
     // 交换授权码获取会话
     await supabase.auth.exchangeCodeForSession(code);

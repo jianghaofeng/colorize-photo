@@ -1,11 +1,11 @@
-import { getCurrentUserOrRedirect } from "~/lib/auth";
+import { getCurrentSupabaseUser } from "~/lib/supabase-auth";
 
 export default async function DashboardLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  await getCurrentUserOrRedirect();
+  await getCurrentSupabaseUser();
 
   return (
     <div className="flex min-h-screen flex-col">

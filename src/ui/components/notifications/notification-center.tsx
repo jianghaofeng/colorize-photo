@@ -5,7 +5,7 @@ import type React from "react";
 import { Bell } from "lucide-react";
 import { useCallback, useState } from "react";
 
-import { cn } from "~/lib/cn";
+import { cn } from "~/lib/utils";
 import { Button } from "~/ui/primitives/button";
 import { CardFooter } from "~/ui/primitives/card";
 import {

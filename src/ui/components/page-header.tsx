@@ -1,6 +1,6 @@
 import { cva, type VariantProps } from "class-variance-authority";
 
-import { cn } from "~/lib/cn";
+import { cn } from "~/lib/utils";
 
 type PageHeaderProps = React.HTMLAttributes<HTMLDivElement> & {
   as?: React.ElementType;
@@ -19,10 +19,10 @@ function PageHeader({
       className={cn(
         "flex w-full flex-col items-center gap-2 text-center",
         withPadding &&
-          `
-            py-4
-            md:py-8
-          `,
+        `
+          py-4
+          md:py-8
+        `,
         className,
       )}
       {...props}

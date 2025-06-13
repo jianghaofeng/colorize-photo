@@ -1,16 +1,16 @@
 export const SEO_CONFIG = {
   description:
-    "Relivator is a robust ecommerce template built with next.js and other modern technologies. It's designed for developers who want a fast, modern, and scalable foundation without reinventing the backend.",
-  fullName: "Relivator Next.js Template",
-  name: "Relivator",
-  slogan: "Store which makes you happy.",
+    "Colorize Photo is a professional website for colorizing and restoring old photographs, using advanced AI technology to add color to your black and white photos, repair old or damaged photos, and bring precious memories back to life.",
+  fullName: "Colorize Photo - Old Photo Colorization & Restoration",
+  name: "Colorize Photo",
+  slogan: "Bringing memories back to color",
 };
 
 export const SYSTEM_CONFIG = {
-  redirectAfterSignIn: "/dashboard/uploads",
-  redirectAfterSignUp: "/dashboard/uploads",
-  repoName: "relivator",
-  repoOwner: "blefnk",
+  redirectAfterSignIn: "/dashboard/stats",
+  redirectAfterSignUp: "/dashboard/stats",
+  repoName: "colorize-photo",
+  repoOwner: "allen",
   repoStars: true,
 };
 

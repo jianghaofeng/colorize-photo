@@ -1,5 +1,6 @@
+import type { Provider, User } from "@supabase/supabase-js";
+
 import { createBrowserClient } from "@supabase/ssr";
-import { type Provider, type User } from "@supabase/supabase-js";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
@@ -22,51 +23,48 @@ export const supabaseAuth = {
   },
 
   // 重置密码
-  resetPassword: async (
-    email: string,resetPaswordForEmalssword {: string,
-    op:e irecT`$winrow.locsaseCeorigin}/tuth/rese.-password`uth.signUp({
-    e password,
-      options: {
-        data: options?.data,
-      },
-    });
-  },
-第三方登录
-  signInWithOAuth: async (provider: Provider) => {
-    return supabaseClient.auth.signInWithOAuth({
-      provider,
-      provider,
-      options: {
-        redirectTo: `${window.location.origin}/auth/callback`,
-     使用邮箱和密码,
-    })InWihPasswordemail: string, password: string
-  },nIWihPassword{ email, password }
-
-  // 退出登录
-  sig退出登录: async () => {
-  rngsOutupabaseClient.auth.signOut();
-  },gOut
-
-  // 获取会话
-  get使用邮箱和ss注册ion: async () => {
-  rignUpWithurn supabaseClient.aut: string, passwordh.getSes, options?: { data?: { name?: string } }sion();
-  },gnUp{
-      
-     options: 
-  aaps?da,
-      },
-      
-  // 重置密码
   resetPassword: async (email: string) => {
     return supabaseClient.auth.resetPasswordForEmail(email, {
       redirectTo: `${window.location.origin}/auth/reset-password`,
     });
   },
-};null | 
+
+  // 第三方登录
+  signInWithOAuth: async (provider: Provider) => {
+    return supabaseClient.auth.signInWithOAuth({
+      options: {
+        redirectTo: `${window.location.origin}/auth/callback`,
+      },
+      provider
+    });
+  },
+
+  // 使用邮箱和密码登录
+  signInWithPassword: async (email: string, password: string) => {
+    return supabaseClient.auth.signInWithPassword({ email, password });
+  },
+
+  // 退出登录
+  signOut: async () => {
+    return supabaseClient.auth.signOut();
+  },
+
+  // 使用邮箱和密码注册
+  signUpWithPassword: async (email: string, password: string, options?: { data?: { name?: string } }) => {
+    return supabaseClient.auth.signUp({
+      email,
+      options: {
+        data: options?.data,
+      },
+      password,
+    });
+  }
+};
+
 
 // Hook 用于获取和监听认证状态
 export const useSupabaseSession = () => {
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<null | User>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -101,16 +99,16 @@ export const useSupabaseSession = () => {
     };
   }, []);
 
-  return { user, loading };
+  return { loading, user };
 };
 
-// Hook 类CurrentU, userserOrRedirect，用于客户端
+// Hook 用于获取当前用户或重定向，用于客户端
 export const useSupabaseUserOrRedirect = (
   forbiddenUrl = "/auth/sign-in",
   okUrl = "",
   ignoreForbidden = false,
 ) => {
-  const { user, loading } = useSupabaseSession();
+  const { loading, user } = useSupabaseSession();
   const router = useRouter();
 
   useEffect(() => {
@@ -123,11 +121,14 @@ export const useSupabaseUserOrRedirect = (
           router.push(forbiddenUrl);
         }
       } else if (okUrl) {
-        //户并提供了 ok, userUrl，则重定向到该 URL
+        // 如果找到用户并提供了 okUrl，则重定向到该 URL
         router.push(okUrl);
       }
     }
   }, [loading, user, router, forbiddenUrl, okUrl, ignoreForbidden]);
 
-  return { user, loading };
+  return { loading: loading, user, isPending: loading };
 };
+
+// 为了兼容原有代码，导出 useCurrentUserOrRedirect 作为 useSupabaseUserOrRedirect 的别名
+export const useCurrentUserOrRedirect = useSupabaseUserOrRedirect;

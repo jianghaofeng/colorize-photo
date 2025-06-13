@@ -6,8 +6,8 @@ import { usePathname } from "next/navigation";
 import { useState } from "react";
 
 import { SEO_CONFIG } from "~/app";
-import { useCurrentUser } from "~/lib/auth-client";
-import { cn } from "~/lib/cn";
+import { useSupabaseSession } from "~/lib/supabase-auth-client";
+import { cn } from "~/lib/utils";
 import { Cart } from "~/ui/components/cart";
 import { Button } from "~/ui/primitives/button";
 import { Skeleton } from "~/ui/primitives/skeleton";
@@ -23,7 +23,7 @@ interface HeaderProps {
 
 export function Header({ showAuth = true }: HeaderProps) {
   const pathname = usePathname();
-  const { isPending, user } = useCurrentUser();
+  const { loading: isPending, user } = useSupabaseSession();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const mainNavigation = [
@@ -35,13 +35,11 @@ export function Header({ showAuth = true }: HeaderProps) {
     { href: "/dashboard/stats", name: "Stats" },
     { href: "/dashboard/profile", name: "Profile" },
     { href: "/dashboard/settings", name: "Settings" },
-    { href: "/dashboard/uploads", name: "Uploads" },
-    { href: "/admin/summary", name: "Admin" },
   ];
 
   const isDashboard =
     user &&
-    (pathname.startsWith("/dashboard") || pathname.startsWith("/admin")); // todo: remove /admin when admin role is implemented
+    (pathname.startsWith("/dashboard")); // todo: remove /admin when admin role is implemented
   const navigation = isDashboard ? dashboardNavigation : mainNavigation;
 
   const renderContent = () => (
@@ -65,10 +63,10 @@ export function Header({ showAuth = true }: HeaderProps) {
                 className={cn(
                   "text-xl font-bold",
                   !isDashboard &&
-                    `
-                      bg-gradient-to-r from-primary to-primary/70 bg-clip-text
-                      tracking-tight text-transparent
-                    `,
+                  `
+                    bg-gradient-to-r from-primary to-primary/70 bg-clip-text
+                    tracking-tight text-transparent
+                  `,
                 )}
               >
                 {SEO_CONFIG.name}
@@ -83,34 +81,34 @@ export function Header({ showAuth = true }: HeaderProps) {
               <ul className="flex items-center gap-6">
                 {isPending
                   ? Array.from({ length: navigation.length }).map((_, i) => (
-                      <li key={i}>
-                        <Skeleton className="h-6 w-20" />
-                      </li>
-                    ))
+                    <li key={i}>
+                      <Skeleton className="h-6 w-20" />
+                    </li>
+                  ))
                   : navigation.map((item) => {
-                      const isActive =
-                        pathname === item.href ||
-                        (item.href !== "/" && pathname?.startsWith(item.href));
+                    const isActive =
+                      pathname === item.href ||
+                      (item.href !== "/" && pathname?.startsWith(item.href));
 
-                      return (
-                        <li key={item.name}>
-                          <Link
-                            className={cn(
-                              `
-                                text-sm font-medium transition-colors
-                                hover:text-primary
-                              `,
-                              isActive
-                                ? "font-semibold text-primary"
-                                : "text-muted-foreground",
-                            )}
-                            href={item.href}
-                          >
-                            {item.name}
-                          </Link>
-                        </li>
-                      );
-                    })}
+                    return (
+                      <li key={item.name}>
+                        <Link
+                          className={cn(
+                            `
+                              text-sm font-medium transition-colors
+                              hover:text-primary
+                            `,
+                            isActive
+                              ? "font-semibold text-primary"
+                              : "text-muted-foreground",
+                          )}
+                          href={item.href}
+                        >
+                          {item.name}
+                        </Link>
+                      </li>
+                    );
+                  })}
               </ul>
             </nav>
           </div>
@@ -139,9 +137,9 @@ export function Header({ showAuth = true }: HeaderProps) {
                 {user ? (
                   <HeaderUserDropdown
                     isDashboard={!!isDashboard}
-                    userEmail={user.email}
-                    userImage={user.image}
-                    userName={user.name}
+                    userEmail={user.email || ""}
+                    userImage={""}
+                    userName={""}
                   />
                 ) : isPending ? (
                   <Skeleton className="h-10 w-32" />
@@ -190,34 +188,34 @@ export function Header({ showAuth = true }: HeaderProps) {
           <div className="space-y-1 border-b px-4 py-3">
             {isPending
               ? Array.from({ length: navigation.length }).map((_, i) => (
-                  <div className="py-2" key={i}>
-                    <Skeleton className="h-6 w-32" />
-                  </div>
-                ))
+                <div className="py-2" key={i}>
+                  <Skeleton className="h-6 w-32" />
+                </div>
+              ))
               : navigation.map((item) => {
-                  const isActive =
-                    pathname === item.href ||
-                    (item.href !== "/" && pathname?.startsWith(item.href));
+                const isActive =
+                  pathname === item.href ||
+                  (item.href !== "/" && pathname?.startsWith(item.href));
 
-                  return (
-                    <Link
-                      className={cn(
-                        "block rounded-md px-3 py-2 text-base font-medium",
-                        isActive
-                          ? "bg-primary/10 text-primary"
-                          : `
-                            text-foreground
-                            hover:bg-muted/50 hover:text-primary
-                          `,
-                      )}
-                      href={item.href}
-                      key={item.name}
-                      onClick={() => setMobileMenuOpen(false)}
-                    >
-                      {item.name}
-                    </Link>
-                  );
-                })}
+                return (
+                  <Link
+                    className={cn(
+                      "block rounded-md px-3 py-2 text-base font-medium",
+                      isActive
+                        ? "bg-primary/10 text-primary"
+                        : `
+                          text-foreground
+                          hover:bg-muted/50 hover:text-primary
+                        `,
+                    )}
+                    href={item.href}
+                    key={item.name}
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    {item.name}
+                  </Link>
+                );
+              })}
           </div>
 
           {showAuth && !user && (

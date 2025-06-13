@@ -3,10 +3,10 @@ import { useCallback, useState } from "react";
 import { useDropzone } from "react-dropzone";
 
 import { cn } from "~/lib/utils";
-import { Button } from "~/ui/button";
-import { Card } from "~/ui/card";
-import { Input } from "~/ui/input";
-import { Spinner } from "~/ui/spinner";
+import { Button } from "~/ui/primitives/button";
+import { Card } from "~/ui/primitives/card";
+import { Input } from "~/ui/primitives/input";
+import { Spinner } from "~/ui/primitives/spinner";
 
 interface FileUploadProps {
   accept?: Record<string, string[]>;
@@ -70,7 +70,7 @@ export function FileUpload({
         throw new Error("上传失败");
       }
 
-      const data = await response.json();
+      const data: any = await response.json();
 
       if (data.error) {
         throw new Error(data.error);

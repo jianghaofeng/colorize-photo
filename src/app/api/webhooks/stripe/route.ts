@@ -13,7 +13,7 @@ export async function POST(request: NextRequest) {
   try {
     const body = await request.text();
     const headersList = headers();
-    const signature = headersList.get("stripe-signature");
+    const signature = (await headersList).get("stripe-signature");
 
     if (!signature || !webhookSecret) {
       return new NextResponse("Webhook 签名验证失败", { status: 400 });

@@ -3,7 +3,6 @@ import Image from "next/image";
 import Link from "next/link";
 
 import United24Banner from "~/ui/components/banners/u24";
-import { HeroBadge } from "~/ui/components/hero-badge";
 import { ProductCard } from "~/ui/components/product-card";
 import { TestimonialsSection } from "~/ui/components/testimonials/testimonials-with-marquee";
 import { Button } from "~/ui/primitives/button";
@@ -81,7 +80,6 @@ export default function HomePage() {
             >
               <div className="flex flex-col justify-center space-y-6">
                 <div className="space-y-4">
-                  <HeroBadge />
 
                   <h1
                     className={`

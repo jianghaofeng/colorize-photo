@@ -8,9 +8,10 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 
-import { cn } from "~/lib/cn";
+import { cn } from "~/lib/utils";
 import { Avatar, AvatarFallback, AvatarImage } from "~/ui/primitives/avatar";
 import { Button } from "~/ui/primitives/button";
+
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -18,6 +19,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "~/ui/primitives/dropdown-menu";
+import { CurrentUserAvatar } from "../current-user-avatar";
 
 interface HeaderUserDropdownProps {
   isDashboard: boolean;
@@ -40,7 +42,8 @@ export function HeaderUserDropdown({
           size="icon"
           variant="ghost"
         >
-          <Avatar className="h-9 w-9">
+          <CurrentUserAvatar />
+          {/* <Avatar className="h-9 w-9">
             <AvatarImage
               alt={userName || "User"}
               src={userImage || undefined}
@@ -56,7 +59,7 @@ export function HeaderUserDropdown({
                 <UserIcon className="h-4 w-4" />
               )}
             </AvatarFallback>
-          </Avatar>
+          </Avatar> */}
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-56">
@@ -104,18 +107,6 @@ export function HeaderUserDropdown({
           <Link className="cursor-pointer" href="/dashboard/settings">
             <Settings className="mr-2 h-4 w-4" />
             Settings
-          </Link>
-        </DropdownMenuItem>
-        <DropdownMenuItem asChild>
-          <Link className="cursor-pointer" href="/dashboard/uploads">
-            <Upload className="mr-2 h-4 w-4" />
-            Uploads
-          </Link>
-        </DropdownMenuItem>
-        <DropdownMenuItem asChild>
-          <Link className="cursor-pointer" href="/admin/summary">
-            <Shield className="mr-2 h-4 w-4" />
-            Admin
           </Link>
         </DropdownMenuItem>
         <DropdownMenuSeparator />

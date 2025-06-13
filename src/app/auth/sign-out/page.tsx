@@ -1,13 +1,34 @@
-import { redirect } from "next/navigation";
+import type { Metadata } from "next";
 
-import { createServerSupabaseClient } from "~/lib/supabase-auth";
+import { SignOutPageClient } from "~/app/auth/sign-out/page.client";
+import { getCurrentSupabaseUser } from "~/lib/supabase-auth";
+import {
+  PageHeader,
+  PageHeaderDescription,
+  PageHeaderHeading,
+} from "~/ui/components/page-header";
+import { Shell } from "~/ui/primitives/shell";
+
+export const metadata: Metadata = {
+  description: "Sign out of your account",
+  metadataBase: new URL(
+    process.env.NEXT_SERVER_APP_URL || "http://localhost:3000",
+  ),
+  title: "Sign out",
+};
 
 export default async function SignOutPage() {
-  const supabase = createServerSupabaseClient();
+  await getCurrentSupabaseUser();
 
-  // 退出登录
-  await supabase.auth.signOut();
-
-  // 重定向到首页
-  redirect("/");
+  return (
+    <Shell>
+      <PageHeader>
+        <PageHeaderHeading>Sign out</PageHeaderHeading>
+        <PageHeaderDescription>
+          Are you sure you want to sign out?
+        </PageHeaderDescription>
+      </PageHeader>
+      <SignOutPageClient />
+    </Shell>
+  );
 }

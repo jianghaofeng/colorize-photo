@@ -20,7 +20,6 @@ import {
 import type { ColumnOption, ElementType } from "~/lib/filters";
 
 import { getFirstNItems, getUniqueValues } from "~/lib/array";
-import { cn } from "~/lib/cn";
 import {
   type ColumnDataType,
   dateFilterDetails,
@@ -38,6 +37,7 @@ import {
   textFilterDetails,
 } from "~/lib/filters";
 import { useIsMobile } from "~/lib/hooks/use-mobile";
+import { cn } from "~/lib/utils";
 import { Button } from "~/ui/primitives/button";
 import { Calendar } from "~/ui/primitives/calendar";
 import { Checkbox } from "~/ui/primitives/checkbox";
@@ -1314,7 +1314,7 @@ export function FilterValueNumberDisplay<TData, TValue>({
     const minValue = filter.values[0];
     const maxValue =
       filter.values[1] === Number.POSITIVE_INFINITY ||
-      filter.values[1] >= cappedMax
+        filter.values[1] >= cappedMax
         ? `${cappedMax}+`
         : filter.values[1];
 

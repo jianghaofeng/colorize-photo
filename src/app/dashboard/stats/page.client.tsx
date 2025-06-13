@@ -1,11 +1,12 @@
 "use client";
 
+import type { User } from "@supabase/supabase-js";
 import Link from "next/link";
-import React from "react";
+import React, { useEffect, useState } from "react";
 
-import type { User } from "~/db/schema/users/types";
+import { useSupabaseSession, supabaseAuth } from "~/lib/supabase-auth-client";
+import { twoFactor } from "~/lib/supabase-mfa";
 
-import { signOut, useCurrentUser } from "~/lib/auth-client";
 import { Button } from "~/ui/primitives/button";
 import {
   Card,
@@ -22,10 +23,32 @@ interface DashboardPageClientProps {
 }
 
 export function DashboardPageClient({ user }: DashboardPageClientProps) {
-  const { isPending } = useCurrentUser();
+  const { loading: isPending } = useSupabaseSession();
+  const [mfaEnabled, setMfaEnabled] = useState(false);
+  const [loadingMfa, setLoadingMfa] = useState(true);
+
+  useEffect(() => {
+    const getMfaStatus = async () => {
+      try {
+        setLoadingMfa(true);
+        const { data, error } = await twoFactor.getStatus();
+        if (error) {
+          console.error("获取 MFA 状态失败:", error);
+          return;
+        }
+        setMfaEnabled(data?.enabled || false);
+      } catch (error) {
+        console.error("获取 MFA 状态失败:", error);
+      } finally {
+        setLoadingMfa(false);
+      }
+    };
+
+    getMfaStatus();
+  }, []);
 
   const handleSignOut = () => {
-    void signOut();
+    void supabaseAuth.signOut();
   };
 
   // If we're still loading, show a skeleton
@@ -90,7 +113,7 @@ export function DashboardPageClient({ user }: DashboardPageClientProps) {
                 <div className="space-y-1">
                   <p className="text-sm leading-none font-medium">Name</p>
                   <p className="text-sm text-muted-foreground">
-                    {user.name ?? "Not set"}
+                    {user.email ?? "Not set"}
                   </p>
                 </div>
                 <div className="space-y-1">
@@ -99,7 +122,7 @@ export function DashboardPageClient({ user }: DashboardPageClientProps) {
                     {user.email ?? "Not set"}
                   </p>
                 </div>
-                {user?.firstName && (
+                {/* {user?.firstName && (
                   <div className="space-y-1">
                     <p className="text-sm leading-none font-medium">
                       First Name
@@ -124,13 +147,17 @@ export function DashboardPageClient({ user }: DashboardPageClientProps) {
                     <p className="text-sm leading-none font-medium">Age</p>
                     <p className="text-sm text-muted-foreground">{user.age}</p>
                   </div>
-                ) : null}
+                ) : null} */}
                 <div className="space-y-1">
                   <p className="text-sm leading-none font-medium">
                     Two-Factor Authentication
                   </p>
                   <p className="text-sm text-muted-foreground">
-                    {user.twoFactorEnabled ? "Enabled" : "Disabled"}
+                    {loadingMfa
+                      ? "Loading..."
+                      : mfaEnabled
+                        ? "Enabled"
+                        : "Disabled"}
                   </p>
                 </div>
               </div>

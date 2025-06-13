@@ -2,7 +2,7 @@ import type * as React from "react";
 
 import { Bell, Check, X } from "lucide-react";
 
-import { cn } from "~/lib/cn";
+import { cn } from "~/lib/utils";
 import { Button } from "~/ui/primitives/button";
 import {
   DropdownMenuGroup,

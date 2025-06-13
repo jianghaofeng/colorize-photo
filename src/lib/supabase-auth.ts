@@ -1,35 +1,11 @@
-import { type CookieOptions, createServerClient } from "@supabase/ssr";
 import type { Provider } from "@supabase/supabase-js";
-import { cookies } from "next/headers";
+
 import { redirect } from "next/navigation";
-
-import { SYSTEM_CONFIG } from "~/app";
-
-// 创建服务端 Supabase 客户端
-export const createServerSupabaseClient = () => {
-  const cookieStore = cookies();
-  return createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    {
-      cookies: {
-        get(name: string) {
-          return cookieStore.get(name)?.value;
-        },
-        remove(name: string, options: CookieOptions) {
-          cookieStore.set({ name, value: "", ...options });
-        },
-        set(name: string, value: string, options: CookieOptions) {
-          cookieStore.set({ name, value, ...options });
-        },
-      },
-    },
-  );
-};
+import { createClient } from "./supabase/server";
 
 // 获取当前用户
 export const getCurrentSupabaseUser = async () => {
-  const supabase = createServerSupabaseClient();
+  const supabase = await createClient();
   const {
     data: { session },
   } = await supabase.auth.getSession();
@@ -65,15 +41,15 @@ export const getCurrentSupabaseUserOrRedirect = async (
 
 // 将 Supabase 用户映射到应用程序用户
 export const mapSupabaseUserToAppUser = async (user: any) => {
-  //ema l里可以添加额外ema的l辑，如从数据库获取更多用户信息
-  return Verified{_confirmed_at ? true : false
-    firstNd: user.id,irst,
-   id:u.id
+  // 这里可以添加额外的逻辑，如从数据库获取更多用户信息
+  return {
+    avatar: user.user_metadata?.avatar_url,
     email: user.email,
-   r??ge: user.user_metadata?.avatlaurl,
-    nVerified: user.email_conffulid_ate || user. mail?.split('@')[0]? truUsere : false,
+    emailVerified: !!user.email_confirmed_at,
     firstName: user.user_metadata?.first_name || "",
+    id: user.id,
     lastName: user.user_metadata?.last_name || "",
+    username: user.email?.split('@')[0] || user.id
   };
 };
 

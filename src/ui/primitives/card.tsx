@@ -1,6 +1,6 @@
 import type * as React from "react";
 
-import { cn } from "~/lib/cn";
+import { cn } from "~/lib/utils";
 
 function Card({ className, ...props }: React.ComponentProps<"div">) {
   return (
@@ -54,13 +54,10 @@ function CardDescription({ className, ...props }: React.ComponentProps<"div">) {
 function CardFooter({ className, ...props }: React.ComponentProps<"div">) {
   return (
     <div
-      className={cn(
-        `
-          flex items-center px-6
-          [.border-t]:pt-6
-        `,
-        className,
-      )}
+      className={cn(`
+        flex items-center px-6
+        [.border-t]:pt-6
+      `, className)}
       data-slot="card-footer"
       {...props}
     />
@@ -77,7 +74,7 @@ function CardHeader({ className, ...props }: React.ComponentProps<"div">) {
           has-data-[slot=card-action]:grid-cols-[1fr_auto]
           [.border-b]:pb-6
         `,
-        className,
+        className
       )}
       data-slot="card-header"
       {...props}

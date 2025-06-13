@@ -2,7 +2,7 @@ import { Facebook, Github, Instagram, Linkedin, Twitter } from "lucide-react";
 import Link from "next/link";
 
 import { SEO_CONFIG } from "~/app";
-import { cn } from "~/lib/cn";
+import { cn } from "~/lib/utils";
 import { Button } from "~/ui/primitives/button";
 
 export function Footer({ className }: { className?: string }) {

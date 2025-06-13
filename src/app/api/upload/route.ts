@@ -1,7 +1,8 @@
 import { type NextRequest, NextResponse } from "next/server";
 
-import { auth } from "~/lib/auth";
+import { getCurrentSupabaseUser } from "~/lib/supabase-auth";
 import { uploadFile } from "~/lib/supabase-storage";
+import { createClient } from "~/lib/supabase/server";
 
 export const config = {
   api: {
@@ -12,9 +13,11 @@ export const config = {
 
 export async function POST(request: NextRequest) {
   try {
-    // 认证检查
-    const session = await auth.api.getSession({ headers: request.headers });
-    if (!session?.user?.id) {
+    // 认证检查'
+    // const client = await createClient();
+    // const session = await client.auth.getSession({ headers: request.headers });
+    const user = await getCurrentSupabaseUser()
+    if (user) {
       return NextResponse.json({ error: "未授权" }, { status: 401 });
     }
 
@@ -43,7 +46,7 @@ export async function POST(request: NextRequest) {
     // 上传到 Supabase
     const result = await uploadFile(
       file,
-      session.user.id,
+      user!.id,
       isImage ? "image" : "video",
     );
 

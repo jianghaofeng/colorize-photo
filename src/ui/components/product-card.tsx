@@ -5,7 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import * as React from "react";
 
-import { cn } from "~/lib/cn";
+import { cn } from "~/lib/utils";
 import { Badge } from "~/ui/primitives/badge";
 import { Button } from "~/ui/primitives/button";
 import { Card, CardContent, CardFooter } from "~/ui/primitives/card";
@@ -63,8 +63,8 @@ export function ProductCard({
 
   const discount = product.originalPrice
     ? Math.round(
-        ((product.originalPrice - product.price) / product.originalPrice) * 100
-      )
+      ((product.originalPrice - product.price) / product.originalPrice) * 100
+    )
     : 0;
 
   const renderStars = () => {
@@ -81,8 +81,8 @@ export function ProductCard({
               i < fullStars
                 ? "fill-yellow-400 text-yellow-400"
                 : i === fullStars && hasHalfStar
-                ? "fill-yellow-400/50 text-yellow-400"
-                : "stroke-muted/40 text-muted"
+                  ? "fill-yellow-400/50 text-yellow-400"
+                  : "stroke-muted/40 text-muted"
             )}
             key={`star-${product.id}-position-${i + 1}`}
           />
@@ -139,9 +139,9 @@ export function ProductCard({
             {discount > 0 && (
               <Badge
                 className={`
-                absolute top-2 right-2 bg-destructive
-                text-destructive-foreground
-              `}
+                  absolute top-2 right-2 bg-destructive
+                  text-destructive-foreground
+                `}
               >
                 {discount}% OFF
               </Badge>

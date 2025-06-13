@@ -1,11 +1,12 @@
 import type React from "react";
 
-import { getCurrentUserOrRedirect } from "~/lib/auth";
+import { getCurrentSupabaseUserOrRedirect } from "~/lib/supabase-auth";
+
 
 export default async function AdminLayout({
   children,
 }: { children: React.ReactNode }) {
-  await getCurrentUserOrRedirect();
+  await getCurrentSupabaseUserOrRedirect();
 
   // TODO: implement admin check
   // const user = await getCurrentUserOrRedirect();
