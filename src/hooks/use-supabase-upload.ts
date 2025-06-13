@@ -1,19 +1,40 @@
-import { createClient } from '~/lib/supabase/client'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { type FileError, type FileRejection, useDropzone } from 'react-dropzone'
+
+import { createClient } from '~/lib/supabase/client'
 
 const supabase = createClient()
 
 interface FileWithPreview extends File {
-  preview?: string
   errors: readonly FileError[]
+  preview?: string
 }
 
-type UseSupabaseUploadOptions = {
+interface UseSupabaseUploadOptions {
+  /**
+   * Allowed MIME types for each file upload (e.g `image/png`, `text/html`, etc). Wildcards are also supported (e.g `image/*`).
+   *
+   * Defaults to allowing uploading of all MIME types.
+   */
+  allowedMimeTypes?: string[]
   /**
    * Name of bucket to upload files to in your Supabase project
    */
   bucketName: string
+  /**
+   * The number of seconds the asset is cached in the browser and in the Supabase CDN.
+   *
+   * This is set in the Cache-Control: max-age=<seconds> header. Defaults to 3600 seconds.
+   */
+  cacheControl?: number
+  /**
+   * Maximum number of files allowed per upload.
+   */
+  maxFiles?: number
+  /**
+   * Maximum upload size of each file allowed in bytes. (e.g 1000 bytes = 1 KB)
+   */
+  maxFileSize?: number
   /**
    * Folder to upload files to in the specified bucket within your Supabase project.
    *
@@ -22,26 +43,6 @@ type UseSupabaseUploadOptions = {
    * e.g If specified path is `test`, your file will be uploaded as `test/file_name`
    */
   path?: string
-  /**
-   * Allowed MIME types for each file upload (e.g `image/png`, `text/html`, etc). Wildcards are also supported (e.g `image/*`).
-   *
-   * Defaults to allowing uploading of all MIME types.
-   */
-  allowedMimeTypes?: string[]
-  /**
-   * Maximum upload size of each file allowed in bytes. (e.g 1000 bytes = 1 KB)
-   */
-  maxFileSize?: number
-  /**
-   * Maximum number of files allowed per upload.
-   */
-  maxFiles?: number
-  /**
-   * The number of seconds the asset is cached in the browser and in the Supabase CDN.
-   *
-   * This is set in the Cache-Control: max-age=<seconds> header. Defaults to 3600 seconds.
-   */
-  cacheControl?: number
   /**
    * When set to true, the file is overwritten if it exists.
    *
@@ -54,18 +55,18 @@ type UseSupabaseUploadReturn = ReturnType<typeof useSupabaseUpload>
 
 const useSupabaseUpload = (options: UseSupabaseUploadOptions) => {
   const {
-    bucketName,
-    path,
     allowedMimeTypes = [],
-    maxFileSize = Number.POSITIVE_INFINITY,
-    maxFiles = 1,
+    bucketName,
     cacheControl = 3600,
+    maxFiles = 1,
+    maxFileSize = Number.POSITIVE_INFINITY,
+    path,
     upsert = false,
   } = options
 
   const [files, setFiles] = useState<FileWithPreview[]>([])
   const [loading, setLoading] = useState<boolean>(false)
-  const [errors, setErrors] = useState<{ name: string; message: string }[]>([])
+  const [errors, setErrors] = useState<{ message: string; name: string; }[]>([])
   const [successes, setSuccesses] = useState<string[]>([])
 
   const isSuccess = useMemo(() => {
@@ -88,7 +89,7 @@ const useSupabaseUpload = (options: UseSupabaseUploadOptions) => {
           return file as FileWithPreview
         })
 
-      const invalidFiles = fileRejections.map(({ file, errors }) => {
+      const invalidFiles = fileRejections.map(({ errors, file }) => {
         ;(file as FileWithPreview).preview = URL.createObjectURL(file)
         ;(file as FileWithPreview).errors = errors
         return file as FileWithPreview
@@ -102,12 +103,12 @@ const useSupabaseUpload = (options: UseSupabaseUploadOptions) => {
   )
 
   const dropzoneProps = useDropzone({
-    onDrop,
-    noClick: true,
     accept: allowedMimeTypes.reduce((acc, type) => ({ ...acc, [type]: [] }), {}),
-    maxSize: maxFileSize,
     maxFiles: maxFiles,
+    maxSize: maxFileSize,
     multiple: maxFiles !== 1,
+    noClick: true,
+    onDrop,
   })
 
   const onUpload = useCallback(async () => {
@@ -128,14 +129,14 @@ const useSupabaseUpload = (options: UseSupabaseUploadOptions) => {
       filesToUpload.map(async (file) => {
         const { error } = await supabase.storage
           .from(bucketName)
-          .upload(!!path ? `${path}/${file.name}` : file.name, file, {
+          .upload(path ? `${path}/${file.name}` : file.name, file, {
             cacheControl: cacheControl.toString(),
             upsert,
           })
         if (error) {
-          return { name: file.name, message: error.message }
+          return { message: error.message, name: file.name }
         } else {
-          return { name: file.name, message: undefined }
+          return { message: undefined, name: file.name }
         }
       })
     )
@@ -146,7 +147,7 @@ const useSupabaseUpload = (options: UseSupabaseUploadOptions) => {
 
     const responseSuccesses = responses.filter((x) => x.message === undefined)
     const newSuccesses = Array.from(
-      new Set([...successes, ...responseSuccesses.map((x) => x.name)])
+      new Set([...responseSuccesses.map((x) => x.name), ...successes])
     )
     setSuccesses(newSuccesses)
 
@@ -175,17 +176,17 @@ const useSupabaseUpload = (options: UseSupabaseUploadOptions) => {
   }, [files.length, setFiles, maxFiles])
 
   return {
+    allowedMimeTypes,
+    errors,
     files,
-    setFiles,
-    successes,
     isSuccess,
     loading,
-    errors,
-    setErrors,
-    onUpload,
-    maxFileSize: maxFileSize,
     maxFiles: maxFiles,
-    allowedMimeTypes,
+    maxFileSize: maxFileSize,
+    onUpload,
+    setErrors,
+    setFiles,
+    successes,
     ...dropzoneProps,
   }
 }

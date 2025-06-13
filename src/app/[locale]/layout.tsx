@@ -1,12 +1,16 @@
 import type { Metadata } from "next";
 
+import { ReactPlugin } from "@stagewise-plugins/react";
+import { StagewiseToolbar } from "@stagewise/toolbar-next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
-import { NextIntlClientProvider } from 'next-intl';
+import { NextIntlClientProvider } from "next-intl";
 import { getMessages } from "next-intl/server";
+
+import "~/css/globals.css";
+
 import { Geist, Geist_Mono } from "next/font/google";
 
 import { SEO_CONFIG } from "~/app";
-import "~/css/globals.css";
 import { CartProvider } from "~/lib/hooks/use-cart";
 import { Footer } from "~/ui/components/footer";
 import { Header } from "~/ui/components/header/header";
@@ -58,8 +62,8 @@ export default async function RootLayout({
               <main className={`flex min-h-screen flex-col`}>{children}</main>
               <Footer />
               <Toaster />
+              <StagewiseToolbar config={{ plugins: [ReactPlugin] }} />
             </NextIntlClientProvider>
-
           </CartProvider>
         </ThemeProvider>
         <SpeedInsights />

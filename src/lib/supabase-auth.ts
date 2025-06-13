@@ -1,6 +1,7 @@
 import type { Provider } from "@supabase/supabase-js";
 
 import { redirect } from "next/navigation";
+
 import { createClient } from "./supabase/server";
 
 // 获取当前用户

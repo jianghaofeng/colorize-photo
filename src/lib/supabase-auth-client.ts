@@ -127,7 +127,7 @@ export const useSupabaseUserOrRedirect = (
     }
   }, [loading, user, router, forbiddenUrl, okUrl, ignoreForbidden]);
 
-  return { loading: loading, user, isPending: loading };
+  return { isPending: loading, loading: loading, user };
 };
 
 // 为了兼容原有代码，导出 useCurrentUserOrRedirect 作为 useSupabaseUserOrRedirect 的别名

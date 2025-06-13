@@ -1,10 +1,10 @@
 "use client";
 
 import { Menu, X } from "lucide-react";
+import { useTranslations } from "next-intl";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
-import { useTranslations } from "next-intl";
 
 import { SEO_CONFIG } from "~/app";
 import { useSupabaseSession } from "~/lib/supabase-auth-client";
@@ -13,9 +13,9 @@ import { Cart } from "~/ui/components/cart";
 import { Button } from "~/ui/primitives/button";
 import { Skeleton } from "~/ui/primitives/skeleton";
 
+import { LanguageSwitcher } from "../language-switcher";
 import { NotificationsWidget } from "../notifications/notifications-widget";
 import { ThemeToggle } from "../theme-toggle";
-import { LanguageSwitcher } from "../language-switcher";
 import { HeaderUserDropdown } from "./header-user";
 
 interface HeaderProps {

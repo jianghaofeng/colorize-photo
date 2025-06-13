@@ -1,7 +1,11 @@
 'use client'
 
-import { cn } from '~/lib/utils'
+import Link from 'next/link'
+import { useRouter } from 'next/navigation'
+import { useState } from 'react'
+
 import { createClient } from '~/lib/supabase/client'
+import { cn } from '~/lib/utils'
 import { Button } from '~/ui/primitives/button'
 import {
   Card,
@@ -12,15 +16,12 @@ import {
 } from '~/ui/primitives/card'
 import { Input } from '~/ui/primitives/input'
 import { Label } from '~/ui/primitives/label'
-import Link from 'next/link'
-import { useRouter } from 'next/navigation'
-import { useState } from 'react'
 
 export function SignUpForm({ className, ...props }: React.ComponentPropsWithoutRef<'div'>) {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [repeatPassword, setRepeatPassword] = useState('')
-  const [error, setError] = useState<string | null>(null)
+  const [error, setError] = useState<null | string>(null)
   const [isLoading, setIsLoading] = useState(false)
   const router = useRouter()
 
@@ -39,10 +40,10 @@ export function SignUpForm({ className, ...props }: React.ComponentPropsWithoutR
     try {
       const { error } = await supabase.auth.signUp({
         email,
-        password,
         options: {
           emailRedirectTo: `${window.location.origin}/protected`,
         },
+        password,
       })
       if (error) throw error
       router.push('/auth/sign-up-success')
@@ -67,11 +68,11 @@ export function SignUpForm({ className, ...props }: React.ComponentPropsWithoutR
                 <Label htmlFor="email">Email</Label>
                 <Input
                   id="email"
-                  type="email"
+                  onChange={(e) => setEmail(e.target.value)}
                   placeholder="m@example.com"
                   required
+                  type="email"
                   value={email}
-                  onChange={(e) => setEmail(e.target.value)}
                 />
               </div>
               <div className="grid gap-2">
@@ -80,10 +81,10 @@ export function SignUpForm({ className, ...props }: React.ComponentPropsWithoutR
                 </div>
                 <Input
                   id="password"
-                  type="password"
-                  required
-                  value={password}
                   onChange={(e) => setPassword(e.target.value)}
+                  required
+                  type="password"
+                  value={password}
                 />
               </div>
               <div className="grid gap-2">
@@ -92,20 +93,20 @@ export function SignUpForm({ className, ...props }: React.ComponentPropsWithoutR
                 </div>
                 <Input
                   id="repeat-password"
-                  type="password"
-                  required
-                  value={repeatPassword}
                   onChange={(e) => setRepeatPassword(e.target.value)}
+                  required
+                  type="password"
+                  value={repeatPassword}
                 />
               </div>
               {error && <p className="text-sm text-red-500">{error}</p>}
-              <Button type="submit" className="w-full" disabled={isLoading}>
+              <Button className="w-full" disabled={isLoading} type="submit">
                 {isLoading ? 'Creating an account...' : 'Sign up'}
               </Button>
             </div>
             <div className="mt-4 text-center text-sm">
               Already have an account?{' '}
-              <Link href="/auth/login" className="underline underline-offset-4">
+              <Link className="underline underline-offset-4" href="/auth/login">
                 Login
               </Link>
             </div>

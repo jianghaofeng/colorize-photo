@@ -1,12 +1,12 @@
 "use client";
 
 import type { User } from "@supabase/supabase-js";
+
 import Link from "next/link";
 import React, { useEffect, useState } from "react";
 
-import { useSupabaseSession, supabaseAuth } from "~/lib/supabase-auth-client";
+import { supabaseAuth, useSupabaseSession } from "~/lib/supabase-auth-client";
 import { twoFactor } from "~/lib/supabase-mfa";
-
 import { Button } from "~/ui/primitives/button";
 import {
   Card,

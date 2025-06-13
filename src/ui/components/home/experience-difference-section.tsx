@@ -82,19 +82,26 @@ export function ExperienceDifferenceSection() {
       return;
     }
 
-    // 设置循环滚动
-    api.on('select', () => {
+    let timeoutId: NodeJS.Timeout | null = null;
+
+    const handleSelect = () => {
       // 如果到达最后一个，自动回到第一个
       if (api.selectedScrollSnap() === api.scrollSnapList().length - 1) {
         // 使用setTimeout避免立即滚动造成的视觉跳跃
-        setTimeout(() => {
+        timeoutId = setTimeout(() => {
           api.scrollTo(0, false);
         }, 500);
       }
-    });
+    };
+
+    // 设置循环滚动
+    api.on('select', handleSelect);
 
     return () => {
-      api.off('select', () => null);
+      api.off('select', handleSelect);
+      if (timeoutId) {
+        clearTimeout(timeoutId);
+      }
     };
   }, [api]);
 
@@ -143,11 +150,11 @@ export function ExperienceDifferenceSection() {
             <div className={`
               pointer-events-none absolute top-0 bottom-0 left-0 z-10 w-24
               bg-gradient-to-r from-background to-transparent
-            `}></div>
+            `} />
             <div className={`
               pointer-events-none absolute top-0 right-0 bottom-0 z-10 w-24
               bg-gradient-to-l from-background to-transparent
-            `}></div>
+            `} />
             <Carousel
               className="w-full"
               opts={{
@@ -165,7 +172,7 @@ export function ExperienceDifferenceSection() {
                   `} key={index}>
                     <Card
                       className={`
-                        relative transition-all duration-300
+                        relative p-0 transition-all duration-300
                         hover:z-10 hover:scale-105
                       `}
                     >

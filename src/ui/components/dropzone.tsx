@@ -6,6 +6,7 @@ import {
   type PropsWithChildren,
   use,
   useCallback,
+  useMemo,
 } from "react";
 
 import type { UseSupabaseUploadReturn } from "~/hooks/use-supabase-upload";
@@ -60,8 +61,10 @@ const Dropzone = ({
     (restProps.errors.length > 0 && !restProps.isSuccess) ||
     restProps.files.some((file) => file.errors.length !== 0);
 
+  const contextValue = useMemo(() => ({ ...restProps }), [restProps]);
+
   return (
-    <DropzoneContext value={{ ...restProps }}>
+    <DropzoneContext value={contextValue}>
       <div
         {...getRootProps({
           className: cn(

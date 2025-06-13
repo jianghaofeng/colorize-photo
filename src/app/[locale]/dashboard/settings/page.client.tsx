@@ -11,7 +11,7 @@ import { Switch } from "~/ui/primitives/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/ui/primitives/tabs";
 
 export function SettingsPageClient() {
-  const { user, loading: isPending } = useSupabaseSession();
+  const { loading: isPending, user } = useSupabaseSession();
 
   return (
     <div

@@ -2,6 +2,7 @@
 
 import { useTranslations } from 'next-intl';
 import Image from 'next/image';
+
 import { Card } from '~/ui/primitives/card';
 // 效果展示图片
 const effectImages = [
@@ -46,8 +47,8 @@ export function AIColorizationGallery() {
               {effectImages.map((image, index) => (
                 <Card
                   className={`
-                    overflow-hidden transition-all duration-300
-                    hover:shadow-xl cursor-pointer
+                    cursor-pointer overflow-hidden transition-all duration-300
+                    hover:shadow-xl
                   `}
                   key={index}
                 >

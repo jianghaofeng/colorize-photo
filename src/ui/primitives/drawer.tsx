@@ -64,12 +64,10 @@ function DrawerContent({
         data-slot="drawer-content"
         {...props}
       >
-        <div
-          className={`
-            mx-auto mt-4 hidden h-2 w-[100px] shrink-0 rounded-full bg-muted
-            group-data-[vaul-drawer-direction=bottom]/drawer-content:block
-          `}
-        />
+        <div className={`
+          mx-auto mt-4 hidden h-2 w-[100px] shrink-0 rounded-full bg-muted
+          group-data-[vaul-drawer-direction=bottom]/drawer-content:block
+        `} />
         {children}
       </DrawerPrimitive.Content>
     </DrawerPortal>
@@ -86,7 +84,7 @@ function DrawerDescription({
       data-slot="drawer-description"
       {...props}
     />
-  );
+  )
 }
 
 function DrawerFooter({ className, ...props }: React.ComponentProps<"div">) {
@@ -96,13 +94,21 @@ function DrawerFooter({ className, ...props }: React.ComponentProps<"div">) {
       data-slot="drawer-footer"
       {...props}
     />
-  );
+  )
 }
 
 function DrawerHeader({ className, ...props }: React.ComponentProps<"div">) {
   return (
     <div
-      className={cn("flex flex-col gap-1.5 p-4", className)}
+      className={cn(
+        `
+          flex flex-col gap-0.5 p-4
+          group-data-[vaul-drawer-direction=bottom]/drawer-content:text-center
+          group-data-[vaul-drawer-direction=top]/drawer-content:text-center
+          md:gap-1.5 md:text-left
+        `,
+        className,
+      )}
       data-slot="drawer-header"
       {...props}
     />
@@ -121,7 +127,7 @@ function DrawerOverlay({
           data-[state=closed]:animate-out data-[state=closed]:fade-out-0
           data-[state=open]:animate-in data-[state=open]:fade-in-0
         `,
-        className,
+        className
       )}
       data-slot="drawer-overlay"
       {...props}
@@ -132,7 +138,7 @@ function DrawerOverlay({
 function DrawerPortal({
   ...props
 }: React.ComponentProps<typeof DrawerPrimitive.Portal>) {
-  return <DrawerPrimitive.Portal data-slot="drawer-portal" {...props} />;
+  return <DrawerPrimitive.Portal data-slot="drawer-portal" {...props} />
 }
 
 function DrawerTitle({

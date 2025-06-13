@@ -15,7 +15,7 @@ export async function createClient() {
         setAll(cookiesToSet) {
           try {
             // biome-ignore lint/complexity/noForEach: <explanation>
-            cookiesToSet.forEach(({ name, value, options }) =>
+            cookiesToSet.forEach(({ name, options, value }) =>
               cookieStore.set(name, value, options)
             )
           } catch {

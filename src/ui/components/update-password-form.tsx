@@ -1,7 +1,10 @@
 'use client'
 
-import { cn } from '~/lib/utils'
+import { useRouter } from 'next/navigation'
+import { useState } from 'react'
+
 import { createClient } from '~/lib/supabase/client'
+import { cn } from '~/lib/utils'
 import { Button } from '~/ui/primitives/button'
 import {
   Card,
@@ -12,12 +15,10 @@ import {
 } from '~/ui/primitives/card'
 import { Input } from '~/ui/primitives/input'
 import { Label } from '~/ui/primitives/label'
-import { useRouter } from 'next/navigation'
-import { useState } from 'react'
 
 export function UpdatePasswordForm({ className, ...props }: React.ComponentPropsWithoutRef<'div'>) {
   const [password, setPassword] = useState('')
-  const [error, setError] = useState<string | null>(null)
+  const [error, setError] = useState<null | string>(null)
   const [isLoading, setIsLoading] = useState(false)
   const router = useRouter()
 
@@ -53,15 +54,15 @@ export function UpdatePasswordForm({ className, ...props }: React.ComponentProps
                 <Label htmlFor="password">New password</Label>
                 <Input
                   id="password"
-                  type="password"
+                  onChange={(e) => setPassword(e.target.value)}
                   placeholder="New password"
                   required
+                  type="password"
                   value={password}
-                  onChange={(e) => setPassword(e.target.value)}
                 />
               </div>
               {error && <p className="text-sm text-red-500">{error}</p>}
-              <Button type="submit" className="w-full" disabled={isLoading}>
+              <Button className="w-full" disabled={isLoading} type="submit">
                 {isLoading ? 'Saving...' : 'Save new password'}
               </Button>
             </div>
