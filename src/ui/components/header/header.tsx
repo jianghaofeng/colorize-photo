@@ -32,6 +32,7 @@ export function Header({ showAuth = true }: HeaderProps) {
   const mainNavigation = [
     { href: "/", name: "Home" },
     { href: "/products", name: "Products" },
+    { href: "/payment-test", name: "Payment" },
   ];
 
   const dashboardNavigation = [
@@ -252,7 +253,7 @@ export function Header({ showAuth = true }: HeaderProps) {
               </Link>
             </div>
           )}
-          
+
           {/* 设置选项 */}
           <div className="space-y-1 border-b px-4 py-3">
             <div className="flex items-center justify-between px-3 py-2">
