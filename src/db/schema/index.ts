@@ -3,8 +3,14 @@ export * from "./payments/tables";
 export * from "./payments/types";
 
 export * from "./uploads/relations";
-export * from "./uploads/tables";
+// 从tables中导出表定义，但不包括relations
+export { uploadsTable } from "./uploads/tables";
 export * from "./uploads/types";
+
+// 积分系统
+export * from "./credits/relations";
+export * from "./credits/tables";
+export * from "./credits/types";
 
 // relations
 // export * from "./users/relations";
@@ -12,4 +18,3 @@ export * from "./uploads/types";
 // schema
 export * from "./users/tables";
 // types
-export * from "./users/types";

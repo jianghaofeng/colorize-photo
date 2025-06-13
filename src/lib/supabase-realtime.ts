@@ -1,9 +1,9 @@
-import { supabase } from "~/lib/supabase-client";
+import { supabase } from '~/lib/supabase-client';
 
 interface RealtimeChannelCallbackParams<T> {
   eventType: "DELETE" | "INSERT" | "UPDATE";
-  new: T;
-  old: T;
+  new?: T;
+  old?: T;
 }
 
 // 实时订阅辅助函数

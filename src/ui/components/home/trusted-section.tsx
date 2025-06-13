@@ -4,7 +4,7 @@ import { useTranslations } from 'next-intl';
 import NextImage from 'next/image';
 
 export function TrustedSection() {
-  const t = useTranslations();
+  const t = useTranslations("Home");
 
   return (
     <section className="bg-muted/30 py-16">
@@ -23,12 +23,12 @@ export function TrustedSection() {
                 uppercase
               `}
             >
-              {t('common.trustedInProductions')}
+              {t('trustedInProductions')}
             </p>
             <div className="space-y-2">
               <p className="text-lg font-semibold text-foreground">
                 "
-                {t('common.remarkablyAccurate')}
+                {t('remarkablyAccurate')}
                 "
               </p>
               <p className="text-sm text-muted-foreground">
@@ -51,7 +51,7 @@ export function TrustedSection() {
             <div className="space-y-2">
               <p className="text-lg font-semibold text-foreground">
                 "
-                {t('common.worldsBestAI')}
+                {t('worldsBestAI')}
                 "
               </p>
               <p className="text-sm text-muted-foreground">
@@ -74,7 +74,7 @@ export function TrustedSection() {
             <div className="space-y-2">
               <p className="text-lg font-semibold text-foreground">
                 "
-                {t('common.inALeagueOfItsOwn')}
+                {t('inALeagueOfItsOwn')}
                 "
               </p>
               <p className="text-sm text-muted-foreground">

@@ -15,7 +15,7 @@ const effectImages = [
 ];
 
 export function AIColorizationGallery() {
-  const t = useTranslations('common');
+  const t = useTranslations('Home');
 
   return (
     <section className="py-20">

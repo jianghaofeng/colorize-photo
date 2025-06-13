@@ -6,7 +6,7 @@ import Link from 'next/link';
 import { Button } from '~/ui/primitives/button';
 
 export function FinalCTASection() {
-  const t = useTranslations();
+  const t = useTranslations("Home");
 
   return (
     <section
@@ -24,7 +24,7 @@ export function FinalCTASection() {
               dark:text-white
             `}
           >
-            {t('common.millionPhotosColorized')}
+            {t('millionPhotosColorized')}
           </h2>
           <Button
             asChild
@@ -33,7 +33,7 @@ export function FinalCTASection() {
             variant="secondary"
           >
             <Link href="/generate">
-              {t('common.getStartNow')}
+              {t('getStartNow')}
             </Link>
           </Button>
         </div>

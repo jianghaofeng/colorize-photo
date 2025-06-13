@@ -79,7 +79,7 @@ const testimonials = [
 ];
 
 export function HomeTestimonialsSection() {
-  const t = useTranslations();
+  const t = useTranslations("Home");
 
   return (
     <section className="bg-muted/50">
@@ -89,7 +89,7 @@ export function HomeTestimonialsSection() {
           className="py-0"
           description="Don't just take our word for it - hear from our satisfied customers"
           testimonials={testimonials}
-          title={t('common.trustedByPhotographers')}
+          title={t('trustedByPhotographers')}
         />
       </div>
     </section>

@@ -47,7 +47,7 @@ const beforeAfterImages = [
 ];
 
 export function ExperienceDifferenceSection() {
-  const t = useTranslations();
+  const t = useTranslations('Home');
   const [api, setApi] = useState<CarouselApi>();
   const [isPaused, setIsPaused] = useState(false);
   const autoScrollIntervalRef = useRef<NodeJS.Timeout | null>(null);
@@ -124,7 +124,7 @@ export function ExperienceDifferenceSection() {
               lg:text-4xl
             `}
           >
-            {t('common.experienceTheDifference')}
+            {t('experienceTheDifference')}
           </h2>
 
           {/* Category Buttons */}
@@ -136,7 +136,7 @@ export function ExperienceDifferenceSection() {
                 onClick={() => setActiveCategory(index)}
                 variant={activeCategory === index ? 'default' : 'outline'}
               >
-                {t(`common.${category}`)}
+                {t(`${category}`)}
               </Button>
             ))}
           </div> */}
@@ -189,7 +189,7 @@ export function ExperienceDifferenceSection() {
                                 px-2 py-1 text-xs font-semibold text-white
                               `}
                             >
-                              {t('common.before')}
+                              {t('before')}
                             </div>
                             <Image
                               alt={`${item.alt} Before`}
@@ -206,7 +206,7 @@ export function ExperienceDifferenceSection() {
                                 px-2 py-1 text-xs font-semibold text-white
                               `}
                             >
-                              {t('common.after')}
+                              {t('after')}
                             </div>
                             <Image
                               alt={`${item.alt} After`}
@@ -221,7 +221,7 @@ export function ExperienceDifferenceSection() {
                                 variant="secondary"
                                 size="sm"
                               >
-                                {t('common.newPalette')}
+                                {t('newPalette')}
                                 {' '}
                                 <span className="ml-1">🪄</span>
                               </Button>
