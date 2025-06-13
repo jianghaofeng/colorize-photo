@@ -1,149 +1,120 @@
-# 🏬 relivator • next.js ecommerce starter
+# Colorize Photo - AI照片上色应用
 
-[demo](https://relivator.com) — [sponsor](https://github.com/sponsors/blefnk) — [discord](https://discord.gg/Pb8uKbwpsJ) — [github](https://github.com/blefnk/relivator) — [docs](https://deepwiki.com/blefnk/relivator-nextjs-template)
+![Colorize Photo](https://zvcxdyuidlhzvmhsviwc.supabase.co/storage/v1/object/public/images/colorized-2.png)
 
-> **relivator** is a robust ecommerce template built with next.js and other modern technologies. it's designed for developers who want a fast, modern, and scalable foundation without reinventing the backend.
+## 项目概述
 
-## stack
+Colorize Photo是一个专业的照片上色和修复网站，使用先进的AI技术为黑白照片添加色彩，修复旧照片或损坏的照片，让珍贵的回忆重获新生。
 
-1. 🧱 **core**: [nextjs 15.3](https://nextjs.org) + [react 19.1](https://react.dev) + [ts 5.8](https://typescriptlang.org)
-2. 🎨 **ui**: [tailwind 4.1](https://tailwindcss.com) + [shadcn/ui](https://ui.shadcn.com)
-3. 🔒 **auth**: [better-auth](https://better-auth.com)
-4. 🎬 **anims**: [animejs](https://animejs.com)
-5. 📦 **storage**: [uploadthing](https://uploadthing.com)
-6. 📊 **analytics**: [vercel](https://vercel.com/docs/analytics)
-7. 🧬 **db**: [drizzle-orm](https://orm.drizzle.team) ([pg](https://neon.tech/postgresql/tutorial)) + [neon](https://neon.tech)/(🤔🔜)[supabase](https://supabase.com)
-8. 🏗️ **dx**: [eslint](https://eslint.org) + [biome](https://biomejs.dev) + [knip](https://knip.dev)
-9. 📝 **forms**: [react-form](https://tanstack.com/form) _(🔜 w.i.p)_ + [arktype](https://arktype.io)
-10. 📅 **tables**: [react-table](https://tanstack.com/table)
-11. 🌐 **i18n**: [next-intl](https://next-intl.dev) _(🔜 w.i.p)_
-12. 💌 **email**: [resend](https://resend.com) _(🔜 w.i.p)_
-13. 💳 **payments**: [polar](https://polar.sh)
-14. 🔑 **api**: [orpc](https://orpc.unnoq.com) _(🔜 w.i.p)_
+## 主要功能
 
-> these features define the main reliverse stack. for an alternative setup—featuring clerk, stripe, trpc, and more—check out [versator](https://github.com/blefnk/versator).
+- **AI照片上色**：将黑白照片转换为逼真的彩色照片
+- **多种滤镜效果**：提供多种滤镜和调色选项
+- **照片修复**：修复旧照片或损坏的照片
+- **国际化支持**：支持英文和中文界面
+- **用户认证**：基于Supabase的用户认证系统
+- **订阅计划**：基础、标准和高级订阅计划
+- **支付集成**：集成Stripe支付系统
 
-## quick start
+## 技术栈
 
-1. install [git](https://git-scm.com), [node.js](https://nodejs.org), [bun](https://bun.sh).
-2. run:
+- **前端框架**：Next.js 15.3.2
+- **UI库**：React 19.1.0
+- **样式**：Tailwind CSS 4.1.5
+- **组件库**：Radix UI, shadcn/ui
+- **状态管理**：React Hooks
+- **国际化**：next-intl 4.1.0
+- **认证**：Supabase Auth
+- **数据库**：Supabase (PostgreSQL)
+- **存储**：Supabase Storage
+- **支付**：Stripe
+- **表单处理**：@tanstack/react-form
+- **表格**：@tanstack/react-table
+- **轮播图**：embla-carousel-react
+- **动画**：framer-motion, animejs
+- **图标**：lucide-react
+- **主题**：next-themes
+- **类型检查**：TypeScript
 
-   ```bash
-   git clone https://github.com/blefnk/relivator.git
-   cd relivator
-   bun install
-   copy .env.example .env
-   ```
+## 快速开始
 
-3. fill in the required environment variables in the `.env` file.
-4. optionally, edit the `src/app.ts` file to make the app yours.
-5. run:
+### 环境要求
 
-   ```bash
-   bun db:push # populate db with schema
-   bun dev # start development server
-   bun run build # build production version
-   ```
+- Node.js 18+
+- Bun (推荐) 或 npm
 
-6. edit something in the code manually or ask ai to help you.
-7. done. seriously. you're building now.
+### 安装步骤
 
-<!-- 
-2. run:
-   ```bash
-   bun i -g @reliverse/cli
-   reliverse cli
-   ```
-3. select **"create a new project"**.
-4. follow prompts to configure your store.
--->
+1. 克隆仓库
 
-### commands
+```bash
+git clone https://github.com/allen/colorize-photo.git
+cd colorize-photo
+```
 
-| command         | description                    |
-|-----------------|--------------------------------|
-| `bun dev`       | start local development        |
-| `bun build`     | create a production build      |
-| `bun latest`    | install latest deps            |
-| `bun ui`        | add shadcn components          |
-| `bun db:push`   | apply db schema changes        |
-| `bun db:auth`   | update auth-related tables     |
-| `bun db:studio` | open visual db editor          |
+2. 安装依赖
 
-## polar integration
+```bash
+bun install
+# 或
+npm install
+```
 
-relivator now integrates with [polar](https://polar.sh) for payment processing and subscription management.
+3. 环境配置
 
-### features
+复制`.env.example`文件并重命名为`.env.local`，然后填写必要的环境变量：
 
-- checkout flow for subscription purchases
-- customer portal for managing subscriptions
-- webhook handling for subscription events
-- automatic customer creation on signup
-- integration with better-auth for seamless authentication
+```
+NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+STRIPE_SECRET_KEY=your_stripe_secret_key
+STRIPE_WEBHOOK_SECRET=your_stripe_webhook_secret
+```
 
-### setup instructions
+4. 启动开发服务器
 
-1. create an account on [polar](https://polar.sh)
-2. create an organization and get an organization access token
-3. configure your environment variables in `.env`:
-   ```
-   POLAR_ACCESS_TOKEN="your_access_token"
-   POLAR_WEBHOOK_SECRET="your_webhook_secret"
-   POLAR_ENVIRONMENT="production" # or "sandbox" for testing
-   ```
-4. create products in the polar dashboard
-5. update the product IDs in `src/lib/auth.ts` to match your polar products:
-   ```typescript
-   checkout: {
-     enabled: true,
-     products: [
-       {
-         productId: "your-product-id", // Replace with actual product ID from Polar Dashboard
-         slug: "pro" // Custom slug for easy reference in Checkout URL
-       }
-     ]
-   }
-   ```
-6. run `bun db:push` to create the necessary database tables
-7. start the application with `bun dev`
+```bash
+bun dev
+# 或
+npm run dev
+```
 
-### verification
+5. 打开浏览器访问 [http://localhost:3000](http://localhost:3000)
 
-to verify that the integration is working:
+### 数据库设置
 
-1. sign up for an account
-2. navigate to the dashboard billing page (`/dashboard/billing`)
-3. try subscribing to a plan
-4. check that your subscription appears in the billing dashboard
-5. test the customer portal by clicking "manage subscription"
+```bash
+bun db:push
+# 或
+npm run db:push
+```
 
-### api routes
+## 项目结构
 
-the following api routes are available for payment processing:
+```
+├── messages/           # 国际化消息文件
+├── public/             # 静态资源
+├── src/
+│   ├── api/            # API路由
+│   ├── app/            # 应用页面
+│   ├── hooks/          # 自定义Hooks
+│   ├── i18n/           # 国际化配置
+│   ├── lib/            # 工具库
+│   └── ui/             # UI组件
+│       ├── components/ # 业务组件
+│       └── primitives/ # 基础UI组件
+```
 
-- `/api/payments/customer-state` - get the current customer state
-- `/api/payments/subscriptions` - get user subscriptions
+## 部署
 
-## notes
+项目可以部署到Vercel、Netlify或其他支持Next.js的平台。
 
-- relivator 1.4.0+ is ai-ready — optimized for ai-powered ides like cursor, making onboarding effortless even for beginners.
-- version 1.3.0 evolved into versator, featuring [clerk](https://clerk.com) authentication and [stripe](https://stripe.com) payments. explore [versator demo](https://versator.relivator.com/en), [repo](https://github.com/blefnk/versator), or [docs](https://docs.reliverse.org/versator).
+```bash
+bun build
+# 或
+npm run build
+```
 
-## stand with ukraine
+## 许可证
 
-- 💙 help fund drones, medkits, and victory.
-- 💛 every dollar helps stop [russia's war crimes](https://war.ukraine.ua/russia-war-crimes) and saves lives.
-- ‼️ please, [donate now](https://u24.gov.ua), it matters.
-
-## stand with reliverse
-
-- ⭐ [star the repo](https://github.com/blefnk/relivator) to help the reliverse community grow.
-- 😉 follow this project's author, [nazar kornienko](https://github.com/blefnk) and his [reliverse](https://github.com/reliverse) ecosystem, to get updates about new projects faster.
-- 🦄 [become a sponsor](https://github.com/sponsors/blefnk) and power the next wave of tools that _just feel right_.
-
-> every bit of support helps keep the dream alive: dev tools that don't suck.
-
-## license
-
-mit © 2025 [nazar kornienko (blefnk)](https://github.com/blefnk), [reliverse](https://github.com/reliverse)
+[MIT](LICENSE)
