@@ -13,11 +13,10 @@ export const config = {
 
 export async function POST(request: NextRequest) {
   try {
-    // 认证检查'
-    // const client = await createClient();
-    // const session = await client.auth.getSession({ headers: request.headers });
+    // 认证检查
+    // 使用更安全的 getCurrentSupabaseUser 方法获取验证过的用户数据
     const user = await getCurrentSupabaseUser()
-    if (user) {
+    if (!user) {
       return NextResponse.json({ error: "未授权" }, { status: 401 });
     }
 

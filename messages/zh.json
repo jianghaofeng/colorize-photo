@@ -201,5 +201,8 @@
   },
   "common": {
     "selectLanguage": "选择语言"
+  },
+  "nav": {
+    "login": "登录"
   }
 }

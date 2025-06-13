@@ -8,9 +8,9 @@ import { createClient } from "./supabase/server";
 export const getCurrentSupabaseUser = async () => {
   const supabase = await createClient();
   const {
-    data: { session },
-  } = await supabase.auth.getSession();
-  return session?.user || null;
+    data: { user },
+  } = await supabase.auth.getUser();
+  return user || null;
 };
 
 // 获取当前用户，如果未登录则重定向

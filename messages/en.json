@@ -201,5 +201,8 @@
   },
   "common": {
     "selectLanguage": "Select Language"
+  },
+  "nav": {
+    "login": "Login"
   }
 }

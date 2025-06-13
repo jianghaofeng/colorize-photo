@@ -1,21 +1,21 @@
-'use client';
+"use client";
 
-import { useTranslations } from 'next-intl';
-import Image from 'next/image';
+import { useTranslations } from "next-intl";
+import Image from "next/image";
 
-import { Card } from '~/ui/primitives/card';
+import { Card } from "~/ui/primitives/card";
 // 效果展示图片
 const effectImages = [
-  'https://zvcxdyuidlhzvmhsviwc.supabase.co/storage/v1/object/public/images/effect-1.png',
-  'https://zvcxdyuidlhzvmhsviwc.supabase.co/storage/v1/object/public/images/effect-2.png',
-  'https://zvcxdyuidlhzvmhsviwc.supabase.co/storage/v1/object/public/images/effect-3.png',
-  'https://zvcxdyuidlhzvmhsviwc.supabase.co/storage/v1/object/public/images/effect-4.png',
-  'https://zvcxdyuidlhzvmhsviwc.supabase.co/storage/v1/object/public/images/effect-5.png',
-  'https://zvcxdyuidlhzvmhsviwc.supabase.co/storage/v1/object/public/images/effect-6.png',
+  "https://zvcxdyuidlhzvmhsviwc.supabase.co/storage/v1/object/public/images/effect-1.png",
+  "https://zvcxdyuidlhzvmhsviwc.supabase.co/storage/v1/object/public/images/effect-2.png",
+  "https://zvcxdyuidlhzvmhsviwc.supabase.co/storage/v1/object/public/images/effect-3.png",
+  "https://zvcxdyuidlhzvmhsviwc.supabase.co/storage/v1/object/public/images/effect-4.png",
+  "https://zvcxdyuidlhzvmhsviwc.supabase.co/storage/v1/object/public/images/effect-5.png",
+  "https://zvcxdyuidlhzvmhsviwc.supabase.co/storage/v1/object/public/images/effect-6.png",
 ];
 
 export function AIColorizationGallery() {
-  const t = useTranslations('Home');
+  const t = useTranslations("Home");
 
   return (
     <section className="py-20">
@@ -28,10 +28,10 @@ export function AIColorizationGallery() {
                 lg:text-4xl
               `}
             >
-              {t('newGenerationAI')}
+              {t("newGenerationAI")}
             </h2>
             <p className="mx-auto max-w-2xl text-lg text-muted-foreground">
-              {t('yearsOfResearch')}
+              {t("yearsOfResearch")}
             </p>
           </div>
 

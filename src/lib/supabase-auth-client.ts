@@ -17,9 +17,10 @@ export const supabaseClient = createBrowserSupabaseClient();
 
 // 认证方法封装
 export const supabaseAuth = {
-  // 获取会话
+  // 获取当前用户
   getSession: async () => {
-    return supabaseClient.auth.getSession();
+    // 保留方法名以兼容现有代码，但内部使用更安全的 getUser 方法
+    return supabaseClient.auth.getUser();
   },
 
   // 重置密码
@@ -68,15 +69,15 @@ export const useSupabaseSession = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // 初始化时获取会话
+    // 初始化时获取用户
     const getInitialSession = async () => {
       try {
         const {
-          data: { session },
+          data: { user: currentUser },
         } = await supabaseAuth.getSession();
-        setUser(session?.user || null);
+        setUser(currentUser || null);
       } catch (error) {
-        console.error("Error getting session:", error);
+        console.error("Error getting user:", error);
       } finally {
         setLoading(false);
       }
@@ -88,8 +89,14 @@ export const useSupabaseSession = () => {
     // 监听认证状态变化
     const {
       data: { subscription },
-    } = supabaseClient.auth.onAuthStateChange((_event, session) => {
-      setUser(session?.user || null);
+    } = supabaseClient.auth.onAuthStateChange(async (_event, session) => {
+      // 当认证状态变化时，使用 getUser() 获取验证过的用户数据
+      if (session) {
+        const { data } = await supabaseClient.auth.getUser();
+        setUser(data.user);
+      } else {
+        setUser(null);
+      }
       setLoading(false);
     });
 
