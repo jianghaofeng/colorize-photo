@@ -82,7 +82,7 @@ export function LanguageSwitcher({ className }: { className?: string }) {
           variant="ghost"
         >
           <Globe className="h-[1.2rem] w-[1.2rem]" />
-          <span className="sr-only">{t("common.selectLanguage")}</span>
+          <span className="sr-only">{t("Common.selectLanguage")}</span>
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">

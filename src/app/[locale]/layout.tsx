@@ -8,7 +8,8 @@ import { getMessages } from "next-intl/server";
 
 import "~/css/globals.css";
 
-import { Geist, Geist_Mono } from "next/font/google";
+// 移除 Google Fonts 导入，使用系统字体堆栈
+// import { Geist, Geist_Mono } from "next/font/google";
 
 import { SEO_CONFIG } from "~/app";
 import { CartProvider } from "~/lib/hooks/use-cart";
@@ -17,15 +18,16 @@ import { Header } from "~/ui/components/header/header";
 import { ThemeProvider } from "~/ui/components/theme-provider";
 import { Toaster } from "~/ui/primitives/sonner";
 
-const geistSans = Geist({
-  subsets: ["latin"],
+// 定义系统字体堆栈作为备用
+const systemFontStack = {
   variable: "--font-geist-sans",
-});
+  className: "",
+};
 
-const geistMono = Geist_Mono({
-  subsets: ["latin"],
+const monoFontStack = {
   variable: "--font-geist-mono",
-});
+  className: "",
+};
 
 export const metadata: Metadata = {
   description: `${SEO_CONFIG.description}`,
@@ -42,12 +44,13 @@ export default async function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <body
         className={`
-          ${geistSans.variable}
-          ${geistMono.variable}
+          ${systemFontStack.variable}
+          ${monoFontStack.variable}
           min-h-screen bg-gradient-to-br from-white to-slate-100
           text-neutral-900 antialiased
           selection:bg-primary/80
           dark:from-neutral-950 dark:to-neutral-900 dark:text-neutral-100
+          font-sans
         `}
       >
         <ThemeProvider

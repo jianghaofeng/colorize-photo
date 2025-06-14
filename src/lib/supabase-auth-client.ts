@@ -36,7 +36,7 @@ export const supabaseAuth = {
       options: {
         redirectTo: `${window.location.origin}/auth/callback`,
       },
-      provider
+      provider,
     });
   },
 
@@ -51,7 +51,11 @@ export const supabaseAuth = {
   },
 
   // 使用邮箱和密码注册
-  signUpWithPassword: async (email: string, password: string, options?: { data?: { name?: string } }) => {
+  signUpWithPassword: async (
+    email: string,
+    password: string,
+    options?: { data?: { name?: string } },
+  ) => {
     return supabaseClient.auth.signUp({
       email,
       options: {
@@ -59,53 +63,19 @@ export const supabaseAuth = {
       },
       password,
     });
-  }
+  },
 };
-
 
 // Hook 用于获取和监听认证状态
 export const useSupabaseSession = () => {
   const [user, setUser] = useState<null | User>(null);
   const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    // 初始化时获取用户
-    const getInitialSession = async () => {
-      try {
-        const {
-          data: { user: currentUser },
-        } = await supabaseAuth.getSession();
-        setUser(currentUser || null);
-      } catch (error) {
-        console.error("Error getting user:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    // 获取初始会话
-    getInitialSession();
-
-    // 监听认证状态变化
-    const {
-      data: { subscription },
-    } = supabaseClient.auth.onAuthStateChange(async (_event, session) => {
-      // 当认证状态变化时，使用 getUser() 获取验证过的用户数据
-      if (session) {
-        const { data } = await supabaseClient.auth.getUser();
-        setUser(data.user);
-      } else {
-        setUser(null);
-      }
-      setLoading(false);
-    });
-
-    // 清理订, user
-    return () => {
-      subscription.unsubscribe();
-    };
-  }, []);
-
+  const getSession = async () => {
+    const { data } = await supabaseAuth.getSession();
+    setUser(data.user || null);
+    setLoading(false);
+  };
+  getSession();
   return { loading, user };
 };
 

@@ -93,8 +93,9 @@ export function FileUpload({
         {...getRootProps()}
         className={cn(
           `
-            flex cursor-pointer flex-col items-center justify-center rounded-lg
-            border-2 border-dashed p-6 transition-colors min-h-[200px] w-full
+            flex min-h-[200px] w-full cursor-pointer flex-col items-center
+            justify-center rounded-lg border-2 border-dashed p-6
+            transition-colors
           `,
           isDragActive
             ? "border-primary bg-primary/5"

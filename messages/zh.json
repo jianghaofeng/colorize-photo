@@ -94,6 +94,40 @@
     "worldsBestAI": "世界最佳AI",
     "inALeagueOfItsOwn": "独一无二的存在"
   },
+  "ImageProcessing": {
+    "title": "照片处理",
+    "colorizeDescription": "为黑白照片添加自然色彩",
+    "restoreDescription": "修复旧照片或损坏的照片",
+    "colorize": "照片上色",
+    "restore": "照片修复",
+    "selectFilter": "选择滤镜",
+    "selectFilterPlaceholder": "选择滤镜风格",
+    "filterNatural": "自然色彩",
+    "filterVintage": "复古风格",
+    "filterVibrant": "鲜艳色彩",
+    "filterSepia": "棕褐色调",
+    "restoreIntensity": "修复强度",
+    "selectIntensityPlaceholder": "选择修复强度",
+    "intensityLight": "轻度修复",
+    "intensityMedium": "中度修复",
+    "intensityStrong": "强度修复",
+    "preview": "预览",
+    "uploadedImage": "已上传图片",
+    "processing": "处理中...",
+    "colorizeButton": "开始上色",
+    "restoreButton": "开始修复",
+    "history": "生成记录",
+    "historyDescription": "查看您的照片处理历史记录",
+    "noHistory": "您还没有处理过任何照片",
+    "startProcessing": "上传并处理照片以查看结果",
+    "selectedImage": "已选择图片",
+    "original": "原始图片",
+    "processed": "处理后图片",
+    "download": "下载",
+    "share": "分享",
+    "recentHistory": "最近记录",
+    "historyItem": "历史记录项"
+  },
   "Navigation": {
     "account": "账户",
     "gallery": "图库",
@@ -198,11 +232,5 @@
     "password": "密码",
     "profile": "个人资料",
     "username": "用户名"
-  },
-  "common": {
-    "selectLanguage": "选择语言"
-  },
-  "nav": {
-    "login": "登录"
   }
 }

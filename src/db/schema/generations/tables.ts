@@ -4,12 +4,8 @@ import { userTable } from "../users/tables";
 
 // AI生成类型枚举
 export const generationTypeEnum = pgEnum("generation_type", [
-    "image_colorization", // 图像上色
-    "image_restoration", // 图像修复
-    "image_enhancement", // 图像增强
-    "video_colorization", // 视频上色
-    "video_restoration", // 视频修复
-    "video_enhancement", // 视频增强
+    "colorization", // 图像上色
+    "restoration", // 图像修复
 ]);
 
 // AI生成状态枚举

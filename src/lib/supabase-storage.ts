@@ -7,7 +7,7 @@ import { uploadsTable } from "~/db/schema";
 import { supabase } from "~/lib/supabase-client";
 
 // 默认存储桶名称
-const BUCKET_NAME = "media";
+const BUCKET_NAME = "images";
 
 // 创建一个存储桶的引用
 export const getStorageBucket = (bucketName: string = BUCKET_NAME) => {
