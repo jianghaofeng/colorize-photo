@@ -41,9 +41,7 @@ export function Header({ showAuth = true }: HeaderProps) {
     { href: "/dashboard/settings", name: "Settings" },
   ];
 
-  const isDashboard =
-    user &&
-    (pathname.startsWith("/dashboard")); // todo: remove /admin when admin role is implemented
+  const isDashboard = user && pathname.startsWith("/dashboard"); // todo: remove /admin when admin role is implemented
   const navigation = isDashboard ? dashboardNavigation : mainNavigation;
 
   const renderContent = () => (
@@ -67,10 +65,10 @@ export function Header({ showAuth = true }: HeaderProps) {
                 className={cn(
                   "text-xl font-bold",
                   !isDashboard &&
-                  `
-                    bg-gradient-to-r from-primary to-primary/70 bg-clip-text
-                    tracking-tight text-transparent
-                  `,
+                    `
+                      bg-gradient-to-r from-primary to-primary/70 bg-clip-text
+                      tracking-tight text-transparent
+                    `
                 )}
               >
                 {SEO_CONFIG.name}
@@ -85,34 +83,34 @@ export function Header({ showAuth = true }: HeaderProps) {
               <ul className="flex items-center gap-6">
                 {isPending
                   ? Array.from({ length: navigation.length }).map((_, i) => (
-                    <li key={i}>
-                      <Skeleton className="h-6 w-20" />
-                    </li>
-                  ))
-                  : navigation.map((item) => {
-                    const isActive =
-                      pathname === item.href ||
-                      (item.href !== "/" && pathname?.startsWith(item.href));
-
-                    return (
-                      <li key={item.name}>
-                        <Link
-                          className={cn(
-                            `
-                              text-sm font-medium transition-colors
-                              hover:text-primary
-                            `,
-                            isActive
-                              ? "font-semibold text-primary"
-                              : "text-muted-foreground",
-                          )}
-                          href={item.href}
-                        >
-                          {item.name}
-                        </Link>
+                      <li key={i}>
+                        <Skeleton className="h-6 w-20" />
                       </li>
-                    );
-                  })}
+                    ))
+                  : navigation.map((item) => {
+                      const isActive =
+                        pathname === item.href ||
+                        (item.href !== "/" && pathname?.startsWith(item.href));
+
+                      return (
+                        <li key={item.name}>
+                          <Link
+                            className={cn(
+                              `
+                                text-sm font-medium transition-colors
+                                hover:text-primary
+                              `,
+                              isActive
+                                ? "font-semibold text-primary"
+                                : "text-muted-foreground"
+                            )}
+                            href={item.href}
+                          >
+                            {item.name}
+                          </Link>
+                        </li>
+                      );
+                    })}
               </ul>
             </nav>
           </div>
@@ -198,34 +196,34 @@ export function Header({ showAuth = true }: HeaderProps) {
           <div className="space-y-1 border-b px-4 py-3">
             {isPending
               ? Array.from({ length: navigation.length }).map((_, i) => (
-                <div className="py-2" key={i}>
-                  <Skeleton className="h-6 w-32" />
-                </div>
-              ))
+                  <div className="py-2" key={i}>
+                    <Skeleton className="h-6 w-32" />
+                  </div>
+                ))
               : navigation.map((item) => {
-                const isActive =
-                  pathname === item.href ||
-                  (item.href !== "/" && pathname?.startsWith(item.href));
+                  const isActive =
+                    pathname === item.href ||
+                    (item.href !== "/" && pathname?.startsWith(item.href));
 
-                return (
-                  <Link
-                    className={cn(
-                      "block rounded-md px-3 py-2 text-base font-medium",
-                      isActive
-                        ? "bg-primary/10 text-primary"
-                        : `
-                          text-foreground
-                          hover:bg-muted/50 hover:text-primary
-                        `,
-                    )}
-                    href={item.href}
-                    key={item.name}
-                    onClick={() => setMobileMenuOpen(false)}
-                  >
-                    {item.name}
-                  </Link>
-                );
-              })}
+                  return (
+                    <Link
+                      className={cn(
+                        "block rounded-md px-3 py-2 text-base font-medium",
+                        isActive
+                          ? "bg-primary/10 text-primary"
+                          : `
+                            text-foreground
+                            hover:bg-muted/50 hover:text-primary
+                          `
+                      )}
+                      href={item.href}
+                      key={item.name}
+                      onClick={() => setMobileMenuOpen(false)}
+                    >
+                      {item.name}
+                    </Link>
+                  );
+                })}
           </div>
 
           {showAuth && !user && (
@@ -261,7 +259,9 @@ export function Header({ showAuth = true }: HeaderProps) {
               <ThemeToggle />
             </div>
             <div className="flex items-center justify-between px-3 py-2">
-              <span className="text-base font-medium">{t("common.language")}</span>
+              <span className="text-base font-medium">
+                {t("common.language")}
+              </span>
               <LanguageSwitcher />
             </div>
           </div>

@@ -94,7 +94,7 @@ export function FileUpload({
         className={cn(
           `
             flex cursor-pointer flex-col items-center justify-center rounded-lg
-            border-2 border-dashed p-6 transition-colors
+            border-2 border-dashed p-6 transition-colors min-h-[200px] w-full
           `,
           isDragActive
             ? "border-primary bg-primary/5"
@@ -117,6 +117,7 @@ export function FileUpload({
                   alt="预览"
                   className="object-cover"
                   fill
+                  sizes="128px"
                   src={URL.createObjectURL(files[0])}
                 />
               </div>

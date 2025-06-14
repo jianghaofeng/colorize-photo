@@ -60,6 +60,7 @@ export function HeroSection() {
                 alt="Original Black and White Photo"
                 className="object-cover"
                 fill
+                sizes="(max-width: 768px) 100vw, 224px"
                 src="https://zvcxdyuidlhzvmhsviwc.supabase.co/storage/v1/object/public/images/original-bw.png"
               />
             </div>
@@ -113,6 +114,7 @@ export function HeroSection() {
                   alt="Colorized Photo 1"
                   className="object-cover"
                   fill
+                  sizes="(max-width: 768px) 100vw, 200px"
                   src="https://zvcxdyuidlhzvmhsviwc.supabase.co/storage/v1/object/public/images/colorized-1.png"
                 />
               </button>
@@ -146,6 +148,7 @@ export function HeroSection() {
                   alt="Colorized Photo 2"
                   className="object-cover"
                   fill
+                  sizes="(max-width: 768px) 100vw, 200px"
                   src="https://zvcxdyuidlhzvmhsviwc.supabase.co/storage/v1/object/public/images/colorized-2.png"
                 />
               </button>
@@ -180,6 +183,7 @@ export function HeroSection() {
                   alt="Colorized Photo 3"
                   className="object-cover"
                   fill
+                  sizes="(max-width: 768px) 100vw, 200px"
                   src="https://zvcxdyuidlhzvmhsviwc.supabase.co/storage/v1/object/public/images/colorized-3.png"
                 />
               </button>

@@ -1,14 +1,20 @@
-import {
-  BarChart,
-  LogOut,
-  Settings,
-  UserIcon,
-} from "lucide-react";
+import { UserIcon } from "lucide-react";
+import { useTranslations } from "next-intl";
 import Link from "next/link";
+import { useState } from "react";
 
 import { cn } from "~/lib/utils";
+import { Icon } from "~/ui/components/Icon";
 import { Avatar, AvatarFallback, AvatarImage } from "~/ui/primitives/avatar";
 import { Button } from "~/ui/primitives/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "~/ui/primitives/dialog";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -32,6 +38,8 @@ export function HeaderUserDropdown({
   userImage,
   userName,
 }: HeaderUserDropdownProps) {
+  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
+  const t = useTranslations();
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -90,26 +98,13 @@ export function HeaderUserDropdown({
         </div>
         <DropdownMenuSeparator />
         <DropdownMenuItem asChild>
-          <Link className="cursor-pointer" href="/dashboard/stats">
-            <BarChart className="mr-2 h-4 w-4" />
-            Stats
-          </Link>
-        </DropdownMenuItem>
-        <DropdownMenuItem asChild>
-          <Link className="cursor-pointer" href="/dashboard/profile">
-            <UserIcon className="mr-2 h-4 w-4" />
-            Profile
-          </Link>
-        </DropdownMenuItem>
-        <DropdownMenuItem asChild>
-          <Link className="cursor-pointer" href="/dashboard/settings">
-            <Settings className="mr-2 h-4 w-4" />
-            Settings
+          <Link className="cursor-pointer" href="/profile">
+            <Icon className="mr-2 h-4 w-4 text-primary" icon="heroicons-duotone:user-circle" />
+            {t("User.profile")}
           </Link>
         </DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuItem
-          asChild
           className={cn(
             "cursor-pointer",
             isDashboard
@@ -119,13 +114,41 @@ export function HeaderUserDropdown({
                 focus:text-destrctive
               `,
           )}
+          onClick={() => setShowLogoutConfirm(true)}
         >
-          <Link href="/auth/sign-out">
-            <LogOut className="mr-2 h-4 w-4" />
-            Log out
-          </Link>
+          <Icon className="mr-2 h-4 w-4 text-red-500" icon="heroicons-duotone:arrow-right-on-rectangle" />
+          {t("User.logout")}
         </DropdownMenuItem>
       </DropdownMenuContent>
+
+      {/* 退出登录确认对话框 */}
+      <Dialog onOpenChange={setShowLogoutConfirm} open={showLogoutConfirm}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>{t("User.logoutConfirmTitle")}</DialogTitle>
+            <DialogDescription>
+              {t("User.logoutConfirmDescription")}
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button
+              onClick={() => setShowLogoutConfirm(false)}
+              variant="outline"
+            >
+              {t("Common.cancel")}
+            </Button>
+            <Button
+              onClick={() => {
+                window.location.href = "/auth/sign-out";
+              }}
+              variant="destructive"
+            >
+              <Icon className="mr-2 h-4 w-4" icon="heroicons-duotone:arrow-right-on-rectangle" />
+              {t("User.confirmLogout")}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </DropdownMenu>
   );
 }

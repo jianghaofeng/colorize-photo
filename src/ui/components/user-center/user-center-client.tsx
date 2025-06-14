@@ -10,12 +10,12 @@ import {
   Shield,
   User
 } from "lucide-react";
-import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import { useCurrentUserOrRedirect } from "~/lib/supabase-auth-client";
 import { twoFactor } from "~/lib/supabase-mfa";
+import { CreditRecharges } from "~/ui/components/payment/credit-recharges";
 import { Alert, AlertDescription, AlertTitle } from "~/ui/primitives/alert";
 import { Badge } from "~/ui/primitives/badge";
 import { Button } from "~/ui/primitives/button";
@@ -45,6 +45,19 @@ export function UserCenterClient() {
 
   // 模拟订阅数据
   const hasActiveSubscription = subscriptions.some((sub) => sub.status === "active");
+
+  // 模拟获取订阅数据
+  useEffect(() => {
+    // 模拟API调用延迟
+    const timer = setTimeout(() => {
+      // 这里可以添加实际获取订阅数据的API调用
+      // 模拟数据
+      // setSubscriptions([]);
+      setBillingLoading(false);
+    }, 1000);
+
+    return () => clearTimeout(timer);
+  }, [activeSection]);
 
   // 处理登出
   const handleLogout = async () => {
@@ -596,10 +609,15 @@ export function UserCenterClient() {
                   </CardFooter>
                 </Card>
 
+                {/* 积分充值记录 */}
+                <div className="mt-6">
+                  <CreditRecharges />
+                </div>
+
                 {/* Payment Plans */}
                 {!hasActiveSubscription && (
                   <div className={`
-                    grid gap-6
+                    mt-6 grid gap-6
                     md:grid-cols-2
                   `}>
                     <Card>
