@@ -4,7 +4,7 @@ import { Menu, X } from "lucide-react";
 import { useTranslations } from "next-intl";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import { SEO_CONFIG } from "~/app";
 import { useSupabaseSession } from "~/lib/supabase-auth-client";
@@ -25,14 +25,30 @@ interface HeaderProps {
 
 export function Header({ showAuth = true }: HeaderProps) {
   const pathname = usePathname();
-  const { loading: isPending, user } = useSupabaseSession();
+  const { loading: supabaseLoading, user } = useSupabaseSession();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [isPending, setIsPending] = useState(true);
   const t = useTranslations();
+
+  // 添加超时处理，防止长时间加载
+  useEffect(() => {
+    setIsPending(supabaseLoading);
+    
+    // 如果supabaseLoading为true，设置一个5秒的超时
+    if (supabaseLoading) {
+      const timeoutId = setTimeout(() => {
+        setIsPending(false);
+      }, 5000); // 5秒后自动结束加载状态
+      
+      return () => clearTimeout(timeoutId);
+    }
+  }, [supabaseLoading]);
 
   const mainNavigation = [
     { href: "/", name: "Home" },
     { href: "/products", name: "Products" },
     { href: "/payment-test", name: "Payment" },
+    { href: "/tts", name: "TTS" },
   ];
 
   const dashboardNavigation = [
@@ -65,10 +81,10 @@ export function Header({ showAuth = true }: HeaderProps) {
                 className={cn(
                   "text-xl font-bold",
                   !isDashboard &&
-                    `
-                      bg-gradient-to-r from-primary to-primary/70 bg-clip-text
-                      tracking-tight text-transparent
-                    `
+                  `
+                    bg-gradient-to-r from-primary to-primary/70 bg-clip-text
+                    tracking-tight text-transparent
+                  `
                 )}
               >
                 {SEO_CONFIG.name}
@@ -83,34 +99,34 @@ export function Header({ showAuth = true }: HeaderProps) {
               <ul className="flex items-center gap-6">
                 {isPending
                   ? Array.from({ length: navigation.length }).map((_, i) => (
-                      <li key={i}>
-                        <Skeleton className="h-6 w-20" />
-                      </li>
-                    ))
+                    <li key={i}>
+                      <Skeleton className="h-6 w-20" />
+                    </li>
+                  ))
                   : navigation.map((item) => {
-                      const isActive =
-                        pathname === item.href ||
-                        (item.href !== "/" && pathname?.startsWith(item.href));
+                    const isActive =
+                      pathname === item.href ||
+                      (item.href !== "/" && pathname?.startsWith(item.href));
 
-                      return (
-                        <li key={item.name}>
-                          <Link
-                            className={cn(
-                              `
-                                text-sm font-medium transition-colors
-                                hover:text-primary
-                              `,
-                              isActive
-                                ? "font-semibold text-primary"
-                                : "text-muted-foreground"
-                            )}
-                            href={item.href}
-                          >
-                            {item.name}
-                          </Link>
-                        </li>
-                      );
-                    })}
+                    return (
+                      <li key={item.name}>
+                        <Link
+                          className={cn(
+                            `
+                              text-sm font-medium transition-colors
+                              hover:text-primary
+                            `,
+                            isActive
+                              ? "font-semibold text-primary"
+                              : "text-muted-foreground"
+                          )}
+                          href={item.href}
+                        >
+                          {item.name}
+                        </Link>
+                      </li>
+                    );
+                  })}
               </ul>
             </nav>
           </div>
@@ -149,7 +165,7 @@ export function Header({ showAuth = true }: HeaderProps) {
                   <div className="flex items-center gap-2">
                     <Link href="/auth/sign-in">
                       <Button size="sm" variant="ghost">
-                        {t("nav.login")}
+                        {t("User.login")}
                       </Button>
                     </Link>
                     <Link href="/auth/sign-up">
@@ -196,34 +212,34 @@ export function Header({ showAuth = true }: HeaderProps) {
           <div className="space-y-1 border-b px-4 py-3">
             {isPending
               ? Array.from({ length: navigation.length }).map((_, i) => (
-                  <div className="py-2" key={i}>
-                    <Skeleton className="h-6 w-32" />
-                  </div>
-                ))
+                <div className="py-2" key={i}>
+                  <Skeleton className="h-6 w-32" />
+                </div>
+              ))
               : navigation.map((item) => {
-                  const isActive =
-                    pathname === item.href ||
-                    (item.href !== "/" && pathname?.startsWith(item.href));
+                const isActive =
+                  pathname === item.href ||
+                  (item.href !== "/" && pathname?.startsWith(item.href));
 
-                  return (
-                    <Link
-                      className={cn(
-                        "block rounded-md px-3 py-2 text-base font-medium",
-                        isActive
-                          ? "bg-primary/10 text-primary"
-                          : `
-                            text-foreground
-                            hover:bg-muted/50 hover:text-primary
-                          `
-                      )}
-                      href={item.href}
-                      key={item.name}
-                      onClick={() => setMobileMenuOpen(false)}
-                    >
-                      {item.name}
-                    </Link>
-                  );
-                })}
+                return (
+                  <Link
+                    className={cn(
+                      "block rounded-md px-3 py-2 text-base font-medium",
+                      isActive
+                        ? "bg-primary/10 text-primary"
+                        : `
+                          text-foreground
+                          hover:bg-muted/50 hover:text-primary
+                        `
+                    )}
+                    href={item.href}
+                    key={item.name}
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    {item.name}
+                  </Link>
+                );
+              })}
           </div>
 
           {showAuth && !user && (
