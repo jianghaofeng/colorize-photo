@@ -1,4 +1,4 @@
-import { supabaseClient } from '~/lib/supabase-auth-client';
+import { createClient } from '~/lib/supabase/client';
 
 interface RealtimeChannelCallbackParams<T> {
   eventType: "DELETE" | "INSERT" | "UPDATE";
@@ -16,7 +16,8 @@ export const createRealtimeSubscription = <T>(
     schema?: string;
   },
 ) => {
-  const channel = supabaseClient
+  const supabase = createClient();
+  const channel = supabase
     .channel(`table-changes-${tableName}`)
     .on(
       "postgres_changes" as any,
@@ -31,6 +32,7 @@ export const createRealtimeSubscription = <T>(
     .subscribe();
 
   return () => {
-    supabaseClient.removeChannel(channel);
+    console.log(`[DEBUG] Removing realtime subscription for table: ${tableName}`);
+    supabase.removeChannel(channel);
   };
 };

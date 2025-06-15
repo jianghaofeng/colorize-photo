@@ -2,7 +2,7 @@ import { eq } from "drizzle-orm";
 import { nanoid } from "nanoid";
 import { type NextRequest, NextResponse } from "next/server";
 
-import { DashscopeImageService } from "~/api/image-gen/DashscopeImageService";
+import { DashscopeImageService } from "~/app/api/image/service/DashscopeImageService";
 import { db } from "~/db"; // 你的 drizzle client 实例
 import { userGenerateRecordsTable } from "~/db/schema/generations/tables";
 import { userTable } from "~/db/schema/users/tables";

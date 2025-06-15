@@ -6,7 +6,7 @@ import { useState } from "react";
 import { useTranslations } from "next-intl";
 
 import { SEO_CONFIG } from "~/app";
-import { supabaseAuth } from "~/lib/supabase-auth-client";
+import { useSupabase } from "~/lib/supabase/SupabaseProvider";
 import { GoogleIcon } from "~/ui/components/icons/google";
 import { Starfield } from "~/ui/components/starfield";
 import { Button } from "~/ui/primitives/button";
@@ -16,6 +16,7 @@ import { Label } from "~/ui/primitives/label";
 import { Separator } from "~/ui/primitives/separator";
 
 export function SignUpPageClient() {
+  const { signUpWithPassword, signInWithOAuth } = useSupabase();
   const t = useTranslations("Auth");
   const router = useRouter();
   const [formData, setFormData] = useState({
@@ -40,7 +41,7 @@ export function SignUpPageClient() {
     setLoading(true);
 
     try {
-      const { error: signUpError } = await supabaseAuth.signUpWithPassword(
+      await signUpWithPassword(
         formData.email,
         formData.password,
         {
@@ -49,11 +50,6 @@ export function SignUpPageClient() {
           },
         }
       );
-
-      if (signUpError) {
-        throw signUpError;
-      }
-
       router.push("/auth/sign-in?registered=true");
     } catch (err: any) {
       if (err.message?.includes("email") || err.message?.includes("Email")) {
@@ -70,7 +66,7 @@ export function SignUpPageClient() {
   const handleGoogleSignUp = async () => {
     setLoading(true);
     try {
-      await supabaseAuth.signInWithOAuth("google");
+      await signInWithOAuth("google");
     } catch (err) {
       setError(t("googleSignUpFailed"));
       console.error(err);

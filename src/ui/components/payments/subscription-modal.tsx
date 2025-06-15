@@ -4,7 +4,7 @@ import { Elements } from "@stripe/react-stripe-js";
 import { loadStripe } from "@stripe/stripe-js";
 import { useState } from "react";
 
-import { PaymentForm } from "~/ui/components/payment/payment-form";
+import { PaymentForm } from "~/ui/components/payments/payment-form";
 import { Button } from "~/ui/primitives/button";
 import {
     Dialog,

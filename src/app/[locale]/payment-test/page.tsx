@@ -2,8 +2,8 @@
 
 import { useState } from "react";
 
-import { PaymentModal } from "~/ui/components/payment/payment-modal";
-import { SubscriptionModal } from "~/ui/components/payment/subscription-modal";
+import { PaymentModal } from "~/ui/components/payments/payment-modal";
+import { SubscriptionModal } from "~/ui/components/payments/subscription-modal";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "~/ui/primitives/card";
 import { Input } from "~/ui/primitives/input";
 import { Label } from "~/ui/primitives/label";

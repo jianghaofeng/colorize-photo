@@ -1,6 +1,6 @@
 import { type NextRequest, NextResponse } from "next/server";
 
-import { createCreditRecharge } from "~/api/credits/credit-service";
+import { createCreditRecharge } from "~/app/api/credits/service/credit-service";
 import { getCurrentSupabaseUser } from "~/lib/supabase-auth";
 
 export async function POST(request: NextRequest) {

@@ -10,6 +10,7 @@ import "~/css/globals.css";
 // 移除 Google Fonts 导入，使用系统字体堆栈
 import { SEO_CONFIG } from "~/app";
 import { CartProvider } from "~/lib/hooks/use-cart";
+import { SupabaseProvider } from "~/lib/supabase/SupabaseProvider";
 import { Footer } from "~/ui/components/footer";
 import { Header } from "~/ui/components/header/header";
 import { ThemeProvider } from "~/ui/components/theme-provider";
@@ -55,15 +56,17 @@ export default async function RootLayout({
           disableTransitionOnChange
           enableSystem
         >
-          <CartProvider>
-            <NextIntlClientProvider messages={messages}>
-              <Header showAuth={false} />
-              <main className={`flex min-h-screen flex-col`}>{children}</main>
-              <Footer />
-              <Toaster />
-              <StagewiseToolbar config={{ plugins: [ReactPlugin] }} />
-            </NextIntlClientProvider>
-          </CartProvider>
+          <SupabaseProvider>
+            <CartProvider>
+              <NextIntlClientProvider messages={messages}>
+                <Header showAuth={false} />
+                <main className={`flex min-h-screen flex-col`}>{children}</main>
+                <Footer />
+                <Toaster />
+                <StagewiseToolbar config={{ plugins: [ReactPlugin] }} />
+              </NextIntlClientProvider>
+            </CartProvider>
+          </SupabaseProvider>
         </ThemeProvider>
         <SpeedInsights />
       </body>

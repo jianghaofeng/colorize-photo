@@ -5,13 +5,14 @@ import Link from "next/link";
 import { useState } from "react";
 
 import { SEO_CONFIG } from "~/app";
-import { supabaseAuth } from "~/lib/supabase-auth-client";
+import { useSupabase } from "~/lib/supabase/SupabaseProvider";
 import { Button } from "~/ui/primitives/button";
 import { Card, CardContent } from "~/ui/primitives/card";
 import { Input } from "~/ui/primitives/input";
 import { Label } from "~/ui/primitives/label";
 
 export function ForgotPasswordClient() {
+  const { resetPassword } = useSupabase();
   const [email, setEmail] = useState("");
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
@@ -24,12 +25,7 @@ export function ForgotPasswordClient() {
     setLoading(true);
 
     try {
-      const { error: resetError } = await supabaseAuth.resetPassword(email);
-
-      if (resetError) {
-        throw resetError;
-      }
-
+      await resetPassword(email);
       // 重置成功
       setSuccess(true);
     } catch (err) {

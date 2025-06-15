@@ -9,7 +9,7 @@ import {
   useMemo,
 } from "react";
 
-import type { UseSupabaseUploadReturn } from "~/hooks/use-supabase-upload";
+import type { UseSupabaseUploadReturn } from "~/lib/hooks/use-supabase-upload";
 
 import { cn } from "~/lib/utils";
 import { Button } from "~/ui/primitives/button";

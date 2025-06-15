@@ -1,7 +1,7 @@
 'use client'
 
-import { useCurrentUserImage } from '~/hooks/use-current-user-image'
-import { useCurrentUserName } from '~/hooks/use-current-user-name'
+import { useCurrentUserImage } from '~/lib/hooks/use-current-user-image'
+import { useCurrentUserName } from '~/lib/hooks/use-current-user-name'
 import { Avatar, AvatarFallback, AvatarImage } from '~/ui/primitives/avatar'
 
 export const CurrentUserAvatar = () => {

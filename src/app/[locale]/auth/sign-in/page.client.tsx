@@ -6,7 +6,7 @@ import { useState } from "react";
 import { useTranslations } from "next-intl";
 
 import { SEO_CONFIG, SYSTEM_CONFIG } from "~/app";
-import { supabaseAuth } from "~/lib/supabase-auth-client";
+import { useSupabase } from "~/lib/supabase/SupabaseProvider";
 import { GoogleIcon } from "~/ui/components/icons/google";
 import { Starfield } from "~/ui/components/starfield";
 import { Button } from "~/ui/primitives/button";
@@ -16,6 +16,7 @@ import { Label } from "~/ui/primitives/label";
 import { Separator } from "~/ui/primitives/separator";
 
 export function SignInPageClient() {
+  const { signInWithPassword, signInWithOAuth } = useSupabase();
   const t = useTranslations();
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -43,15 +44,7 @@ export function SignInPageClient() {
     setLoading(true);
 
     try {
-      const { error: signInError } = await supabaseAuth.signInWithPassword(
-        email,
-        password
-      );
-
-      if (signInError) {
-        throw signInError;
-      }
-
+      await signInWithPassword(email, password);
       router.push(SYSTEM_CONFIG.redirectAfterSignIn);
     } catch (err) {
       setError(t("Auth.invalidCredentials"));
@@ -75,7 +68,7 @@ export function SignInPageClient() {
   const handleGoogleLogin = async () => {
     setLoading(true);
     try {
-      await supabaseAuth.signInWithOAuth("google");
+      await signInWithOAuth("google");
     } catch (err) {
       setError(t("Auth.googleLoginFailed"));
       console.error(err);

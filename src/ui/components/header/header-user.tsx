@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useState } from "react";
 
 import { useRouter } from "~/i18n/i18nConfig";
-import { supabaseAuth } from "~/lib/supabase-auth-client";
+import { useSupabase } from "~/lib/supabase/SupabaseProvider";
 import { cn } from "~/lib/utils";
 import { Icon } from "~/ui/components/Icon";
 import { Avatar, AvatarFallback, AvatarImage } from "~/ui/primitives/avatar";
@@ -42,7 +42,8 @@ export function HeaderUserDropdown({
 }: HeaderUserDropdownProps) {
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
   const t = useTranslations();
-  const route = useRouter()
+  const route = useRouter();
+  const { signOut } = useSupabase();
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -149,7 +150,7 @@ export function HeaderUserDropdown({
             <Button
               onClick={async () => {
                 // window.location.href = "/auth/sign-out";
-                await supabaseAuth.signOut();
+                await signOut();
                 window.location.href = "/auth/sign-in";
               }}
               variant="destructive"

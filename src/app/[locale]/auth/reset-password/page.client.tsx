@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 import { SEO_CONFIG } from "~/app";
-import { supabaseClient } from "~/lib/supabase-auth-client";
+import { useSupabase } from "~/lib/supabase/SupabaseProvider";
 import { Button } from "~/ui/primitives/button";
 import { Card, CardContent } from "~/ui/primitives/card";
 import { Input } from "~/ui/primitives/input";
@@ -19,6 +19,7 @@ export function ResetPasswordClient() {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
   const [loading, setLoading] = useState(false);
+  const { updateUser } = useSupabase();
 
   const handleResetPassword = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -41,13 +42,9 @@ export function ResetPasswordClient() {
 
     try {
       // 使用 Supabase 更新密码
-      const { error: updateError } = await supabaseClient.auth.updateUser({
+      await updateUser({
         password,
       });
-
-      if (updateError) {
-        throw updateError;
-      }
 
       // 密码重置成功
       setSuccess(true);

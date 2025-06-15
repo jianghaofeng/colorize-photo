@@ -7,7 +7,7 @@ import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 
 import { SEO_CONFIG } from "~/app";
-import { supabaseAuth } from "~/lib/supabase-auth-client";
+import { useSupabase } from "~/lib/supabase/SupabaseProvider";
 import { cn } from "~/lib/utils";
 import { Button } from "~/ui/primitives/button";
 
@@ -26,20 +26,21 @@ export function Header({ showAuth = true }: HeaderProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [user, setUser] = useState<any>(null);
   const t = useTranslations();
+  const { getSession } = useSupabase();
 
   useEffect(() => {
     const getUser = async () => {
       try {
-        const { data, error } = await supabaseAuth.getUser();
-        if (!error && data.user) {
-          setUser(data.user);
+        const { data } = await getSession();
+        if (data.session?.user) {
+          setUser(data.session.user);
         }
       } catch (error) {
         console.error("获取用户信息失败:", error);
       }
     };
     getUser();
-  }, []);
+  }, [getSession]);
 
   const mainNavigation = [
     { href: "/", name: "Home" },

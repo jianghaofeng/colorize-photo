@@ -5,7 +5,7 @@ import { useTranslations } from "next-intl";
 import { forwardRef, useCallback, useEffect, useImperativeHandle, useState } from "react";
 import { useDropzone } from "react-dropzone";
 
-import { useSupabaseUpload } from "~/hooks/use-supabase-upload";
+import { useSupabaseUpload } from "~/lib/hooks/use-supabase-upload";
 import { cn } from "~/lib/utils";
 import { Button } from "~/ui/primitives/button";
 import { Progress } from "~/ui/primitives/progress";

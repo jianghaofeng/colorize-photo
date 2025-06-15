@@ -1,4 +1,6 @@
-import { supabaseClient } from './supabase-auth-client';
+import { createClient } from "~/lib/supabase/client";
+
+const supabaseClient = createClient();
 
 /**
  * 双因素认证（Two-Factor Authentication）功能封装

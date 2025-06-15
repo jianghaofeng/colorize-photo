@@ -4,8 +4,8 @@ import type Stripe from "stripe";
 import { headers } from "next/headers";
 import { NextResponse } from "next/server";
 
-import { handleCreditRechargeSuccess } from "~/api/credits/credit-service";
-import { syncSubscription } from "~/api/payments/stripe-service";
+import { handleCreditRechargeSuccess } from "~/app/api/credits/service/credit-service";
+import { syncSubscription } from "~/app/api/stripe/service/stripe-service";
 import { stripe } from "~/lib/stripe";
 
 const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
