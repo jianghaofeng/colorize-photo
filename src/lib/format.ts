@@ -6,8 +6,8 @@ export function formatCurrency(amount: number, currency = "USD") {
   // 价格以美分存储，转换为美元显示
   const value = amount / 100;
   return new Intl.NumberFormat("zh-CN", {
-    style: "currency",
     currency: currency.toUpperCase(),
+    style: "currency",
   }).format(value);
 }
 

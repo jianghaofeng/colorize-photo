@@ -1,10 +1,16 @@
 'use client';
 
 import type { IconProps as IconifyIconProps } from '@iconify/react';
+
 import { Icon as IconifyIcon } from '@iconify/react';
+
 import { cn } from '~/lib/utils';
 
-export type IconProps = {
+export type IconProps = Omit<IconifyIconProps, 'icon'> & {
+  /**
+   * Additional CSS classes
+   */
+  className?: string;
   /**
    * Icon name from Iconify
    * @example "mdi:home" | "heroicons:home" | "lucide:home"
@@ -15,11 +21,7 @@ export type IconProps = {
    * @default 24
    */
   size?: number | string;
-  /**
-   * Additional CSS classes
-   */
-  className?: string;
-} & Omit<IconifyIconProps, 'icon'>;
+};
 
 /**
  * Icon component using Iconify
@@ -32,17 +34,17 @@ export type IconProps = {
  * ```
  */
 export function Icon({
+  className,
   icon,
   size = 24,
-  className,
   ...props
 }: IconProps) {
   return (
     <IconifyIcon
+      className={cn('inline-block', className)}
+      height={size}
       icon={icon}
       width={size}
-      height={size}
-      className={cn('inline-block', className)}
       {...props}
     />
   );

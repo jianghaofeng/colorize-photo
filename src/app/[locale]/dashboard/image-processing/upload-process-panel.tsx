@@ -313,7 +313,6 @@ export function UploadProcessPanel(props: UploadProcessPanelProps) {
               `}
             >
               <SupabaseFileUpload
-                ref={fileUploadRef}
                 accept={{ "image/*": [".jpeg", ".jpg", ".png", ".webp"] }}
                 bucketName="images"
                 className="single-upload"
@@ -326,6 +325,7 @@ export function UploadProcessPanel(props: UploadProcessPanelProps) {
                   }
                 }}
                 onUploadError={handleUploadError}
+                ref={fileUploadRef}
               />
             </div>
           </div>
@@ -344,9 +344,12 @@ export function UploadProcessPanel(props: UploadProcessPanelProps) {
             value={activeTab}
           >
             <TabsList
-              className={`grid w-full grid-cols-2 rounded-xl bg-muted/50 p-1 ${
+              className={`
+                grid w-full grid-cols-2 rounded-xl bg-muted/50 p-1
+                ${
                 isProcessing ? 'pointer-events-none opacity-50' : ''
-              }`}
+              }
+              `}
             >
               <TabsTrigger
                 className={`
@@ -385,8 +388,9 @@ export function UploadProcessPanel(props: UploadProcessPanelProps) {
                   <SelectTrigger
                     className={`
                       h-auto min-h-[60px] w-full rounded-xl border-border/20
-                      bg-background/50 ${
-                        isProcessing ? 'opacity-50 cursor-not-allowed' : ''
+                      bg-background/50
+                      ${
+                        isProcessing ? 'cursor-not-allowed opacity-50' : ''
                       }
                     `}
                   >
@@ -425,8 +429,9 @@ export function UploadProcessPanel(props: UploadProcessPanelProps) {
                   <SelectTrigger
                     className={`
                       h-auto min-h-[60px] w-full rounded-xl border-border/20
-                      bg-background/50 ${
-                        isProcessing ? 'opacity-50 cursor-not-allowed' : ''
+                      bg-background/50
+                      ${
+                        isProcessing ? 'cursor-not-allowed opacity-50' : ''
                       }
                     `}
                   >

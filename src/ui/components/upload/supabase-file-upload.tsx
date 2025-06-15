@@ -39,7 +39,7 @@ interface SupabaseFileUploadProps {
   // showPreview?: boolean; // 是否显示预览
 }
 
-export const SupabaseFileUpload = forwardRef<SupabaseFileUploadRef, SupabaseFileUploadProps>(function SupabaseFileUpload({ accept = { "image/*": [".jpeg", ".jpg", ".png", ".webp"] }, bucketName = "images", className, disabled = false, listType = "picture-card", maxCount = 1, maxSize = 10, onUploadComplete, onUploadError, path = "uploads" }, ref) {
+export const SupabaseFileUpload = function SupabaseFileUpload({ accept = { "image/*": [".jpeg", ".jpg", ".png", ".webp"] }, bucketName = "images", className, disabled = false, listType = "picture-card", maxCount = 1, maxSize = 10, onUploadComplete, onUploadError, path = "uploads", ref }: SupabaseFileUploadProps & { ref?: React.RefObject<null | SupabaseFileUploadRef> }) {
   const [fileList, setFileList] = useState<FileWithPreview[]>([]);
   const [previewVisible, setPreviewVisible] = useState(false);
   const [previewImage, setPreviewImage] = useState("");
@@ -416,4 +416,4 @@ export const SupabaseFileUpload = forwardRef<SupabaseFileUploadRef, SupabaseFile
       )}
     </div>
   );
-});
+};

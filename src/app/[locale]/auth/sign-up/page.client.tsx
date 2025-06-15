@@ -1,9 +1,9 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { useTranslations } from "next-intl";
 
 import { SEO_CONFIG } from "~/app";
 import { useSupabase } from "~/lib/supabase/SupabaseProvider";
@@ -16,7 +16,7 @@ import { Label } from "~/ui/primitives/label";
 import { Separator } from "~/ui/primitives/separator";
 
 export function SignUpPageClient() {
-  const { signUpWithPassword, signInWithOAuth } = useSupabase();
+  const { signInWithOAuth, signUpWithPassword } = useSupabase();
   const t = useTranslations("Auth");
   const router = useRouter();
   const [formData, setFormData] = useState({

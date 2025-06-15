@@ -2,6 +2,7 @@
 
 import type {Provider, Session, User} from '@supabase/supabase-js';
 import type {ReactNode} from 'react';
+
 import {createContext, use, useCallback, useEffect, useMemo, useState} from 'react';
 
 import {createClient} from './client';

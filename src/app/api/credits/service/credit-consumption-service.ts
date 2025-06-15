@@ -1,13 +1,14 @@
 import { createId } from "@paralleldrive/cuid2";
 import { eq } from 'drizzle-orm';
 
+import type { CreditTransactionType } from '~/db/schema/credits/types';
+
 import { db } from '~/db';
 import {
   creditConsumptionConfigTable,
   creditTransactionTable,
   userCreditBalanceTable,
 } from '~/db/schema/credits/tables';
-import type { CreditTransactionType } from '~/db/schema/credits/types';
 import { uploadsTable } from '~/db/schema/uploads/tables';
 
 /**

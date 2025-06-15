@@ -51,6 +51,26 @@ export async function POST(request: NextRequest) {
   }
 }
 
+async function handlePaymentIntentSucceeded(event: any) {
+  const paymentIntent = event.data.object as Stripe.PaymentIntent;
+  const { metadata } = paymentIntent;
+
+  // 检查是否是积分充值
+  if (metadata && metadata.type === "credit_recharge") {
+    const { rechargeId } = metadata;
+    if (rechargeId) {
+      try {
+        // 处理积分充值成功
+        await handleCreditRechargeSuccess(rechargeId, paymentIntent.id);
+        console.log(`积分充值成功处理完成: ${rechargeId}`);
+      } catch (error) {
+        console.error(`处理积分充值失败: ${rechargeId}`, error);
+        throw error;
+      }
+    }
+  }
+}
+
 async function handleSubscriptionChange(event: any) {
   const subscription = event.data.object as Stripe.Subscription;
   const customerId = subscription.customer as string;
@@ -84,24 +104,4 @@ async function handleSubscriptionChange(event: any) {
     productId,
     subscription.status,
   );
-}
-
-async function handlePaymentIntentSucceeded(event: any) {
-  const paymentIntent = event.data.object as Stripe.PaymentIntent;
-  const { metadata } = paymentIntent;
-
-  // 检查是否是积分充值
-  if (metadata && metadata.type === "credit_recharge") {
-    const { rechargeId } = metadata;
-    if (rechargeId) {
-      try {
-        // 处理积分充值成功
-        await handleCreditRechargeSuccess(rechargeId, paymentIntent.id);
-        console.log(`积分充值成功处理完成: ${rechargeId}`);
-      } catch (error) {
-        console.error(`处理积分充值失败: ${rechargeId}`, error);
-        throw error;
-      }
-    }
-  }
 }

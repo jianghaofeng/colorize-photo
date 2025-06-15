@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 
-type PaymentStatus = "initial" | "processing" | "success" | "error";
+type PaymentStatus = "error" | "initial" | "processing" | "success";
 
 /**
  * 支付相关的状态和操作的Hook
