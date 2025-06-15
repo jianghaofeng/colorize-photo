@@ -7,8 +7,8 @@ export const SEO_CONFIG = {
 };
 
 export const SYSTEM_CONFIG = {
-  redirectAfterSignIn: "/dashboard/stats",
-  redirectAfterSignUp: "/dashboard/stats",
+  redirectAfterSignIn: "/dashboard",
+  redirectAfterSignUp: "/dashboard",
   repoName: "colorize-photo",
   repoOwner: "allen",
   repoStars: true,

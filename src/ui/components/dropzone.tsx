@@ -30,7 +30,7 @@ export const formatBytes = (
       ? sizes.indexOf(size)
       : Math.floor(Math.log(bytes) / Math.log(k));
   return (
-    Number.parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + " " + sizes[i]
+    `${Number.parseFloat((bytes / k ** i).toFixed(dm))} ${sizes[i]}`
   );
 };
 
@@ -69,8 +69,8 @@ const Dropzone = ({
         {...getRootProps({
           className: cn(
             `
-              rounded-lg border-2 border-gray-300 bg-card p-6 text-center
-              text-foreground transition-colors duration-300 min-h-[200px] w-full
+              min-h-[200px] w-full rounded-lg border-2 border-gray-300 bg-card
+              p-6 text-center text-foreground transition-colors duration-300
             `,
             className,
             isSuccess ? "border-solid" : "border-dashed",

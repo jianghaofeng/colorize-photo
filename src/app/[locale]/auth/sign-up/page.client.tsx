@@ -1,14 +1,14 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 
 import { SEO_CONFIG } from "~/app";
 import { supabaseAuth } from "~/lib/supabase-auth-client";
-import { GitHubIcon } from "~/ui/components/icons/github";
 import { GoogleIcon } from "~/ui/components/icons/google";
+import { Starfield } from "~/ui/components/starfield";
 import { Button } from "~/ui/primitives/button";
 import { Card, CardContent } from "~/ui/primitives/card";
 import { Input } from "~/ui/primitives/input";
@@ -16,6 +16,7 @@ import { Label } from "~/ui/primitives/label";
 import { Separator } from "~/ui/primitives/separator";
 
 export function SignUpPageClient() {
+  const t = useTranslations("Auth");
   const router = useRouter();
   const [formData, setFormData] = useState({
     email: "",
@@ -56,23 +57,12 @@ export function SignUpPageClient() {
       router.push("/auth/sign-in?registered=true");
     } catch (err: any) {
       if (err.message?.includes("email") || err.message?.includes("Email")) {
-        setError("该邮箱已被注册，请尝试使用其他邮箱");
+        setError(t("emailAlreadyRegistered"));
       } else {
-        setError("注册失败，请稍后再试");
+        setError(t("signUpFailed"));
       }
       console.error(err);
     } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleGitHubSignUp = async () => {
-    setLoading(true);
-    try {
-      await supabaseAuth.signInWithOAuth("github");
-    } catch (err) {
-      setError("GitHub 注册失败");
-      console.error(err);
       setLoading(false);
     }
   };
@@ -82,7 +72,7 @@ export function SignUpPageClient() {
     try {
       await supabaseAuth.signInWithOAuth("google");
     } catch (err) {
-      setError("Google 注册失败");
+      setError(t("googleSignUpFailed"));
       console.error(err);
       setLoading(false);
     }
@@ -91,76 +81,110 @@ export function SignUpPageClient() {
   return (
     <div
       className={`
-        grid h-screen w-screen
+        relative grid h-screen w-screen overflow-hidden
         md:grid-cols-2
       `}
     >
-      {/* Left side - Image */}
+      {/* 渐变背景 */}
+      <div className={`
+        absolute inset-0 bg-gradient-to-br from-white via-blue-50 to-purple-50
+        dark:from-black dark:via-gray-950 dark:to-black
+      `} />
+
+      {/* 星空装饰 */}
+      <Starfield />
+      {/* Left side - Brand info */}
       <div
         className={`
-          relative hidden
-          md:block
+          relative z-10 hidden items-end p-8
+          md:flex
         `}
       >
-        <Image
-          alt="Sign-up background image"
-          className="object-cover"
-          fill
-          priority
-          sizes="(max-width: 768px) 0vw, 50vw"
-          src="https://images.unsplash.com/photo-1719811059181-09032aef07b8?q=80&w=1200&auto=format&fit=crop&ixlib=rb-4.0.3"
-        />
-        <div
-          className={`
-            absolute inset-0 bg-gradient-to-t from-background/80 to-transparent
-          `}
-        />
-        <div className="absolute bottom-8 left-8 z-10 text-white">
-          <h1 className="text-3xl font-bold">{SEO_CONFIG.name}</h1>
-          <p className="mt-2 max-w-md text-sm text-white/80">
+        <div className={`
+          text-gray-900
+          dark:text-white
+        `}>
+          <h1 className={`
+            bg-gradient-to-r from-gray-900 to-blue-600 bg-clip-text text-4xl
+            font-bold text-transparent
+            dark:from-white dark:to-blue-200
+          `}>
+            {SEO_CONFIG.name}
+          </h1>
+          <p className={`
+            mt-4 max-w-md text-lg text-gray-700
+            dark:text-white/90
+          `}>
             {SEO_CONFIG.slogan}
           </p>
+          <div className="mt-6 flex space-x-2">
+            <div className="h-2 w-2 animate-pulse rounded-full bg-blue-400" />
+            <div className="h-2 w-2 animate-pulse rounded-full bg-purple-400" style={{ animationDelay: '0.5s' }} />
+            <div className="h-2 w-2 animate-pulse rounded-full bg-pink-400" style={{ animationDelay: '1s' }} />
+          </div>
         </div>
       </div>
 
       {/* Right side - Sign up form */}
       <div
         className={`
-          flex items-center justify-center p-4
+          relative z-10 flex items-center justify-center p-4
           md:p-8
         `}
       >
-        <div className="w-full max-w-md space-y-4">
+        {/* 半透明背景 */}
+        <div className="absolute inset-0" />
+        <div className="relative z-10 w-full max-w-md space-y-4">
           <div
             className={`
               space-y-4 text-center
               md:text-left
             `}
           >
-            <h2 className="text-3xl font-bold">创建账户</h2>
-            <p className="text-sm text-muted-foreground">
-              输入您的详细信息创建账户
+            <h2 className={`
+              text-3xl font-bold text-gray-900
+              dark:text-white
+            `}>{t("createAccount")}</h2>
+            <p className={`
+              text-sm text-gray-600
+              dark:text-white/70
+            `}>
+              {t("enterDetailsToCreateAccount")}
             </p>
           </div>
 
-          <Card className="border-none shadow-sm">
+          <Card >
             <CardContent className="pt-2">
               <form className="space-y-4" onSubmit={handleSubmit}>
                 <div className="grid gap-2">
-                  <Label htmlFor="name">姓名</Label>
+                  <Label className={`
+                    text-gray-900
+                    dark:text-white
+                  `} htmlFor="name">{t("name")}</Label>
                   <Input
+                    className={`
+                      bg-white
+                      dark:bg-input/30
+                    `}
                     id="name"
                     name="name"
                     onChange={handleChange}
-                    placeholder="张三"
+                    placeholder={t("namePlaceholder")}
                     required
                     type="text"
                     value={formData.name}
                   />
                 </div>
                 <div className="grid gap-2">
-                  <Label htmlFor="email">邮箱</Label>
+                  <Label className={`
+                    text-gray-900
+                    dark:text-white
+                  `} htmlFor="email">{t("email")}</Label>
                   <Input
+                    className={`
+                      bg-white
+                      dark:bg-input/30
+                    `}
                     id="email"
                     name="email"
                     onChange={handleChange}
@@ -171,8 +195,15 @@ export function SignUpPageClient() {
                   />
                 </div>
                 <div className="grid gap-2">
-                  <Label htmlFor="password">密码</Label>
+                  <Label className={`
+                    text-gray-900
+                    dark:text-white
+                  `} htmlFor="password">{t("password")}</Label>
                   <Input
+                    className={`
+                      bg-white
+                      dark:bg-input/30
+                    `}
                     id="password"
                     name="password"
                     onChange={handleChange}
@@ -187,7 +218,7 @@ export function SignUpPageClient() {
                   </div>
                 )}
                 <Button className="w-full" disabled={loading} type="submit">
-                  {loading ? "创建账户中..." : "创建账户"}
+                  {loading ? t("creatingAccount") : t("createAccount")}
                 </Button>
               </form>
               <div className="relative mt-6">
@@ -195,23 +226,17 @@ export function SignUpPageClient() {
                   <Separator className="w-full" />
                 </div>
                 <div className="relative flex justify-center text-xs uppercase">
-                  <span className="bg-background px-2 text-muted-foreground">
-                    或继续使用
+                  <span className={`
+                    bg-white/80 px-2 text-gray-600
+                    dark:bg-white/10 dark:text-white/70
+                  `}>
+                    {t("orContinueWith")}
                   </span>
                 </div>
               </div>
-              <div className="mt-6 grid grid-cols-2 gap-4">
+              <div className="mt-6">
                 <Button
-                  className="flex items-center gap-2"
-                  disabled={loading}
-                  onClick={handleGitHubSignUp}
-                  variant="outline"
-                >
-                  <GitHubIcon className="h-5 w-5" />
-                  GitHub
-                </Button>
-                <Button
-                  className="flex items-center gap-2"
+                  className="flex w-full items-center justify-center"
                   disabled={loading}
                   onClick={handleGoogleSignUp}
                   variant="outline"
@@ -220,16 +245,20 @@ export function SignUpPageClient() {
                   Google
                 </Button>
               </div>
-              <div className="mt-6 text-center text-sm text-muted-foreground">
-                已有账户?{" "}
+              <div className={`
+                mt-6 text-center text-sm text-gray-600
+                dark:text-white/70
+              `}>
+                {t("alreadyHaveAccount")}{" "}
                 <Link
                   className={`
-                    text-primary underline-offset-4
-                    hover:underline
+                    text-blue-600 underline-offset-4
+                    hover:text-blue-800 hover:underline
+                    dark:text-blue-400 dark:hover:text-blue-300
                   `}
                   href="/auth/sign-in"
                 >
-                  登录
+                  {t("signIn")}
                 </Link>
               </div>
             </CardContent>

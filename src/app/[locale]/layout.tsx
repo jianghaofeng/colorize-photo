@@ -7,10 +7,7 @@ import { NextIntlClientProvider } from "next-intl";
 import { getMessages } from "next-intl/server";
 
 import "~/css/globals.css";
-
 // 移除 Google Fonts 导入，使用系统字体堆栈
-// import { Geist, Geist_Mono } from "next/font/google";
-
 import { SEO_CONFIG } from "~/app";
 import { CartProvider } from "~/lib/hooks/use-cart";
 import { Footer } from "~/ui/components/footer";
@@ -20,13 +17,13 @@ import { Toaster } from "~/ui/primitives/sonner";
 
 // 定义系统字体堆栈作为备用
 const systemFontStack = {
-  variable: "--font-geist-sans",
   className: "",
+  variable: "--font-geist-sans",
 };
 
 const monoFontStack = {
-  variable: "--font-geist-mono",
   className: "",
+  variable: "--font-geist-mono",
 };
 
 export const metadata: Metadata = {
@@ -46,11 +43,10 @@ export default async function RootLayout({
         className={`
           ${systemFontStack.variable}
           ${monoFontStack.variable}
-          min-h-screen bg-gradient-to-br from-white to-slate-100
+          min-h-screen bg-gradient-to-br from-white to-slate-100 font-sans
           text-neutral-900 antialiased
           selection:bg-primary/80
           dark:from-neutral-950 dark:to-neutral-900 dark:text-neutral-100
-          font-sans
         `}
       >
         <ThemeProvider
@@ -61,7 +57,7 @@ export default async function RootLayout({
         >
           <CartProvider>
             <NextIntlClientProvider messages={messages}>
-              <Header showAuth={true} />
+              <Header showAuth={false} />
               <main className={`flex min-h-screen flex-col`}>{children}</main>
               <Footer />
               <Toaster />

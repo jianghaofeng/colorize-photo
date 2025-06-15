@@ -1,25 +1,32 @@
 import type { useTranslations } from "next-intl";
-import type { ReactNode } from "react";
 
-import { id } from "date-fns/locale";
-import { Building, ImageIcon, RefreshCcw } from "lucide-react";
+import { AnimatePresence, motion } from "framer-motion";
 import {
+  Building,
   Camera,
   Cherry,
   Film,
-  Flower2,
   Heart,
-  Leaf,
   Rainbow,
+  RefreshCcw,
   Snowflake,
+  Sparkles,
   Sunrise,
+  Upload,
+  Wand2,
 } from "lucide-react";
-import Image from "next/image";
-import React from "react";
+import { useEffect, useRef, useState } from "react";
 
-import { SupabaseFileUpload } from "~/lib/components/supabase-file-upload";
+import { createClient } from "~/lib/supabase/client";
+import { SupabaseFileUpload, type SupabaseFileUploadRef } from "~/ui/components/upload/supabase-file-upload";
 import { Button } from "~/ui/primitives/button";
-import { Card, CardContent, CardFooter } from "~/ui/primitives/card";
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "~/ui/primitives/card";
 import { Label } from "~/ui/primitives/label";
 import {
   Select,
@@ -31,151 +38,179 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/ui/primitives/tabs";
 
 export interface UploadProcessPanelProps {
-  activeTab: "colorization" | "restore";
-  handleUploadComplete: (params: { fileKey: string; fileUrl: string }) => void;
-  handleUploadError: (error: Error) => void;
-  isProcessing: boolean;
-  selectedFilter: string;
-  setActiveTab: (tab: "colorization" | "restore") => void;
-  setGeneratedImages: (callback: (prev: any[]) => any[]) => void;
-  setIsProcessing: (isProcessing: boolean) => void;
-  setSelectedFilter: (filter: string) => void;
-  setSelectedImage: (image: any) => void;
-  setUploadedImageUrl: (url: string) => void;
+  onImageGenerated: (image: any) => void;
   t: ReturnType<typeof useTranslations>;
-  uploadedImageUrl: string;
 }
 
-const getColorizationPresets = (t: ReturnType<typeof useTranslations>) => [
+// 获取着色预设（国际化）
+const getColorizationPresets = (t: any) => [
   {
-    color: "text-green-500",
     description: t("ImageProcessing.presets.natural.description"),
-    icon: <Leaf className="h-10 w-10" />,
-    id: 1,
+    icon: <Sunrise className="h-4 w-4 text-orange-500" />,
     label: t("ImageProcessing.presets.natural.label"),
-    value: t("ImageProcessing.presets.natural.value"),
+    value: "natural",
   },
   {
-    color: "text-orange-500",
     description: t("ImageProcessing.presets.warm.description"),
-    icon: <Sunrise className="h-10 w-10" />,
-    id: 2,
+    icon: <Heart className="h-4 w-4 text-red-500" />,
     label: t("ImageProcessing.presets.warm.label"),
-    value: t("ImageProcessing.presets.warm.value"),
+    value: "warm",
   },
   {
-    color: "text-blue-500",
     description: t("ImageProcessing.presets.cool.description"),
-    icon: <Snowflake className="h-10 w-10" />,
-    id: 3,
+    icon: <Snowflake className="h-4 w-4 text-blue-500" />,
     label: t("ImageProcessing.presets.cool.label"),
-    value: t("ImageProcessing.presets.cool.value"),
+    value: "cool",
   },
   {
-    color: "text-amber-600",
-    description: t("ImageProcessing.presets.vintage.description"),
-    icon: <Camera className="h-10 w-10" />,
-    id: 4,
-    label: t("ImageProcessing.presets.vintage.label"),
-    value: t("ImageProcessing.presets.vintage.value"),
-  },
-  {
-    color:
-      "text-rainbow bg-gradient-to-r from-red-500 via-yellow-500 to-blue-500 bg-clip-text text-transparent",
     description: t("ImageProcessing.presets.vibrant.description"),
-    icon: <Rainbow className="h-10 w-10" />,
-    id: 5,
+    icon: <Rainbow className="h-4 w-4 text-purple-500" />,
     label: t("ImageProcessing.presets.vibrant.label"),
-    value: t("ImageProcessing.presets.vibrant.value"),
+    value: "vibrant",
   },
   {
-    color: "text-pink-400",
+    description: t("ImageProcessing.presets.vintage.description"),
+    icon: <Film className="h-4 w-4 text-amber-600" />,
+    label: t("ImageProcessing.presets.vintage.label"),
+    value: "vintage",
+  },
+  {
     description: t("ImageProcessing.presets.soft.description"),
-    icon: <Flower2 className="h-10 w-10" />,
-    id: 6,
+    icon: <Cherry className="h-4 w-4 text-pink-500" />,
     label: t("ImageProcessing.presets.soft.label"),
-    value: t("ImageProcessing.presets.soft.value"),
+    value: "soft",
+  },
+];
+
+// 获取修复预设（国际化）
+const getRestorePresets = (t: any) => [
+  {
+    description: t("ImageProcessing.presets.smart.description"),
+    icon: <Sparkles className="h-4 w-4 text-yellow-500" />,
+    label: t("ImageProcessing.presets.smart.label"),
+    value: "smart",
   },
   {
-    color: "text-purple-600",
-    description: t("ImageProcessing.presets.cinematic.description"),
-    icon: <Film className="h-10 w-10" />,
-    id: 7,
-    label: t("ImageProcessing.presets.cinematic.label"),
-    value: t("ImageProcessing.presets.cinematic.value"),
+    description: t("ImageProcessing.presets.denoise.description"),
+    icon: <RefreshCcw className="h-4 w-4 text-green-500" />,
+    label: t("ImageProcessing.presets.denoise.label"),
+    value: "denoise",
   },
   {
-    color: "text-rose-400",
-    description: t("ImageProcessing.presets.japanese.description"),
-    icon: <Cherry className="h-10 w-10" />,
-    id: 8,
-    label: t("ImageProcessing.presets.japanese.label"),
-    value: t("ImageProcessing.presets.japanese.value"),
+    description: t("ImageProcessing.presets.detail.description"),
+    icon: <Building className="h-4 w-4 text-blue-600" />,
+    label: t("ImageProcessing.presets.detail.label"),
+    value: "detail",
   },
   {
-    color: "text-pink-500",
-    description: t("ImageProcessing.presets.korean.description"),
-    icon: <Heart className="h-10 w-10" />,
-    id: 9,
-    label: t("ImageProcessing.presets.korean.label"),
-    value: t("ImageProcessing.presets.korean.value"),
-  },
-  {
-    color: "text-stone-600",
-    description: t("ImageProcessing.presets.historical.description"),
-    icon: <Building className="h-10 w-10" />,
-    id: 10,
-    label: t("ImageProcessing.presets.historical.label"),
-    value: t("ImageProcessing.presets.historical.value"),
+    description: t("ImageProcessing.presets.professional.description"),
+    icon: <Camera className="h-4 w-4 text-purple-600" />,
+    label: t("ImageProcessing.presets.professional.label"),
+    value: "professional",
   },
 ];
 
 export function UploadProcessPanel(props: UploadProcessPanelProps) {
-  const {
-    activeTab,
-    handleUploadComplete,
-    handleUploadError,
-    isProcessing,
-    selectedFilter,
-    setActiveTab,
-    setGeneratedImages,
-    setIsProcessing,
-    setSelectedFilter,
-    setSelectedImage,
-    t,
-    uploadedImageUrl,
-  } = props;
+  const { onImageGenerated, t } = props;
+
+  // 文件上传组件的引用
+  const fileUploadRef = useRef<SupabaseFileUploadRef>(null);
+
+  // 内部状态管理
+  const [activeTab, setActiveTab] = useState<"colorization" | "restore">(
+    "colorization"
+  );
+  const [selectedFilter, setSelectedFilter] = useState<string>("natural");
+  const [uploadedImageUrl, setUploadedImageUrl] = useState<string>("");
+  const [isProcessing, setIsProcessing] = useState<boolean>(false);
+  const [currentRecordId, setCurrentRecordId] = useState<null | string>(null);
+
+  // 处理图片上传完成
+  const handleUploadComplete = ({
+    fileUrl,
+  }: {
+    fileKey: string;
+    fileUrl: string;
+  }) => {
+    setUploadedImageUrl(fileUrl);
+  };
+
+  // 处理图片上传错误
+  const handleUploadError = (error: Error) => {
+    console.error("上传错误:", error);
+    // 这里可以添加错误提示
+  };
+
+  // 使用Supabase realtime监控记录状态
+  useEffect(() => {
+    if (!currentRecordId) return;
+
+    console.log('开始监控记录ID:', currentRecordId);
+    const supabase = createClient();
+
+    const channel = supabase.realtime
+      .channel('user_generate_records_changes')
+      .on(
+        'postgres_changes',
+        {
+          event: 'UPDATE',
+          filter: `id=eq.${currentRecordId}`,
+          schema: 'public',
+          table: 'user_generate_records',
+        },
+        (payload) => {
+          console.log('收到Realtime更新:', payload);
+          const record = payload.new as any;
+
+          if (record.status === 'completed' && record.output_url) {
+            // 生成成功
+            console.log('图片处理完成:', record);
+            const newImage = {
+              id: record.id,
+              originalUrl: record.input_url,
+              processedUrl: record.output_url,
+              timestamp: new Date(record.completed_at),
+              type: record.type,
+            };
+
+            onImageGenerated(newImage);
+            setIsProcessing(false);
+            setCurrentRecordId(null);
+            
+            // 清除上传的图片和缓存
+            setUploadedImageUrl("");
+            if (fileUploadRef.current) {
+              fileUploadRef.current.clearFiles();
+            }
+          } else if (record.status === 'failed') {
+            // 生成失败
+            console.error('图片处理失败:', record.error_message);
+            setIsProcessing(false);
+            setCurrentRecordId(null);
+          }
+        }
+      )
+      .subscribe((status) => {
+        console.log('Realtime订阅状态:', status);
+      });
+
+    return () => {
+      console.log('清理Realtime订阅');
+      supabase.removeChannel(channel);
+    };
+  }, [currentRecordId, onImageGenerated]);
 
   // 处理图片处理
   const handleProcessImage = async () => {
-    if (!uploadedImageUrl) {
-      // 显示错误提示：请先上传图片
-      return;
-    }
+    if (!uploadedImageUrl) return;
 
     setIsProcessing(true);
-
     try {
-      // 获取实际的 prompt 值
-      let promptValue = selectedFilter;
+      const promptValue =
+        activeTab === "colorization"
+          ? `Colorize this black and white photo with ${selectedFilter} style`
+          : `Restore this old or damaged photo using ${selectedFilter} technique`;
 
-      if (activeTab === "colorization") {
-        // 对于着色功能，根据 id 查找对应的 value
-        const preset = getColorizationPresets(t).find(p => p.id.toString() === selectedFilter);
-        if (preset) {
-          promptValue = preset.value;
-        }
-      } else if (activeTab === "restore") {
-        // 对于恢复功能，将 id 映射回强度值
-        const intensityMap: Record<string, string> = {
-          "1": "light",
-          "2": "medium",
-          "3": "strong"
-        };
-        promptValue = intensityMap[selectedFilter] || "medium";
-      }
-
-      // 调用后端API进行图片处理
       const response = await fetch("/api/image/process", {
         body: JSON.stringify({
           functionType: activeTab,
@@ -189,114 +224,185 @@ export function UploadProcessPanel(props: UploadProcessPanelProps) {
       });
 
       if (!response.ok) {
-        const errorData: any = await response.json();
-        throw new Error(errorData.error || "图像处理失败");
+        throw new Error("处理失败");
       }
 
+      const result = (await response.json()) as { id: string; task_id: string };
+
+      // 设置记录ID以开始监控
+      setCurrentRecordId(result.id);
     } catch (error) {
-      console.error("处理图片时出错:", error);
-      // 显示错误提示
-    } finally {
+      console.error("处理错误:", error);
       setIsProcessing(false);
     }
   };
 
-  // 图标尺寸
-  const iconSizeClass = "h-8 w-8";
-
-  // 图标在左，右侧为标题和描述两行
+  // 渲染选择预设
   const renderSelectPreset = (preset: any) => (
-    <div className="flex w-full items-center gap-4">
-      <span
+    <div className="flex items-center gap-3 p-2">
+      <div
         className={`
-          flex shrink-0 items-center justify-center
-          ${iconSizeClass}
+          rounded-lg bg-gradient-to-br from-primary/20 to-primary/10 p-2
         `}
       >
-        {
-          preset.icon
-        }
-      </span>
-      <span className="flex min-w-0 flex-col items-start">
-        <span className="truncate leading-tight font-medium">
-          {preset.label}
-        </span>
-        <span className="truncate text-xs leading-tight text-muted-foreground">
+        {preset.icon}
+      </div>
+      <div className="flex-1">
+        <div className="text-left text-sm font-medium">{preset.label}</div>
+        <div className="text-xs text-muted-foreground">
           {preset.description}
-        </span>
-      </span>
+        </div>
+      </div>
     </div>
   );
 
-
-  // 自定义 SelectValue 渲染
-  const renderSelectValue = (selected: string): ReactNode => {
-    const preset = getColorizationPresets(t).find((p) => p.id.toString() === selected);
-    if (!preset) return null;
-    return renderSelectPreset(preset);
+  // 渲染选择值
+  const renderSelectValue = () => {
+    const presets =
+      activeTab === "colorization"
+        ? getColorizationPresets(t)
+        : getRestorePresets(t);
+    const selectedPreset = presets.find((p) => p.value === selectedFilter);
+    return selectedPreset
+      ? renderSelectPreset(selectedPreset)
+      : t("ImageProcessing.selectFilterPlaceholder");
   };
 
-
   return (
-    <Card className="flex h-full flex-col rounded-none">
-      <CardContent className="space-y-4">
-        <Tabs
-          className="w-full"
-          defaultValue="colorization"
-          onValueChange={(value: string) =>
-            setActiveTab(value as "colorization" | "restore")
-          }
-          value={activeTab}
+    <motion.div
+      animate={{ opacity: 1, y: 0 }}
+      className="h-full"
+      initial={{ opacity: 0, y: 20 }}
+      transition={{ duration: 0.5 }}
+    >
+      <Card
+        className={`
+          flex h-full flex-col overflow-hidden rounded-2xl border
+          border-border/20 bg-gradient-to-br from-background/80
+          via-background/60 to-accent/10 p-0 shadow-2xl backdrop-blur-xl
+        `}
+      >
+        <CardHeader
+          className={`
+            border-b border-border/10 bg-gradient-to-r from-accent/5
+            to-primary/5 p-6
+          `}
         >
-          <TabsList className="grid w-full grid-cols-2">
-            <TabsTrigger className="flex items-center gap-2" value="colorization">
-              <ImageIcon className="h-4 w-4" />
-              {t("ImageProcessing.colorize")}
-            </TabsTrigger>
-            <TabsTrigger className="items-center= flex gap-2" value="restore">
-              <RefreshCcw className="h-4 w-4" />
-              {t("ImageProcessing.restore")}
-            </TabsTrigger>
-          </TabsList>
+          <CardTitle className={`flex items-center gap-3 text-xl font-bold`}>
+            <div
+              className={`
+                rounded-xl bg-gradient-to-br from-primary/20 to-primary/10 p-2
+              `}
+            >
+              <Upload className="h-6 w-6 text-primary" />
+            </div>
+            {t("ImageProcessing.uploadAndProcess")}
+          </CardTitle>
+        </CardHeader>
 
-          <TabsContent className="h-full min-h-0 flex-1" value="colorization">
-            <div className={`flex min-h-0 flex-1 flex-col space-y-4 py-4`}>
+        <CardContent className="flex-1 space-y-6 p-6">
+          {/* 文件上传区域 */}
+          <div className="space-y-4">
+            <Label className="text-sm font-medium">
+              {t("ImageProcessing.uploadImage")}
+            </Label>
+            <div
+              className={`
+                rounded-xl border-2 border-dashed border-border/20 bg-muted/20
+                p-6
+              `}
+            >
               <SupabaseFileUpload
+                ref={fileUploadRef}
+                accept={{ "image/*": [".jpeg", ".jpg", ".png", ".webp"] }}
                 bucketName="images"
-                isUploading={isProcessing}
-                maxFiles={1}
+                className="single-upload"
+                disabled={isProcessing}
+                maxCount={1}
                 maxSize={10} // 10MB
-                onUploadComplete={handleUploadComplete}
+                onUploadComplete={(files) => {
+                  if (files && files.length > 0) {
+                    handleUploadComplete(files[0]);
+                  }
+                }}
                 onUploadError={handleUploadError}
-                path="colorization"
               />
+            </div>
+          </div>
 
+          {/* 标签页切换 */}
+          <Tabs
+            onValueChange={(value) => {
+              if (isProcessing) return; // 处理中禁用切换
+              const newTab = value as "colorization" | "restore";
+              setActiveTab(newTab);
+              // 切换标签时设置默认滤镜
+              const defaultFilter =
+                newTab === "colorization" ? "natural" : "smart";
+              setSelectedFilter(defaultFilter);
+            }}
+            value={activeTab}
+          >
+            <TabsList
+              className={`grid w-full grid-cols-2 rounded-xl bg-muted/50 p-1 ${
+                isProcessing ? 'pointer-events-none opacity-50' : ''
+              }`}
+            >
+              <TabsTrigger
+                className={`
+                  rounded-lg
+                  data-[state=active]:bg-background
+                  data-[state=active]:shadow-sm
+                `}
+                value="colorization"
+              >
+                <Sparkles className="mr-2 h-4 w-4" />
+                {t("ImageProcessing.colorization")}
+              </TabsTrigger>
+              <TabsTrigger
+                className={`
+                  rounded-lg
+                  data-[state=active]:bg-background
+                  data-[state=active]:shadow-sm
+                `}
+                value="restore"
+              >
+                <Wand2 className="mr-2 h-4 w-4" />
+                {t("ImageProcessing.restore")}
+              </TabsTrigger>
+            </TabsList>
+
+            <TabsContent className="space-y-4" value="colorization">
               <div className="space-y-2">
                 <Label className="text-sm font-medium">
-                  {t("ImageProcessing.selectFilter")}
+                  {t("ImageProcessing.selectColorStyle")}
                 </Label>
                 <Select
-                  defaultValue=""
+                  disabled={isProcessing}
                   onValueChange={setSelectedFilter}
-                  value={selectedFilter || ""}
+                  value={selectedFilter}
                 >
-                  <SelectTrigger className="h-20 w-full gap-4">
-                    <SelectValue
-                      placeholder={t("ImageProcessing.selectFilterPlaceholder")}
-                    >
-                      {
-                        renderSelectValue(
-                          selectedFilter
-                        ) as unknown as ReactNode
+                  <SelectTrigger
+                    className={`
+                      h-auto min-h-[60px] w-full rounded-xl border-border/20
+                      bg-background/50 ${
+                        isProcessing ? 'opacity-50 cursor-not-allowed' : ''
                       }
-                    </SelectValue>
+                    `}
+                  >
+                    <SelectValue>{renderSelectValue()}</SelectValue>
                   </SelectTrigger>
-                  <SelectContent>
+                  <SelectContent
+                    className={`
+                      rounded-xl border-border/20 bg-background/95
+                      backdrop-blur-xl
+                    `}
+                  >
                     {getColorizationPresets(t).map((preset) => (
                       <SelectItem
-                        className={preset.color}
-                        key={preset.id}
-                        value={preset.id.toString()}
+                        className="rounded-lg"
+                        key={preset.value}
+                        value={preset.value}
                       >
                         {renderSelectPreset(preset)}
                       </SelectItem>
@@ -304,83 +410,96 @@ export function UploadProcessPanel(props: UploadProcessPanelProps) {
                   </SelectContent>
                 </Select>
               </div>
-            </div>
-          </TabsContent>
+            </TabsContent>
 
-          <TabsContent value="restore">
-            <div className="space-y-4 py-4">
-              <SupabaseFileUpload
-                bucketName="images"
-                isUploading={isProcessing}
-                maxFiles={1}
-                maxSize={10} // 10MB
-                onUploadComplete={handleUploadComplete}
-                onUploadError={handleUploadError}
-                path="restore"
-              />
-
+            <TabsContent className="space-y-4" value="restore">
               <div className="space-y-2">
                 <Label className="text-sm font-medium">
-                  {t("ImageProcessing.restoreIntensity")}
+                  {t("ImageProcessing.selectRestoreMode")}
                 </Label>
                 <Select
-                  defaultValue="2"
+                  disabled={isProcessing}
                   onValueChange={setSelectedFilter}
                   value={selectedFilter}
                 >
-                  <SelectTrigger className="w-full">
-                    <SelectValue
-                      placeholder={t(
-                        "ImageProcessing.selectIntensityPlaceholder"
-                      )}
-                    />
+                  <SelectTrigger
+                    className={`
+                      h-auto min-h-[60px] w-full rounded-xl border-border/20
+                      bg-background/50 ${
+                        isProcessing ? 'opacity-50 cursor-not-allowed' : ''
+                      }
+                    `}
+                  >
+                    <SelectValue>{renderSelectValue()}</SelectValue>
                   </SelectTrigger>
-                  <SelectContent className="h-20">
-                    <SelectItem key="1" value="1">
-                      {t("ImageProcessing.intensityLight")}
-                    </SelectItem>
-                    <SelectItem key="2" value="2">
-                      {t("ImageProcessing.intensityMedium")}
-                    </SelectItem>
-                    <SelectItem key="3" value="3">
-                      {t("ImageProcessing.intensityStrong")}
-                    </SelectItem>
+                  <SelectContent
+                    className={`
+                      rounded-xl border-border/20 bg-background/95
+                      backdrop-blur-xl
+                    `}
+                  >
+                    {getRestorePresets(t).map((preset) => (
+                      <SelectItem
+                        className="rounded-lg"
+                        key={preset.value}
+                        value={preset.value}
+                      >
+                        {renderSelectPreset(preset)}
+                      </SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
               </div>
-            </div>
-          </TabsContent>
-        </Tabs>
+            </TabsContent>
+          </Tabs>
+        </CardContent>
 
-        {uploadedImageUrl && (
-          <div className="mt-4">
-            <p className="mb-2 text-sm font-medium">
-              {t("ImageProcessing.preview")}
-            </p>
-            <div className={`relative h-64 w-full overflow-hidden rounded-md`}>
-              <Image
-                alt={t("ImageProcessing.uploadedImage")}
-                className="object-contain"
-                fill
-                src={uploadedImageUrl}
-              />
-            </div>
-          </div>
-        )}
-      </CardContent>
-      <CardFooter>
-        <Button
-          className="w-full"
-          disabled={!uploadedImageUrl || isProcessing}
-          onClick={handleProcessImage}
+        <CardFooter
+          className={`
+            border-t border-border/10 bg-gradient-to-r from-accent/5
+            to-primary/5 p-6
+          `}
         >
-          {isProcessing
-            ? t("ImageProcessing.processing")
-            : activeTab === "colorization"
-              ? t("ImageProcessing.colorizeButton")
-              : t("ImageProcessing.restoreButton")}
-        </Button>
-      </CardFooter>
-    </Card>
+          <Button
+            className={`
+              w-full rounded-xl bg-gradient-to-r from-primary to-primary/80 py-3
+              text-base font-medium shadow-lg transition-all
+              hover:shadow-xl
+              disabled:opacity-50
+            `}
+            disabled={!uploadedImageUrl || isProcessing || !selectedFilter}
+            onClick={handleProcessImage}
+          >
+            <AnimatePresence mode="wait">
+              {isProcessing ? (
+                <motion.div
+                  animate={{ opacity: 1 }}
+                  className="flex items-center gap-2"
+                  exit={{ opacity: 0 }}
+                  initial={{ opacity: 0 }}
+                  key="processing"
+                >
+                  <RefreshCcw className="h-4 w-4 animate-spin" />
+                  {t("ImageProcessing.processing")}
+                </motion.div>
+              ) : (
+                <motion.div
+                  animate={{ opacity: 1 }}
+                  className="flex items-center gap-2"
+                  exit={{ opacity: 0 }}
+                  initial={{ opacity: 0 }}
+                  key="process"
+                >
+                  <Sparkles className="h-4 w-4" />
+                  {activeTab === "colorization"
+                    ? t("ImageProcessing.startColorization")
+                    : t("ImageProcessing.startRestore")}
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </Button>
+        </CardFooter>
+      </Card>
+    </motion.div>
   );
 }

@@ -1,25 +1,19 @@
-import type { Provider, User } from "@supabase/supabase-js";
+import type { Provider } from "@supabase/supabase-js";
 
-import { createBrowserClient } from "@supabase/ssr";
-import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { createClient } from "./supabase/client";
 
-// 创建浏览器端 Supabase 客户端
-export const createBrowserSupabaseClient = () => {
-  return createBrowserClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-  );
-};
-
-// 创建并导出 Supabase 客户端实例
-export const supabaseClient = createBrowserSupabaseClient();
+// 创建 Supabase 客户端实例
+export const supabaseClient = createClient();
 
 // 认证方法封装
 export const supabaseAuth = {
-  // 获取当前用户
+  // 获取当前用户会话
   getSession: async () => {
-    // 保留方法名以兼容现有代码，但内部使用更安全的 getUser 方法
+    return supabaseClient.auth.getSession();
+  },
+
+  // 获取当前用户
+  getUser: async () => {
     return supabaseClient.auth.getUser();
   },
 
@@ -66,46 +60,36 @@ export const supabaseAuth = {
   },
 };
 
-// Hook 用于获取和监听认证状态
-export const useSupabaseSession = () => {
-  const [user, setUser] = useState<null | User>(null);
-  const [loading, setLoading] = useState(true);
-  const getSession = async () => {
-    const { data } = await supabaseAuth.getSession();
-    setUser(data.user || null);
-    setLoading(false);
-  };
-  getSession();
-  return { loading, user };
-};
-
-// Hook 用于获取当前用户或重定向，用于客户端
-export const useSupabaseUserOrRedirect = (
-  forbiddenUrl = "/auth/sign-in",
-  okUrl = "",
-  ignoreForbidden = false,
-) => {
-  const { loading, user } = useSupabaseSession();
-  const router = useRouter();
-
-  useEffect(() => {
-    // 仅在加载完成后执行重定向
-    if (!loading) {
-      // 如果没有找到用户
-      if (!user) {
-        // 除非明确忽略，否则重定向到禁止页面
-        if (!ignoreForbidden) {
-          router.push(forbiddenUrl);
-        }
-      } else if (okUrl) {
-        // 如果找到用户并提供了 okUrl，则重定向到该 URL
-        router.push(okUrl);
-      }
-    }
-  }, [loading, user, router, forbiddenUrl, okUrl, ignoreForbidden]);
-
-  return { isPending: loading, loading: loading, user };
-};
-
-// 为了兼容原有代码，导出 useCurrentUserOrRedirect 作为 useSupabaseUserOrRedirect 的别名
-export const useCurrentUserOrRedirect = useSupabaseUserOrRedirect;
+/**
+ * 注意：客户端钩子函数已被移除
+ * 
+ * 请使用服务器端的认证函数：
+ * - getCurrentSupabaseUser
+ * - getCurrentSupabaseUserOrRedirect
+ * 
+ * 如果需要在客户端组件中获取用户信息，请直接使用：
+ * ```typescript
+ * import { supabaseAuth } from "~/lib/supabase-auth-client";
+ * 
+ * // 在组件内部
+ * const [user, setUser] = useState(null);
+ * const [isPending, setIsPending] = useState(true);
+ * 
+ * useEffect(() => {
+ *   const getUser = async () => {
+ *     try {
+ *       const { data, error } = await supabaseAuth.getUser();
+ *       if (!error && data.user) {
+ *         setUser(data.user);
+ *       }
+ *     } catch (error) {
+ *       console.error("获取用户信息失败:", error);
+ *     } finally {
+ *       setIsPending(false);
+ *     }
+ *   };
+ *   
+ *   getUser();
+ * }, []);
+ * ```
+ */

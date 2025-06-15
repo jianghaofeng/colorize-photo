@@ -47,35 +47,20 @@ export function AIColorizationGallery() {
               {effectImages.map((image, index) => (
                 <Card
                   className={`
-                    cursor-pointer overflow-hidden transition-all duration-300
+                    aspect-[4/5] cursor-pointer overflow-hidden p-0
+                    transition-all duration-300
                     hover:shadow-xl
                   `}
                   key={index}
                 >
-                  <Image
-                    alt={`Effect ${index + 1}`}
-                    className={`
-                      h-auto w-full object-cover transition-transform
-                      duration-300
-                      hover:scale-105
-                    `}
-                    height={250}
-                    src={image}
-                    width={200}
-                  />
-                  {/* <CardContent className="p-0">
+                  <div className="relative h-full min-h-[320px] w-full">
                     <Image
                       alt={`Effect ${index + 1}`}
-                      className={`
-                        h-auto w-full object-cover transition-transform
-                        duration-300
-                        hover:scale-105
-                      `}
-                      height={250}
+                      className="object-cover"
+                      fill
                       src={image}
-                      width={200}
                     />
-                  </CardBody> */}
+                  </div>
                 </Card>
               ))}
             </div>

@@ -1,18 +1,38 @@
 {
   "Auth": {
+    "alreadyHaveAccount": "已有账户?",
+    "confirmLogout": "确认退出",
     "createAccount": "创建账户",
+    "logoutConfirmTitle": "确认退出",
+    "logoutConfirmDescription": "您确定要退出登录吗？",
+    "creatingAccount": "创建账户中...",
+    "email": "邮箱",
     "emailAddress": "电子邮箱",
+    "emailAlreadyRegistered": "该邮箱已被注册，请尝试使用其他邮箱",
+    "enterDetailsToCreateAccount": "输入您的详细信息创建账户",
     "forgotPassword": "忘记密码？",
+    "googleLoginFailed": "Google 登录失败",
+    "googleSignUpFailed": "Google 注册失败",
+    "invalidCredentials": "邮箱或密码无效",
+    "name": "姓名",
+    "namePlaceholder": "张三",
     "newPassword": "新密码",
+    "noAccount": "还没有账户?",
+    "oauthLoginFailed": "第三方登录失败，请稍后再试",
+    "orContinueWith": "或继续使用",
     "password": "密码",
+    "registrationSuccess": "注册成功！请登录。",
     "resetPassword": "重置密码",
     "resetPasswordDescription": "输入您的电子邮箱，我们将向您发送重置密码的链接。",
     "resetPasswordSuccess": "检查您的邮箱",
     "resetPasswordSuccessDescription": "我们已向您发送了一封包含重置密码链接的电子邮件。",
     "signIn": "登录",
+    "signInDescription": "输入您的凭据访问您的账户",
     "signInWithEmail": "使用邮箱登录",
     "signInWithGoogle": "使用谷歌登录",
+    "signingIn": "登录中...",
     "signUp": "注册",
+    "signUpFailed": "注册失败，请稍后再试",
     "signUpWithEmail": "使用邮箱注册",
     "signUpWithGoogle": "使用谷歌注册"
   },
@@ -94,12 +114,63 @@
     "worldsBestAI": "世界最佳AI",
     "inALeagueOfItsOwn": "独一无二的存在"
   },
+  "Dashboard": {
+    "welcome": "欢迎来到您的工作台",
+    "overview": "概览",
+    "activity": "活动",
+    "credits": "积分",
+    "totalImages": "总图片数",
+    "allProcessedImages": "您处理的所有图片",
+    "colorizedImages": "上色图片",
+    "colorizedDescription": "您已上色的黑白照片",
+    "restoredImages": "修复图片",
+    "restoredDescription": "您已修复的旧照片或损坏照片",
+    "creditsUsed": "已使用积分",
+    "creditsUsedDescription": "处理图片所花费的总积分",
+    "creditsRemaining": "剩余积分",
+    "creditsRemainingDescription": "可用于未来处理的积分",
+    "quickActions": "快捷操作",
+    "quickActionsDescription": "您可以执行的常见任务",
+    "processImage": "处理新图片",
+    "editProfile": "编辑个人资料",
+    "settings": "设置",
+    "processMore": "处理更多",
+    "colorizeMore": "上色更多",
+    "restoreMore": "修复更多",
+    "viewBilling": "查看账单",
+    "buyCredits": "购买积分",
+    "recentActivity": "最近活动",
+    "recentActivityDescription": "您最近的图片处理活动",
+    "noRecentActivity": "暂无最近活动显示",
+    "creditBalance": "积分余额",
+    "creditBalanceDescription": "您当前的积分余额和使用情况",
+    "creditsAvailable": "可用积分",
+    "purchaseCredits": "购买积分",
+    "creditUsageHistory": "积分使用历史",
+    "creditUsageHistoryDescription": "您的积分使用历史记录",
+    "noCreditHistory": "暂无积分使用历史显示"
+  },
   "ImageProcessing": {
-    "title": "照片处理",
+    "title": "图片处理",
+    "description": "使用AI驱动的上色和修复技术改造您的照片",
     "colorizeDescription": "为黑白照片添加自然色彩",
     "restoreDescription": "修复旧照片或损坏的照片",
+    "colorization": "照片上色",
     "colorize": "照片上色",
     "restore": "照片修复",
+    "uploadAndProcess": "上传并处理",
+    "selectColorStyle": "选择色彩风格",
+    "selectRestoreMode": "选择修复模式",
+    "uploadImage": "上传图片",
+    "uploadTip": "点击或拖拽图片到此处",
+    "uploadSupport": "支持 JPG、PNG、WebP 格式，最大 {maxSize}MB",
+    "uploadForColorization": "上传进行上色",
+    "uploadForRestore": "上传进行修复",
+    "startColorization": "开始上色",
+    "startRestore": "开始修复",
+    "generationHistory": "生成历史",
+    "noGeneratedImages": "暂无生成的图片",
+    "pleaseWait": "请稍候...",
     "selectFilter": "选择滤镜",
     "selectFilterPlaceholder": "选择滤镜风格",
     "filterNatural": "自然色彩",
@@ -126,7 +197,83 @@
     "download": "下载",
     "share": "分享",
     "recentHistory": "最近记录",
-    "historyItem": "历史记录项"
+    "historyItem": "历史记录项",
+    "presets": {
+      "custom": {
+        "label": "自定义",
+        "description": "手动输入提示词"
+      },
+      "natural": {
+        "label": "自然色彩",
+        "description": "真实自然的色彩还原",
+        "value": "自然真实的色彩，保持原有光影效果"
+      },
+      "warm": {
+        "label": "暖色调",
+        "description": "温馨舒适的暖色调",
+        "value": "暖色调为主，增强黄色和橙色，营造温馨氛围"
+      },
+      "cool": {
+        "label": "冷色调",
+        "description": "清爽优雅的冷色调",
+        "value": "冷色调为主，增强蓝色和青色，营造清爽氛围"
+      },
+      "vintage": {
+        "label": "复古怀旧",
+        "description": "怀旧复古的色彩风格",
+        "value": "复古怀旧色彩风格，略带泛黄色调"
+      },
+      "vibrant": {
+        "label": "鲜艳活力",
+        "description": "充满活力的鲜艳色彩",
+        "value": "鲜艳饱和的色彩，高对比度，充满活力"
+      },
+      "soft": {
+        "label": "柔和优雅",
+        "description": "艺术清新的优雅色调",
+        "value": "柔和优雅的色彩，低饱和度，艺术清新"
+      },
+      "cinematic": {
+        "label": "电影调色",
+        "description": "专业电影色彩效果",
+        "value": "电影调色，专业调色效果"
+      },
+      "japanese": {
+        "label": "日系清新",
+        "description": "明亮透明的日系风格",
+        "value": "日系清新色彩，明亮透明，略带过曝效果"
+      },
+      "korean": {
+        "label": "韩系浪漫",
+        "description": "柔美浪漫的韩系色调",
+        "value": "韩系色彩风格，偏粉色调，柔美浪漫"
+      },
+      "historical": {
+        "label": "历史还原",
+        "description": "还原历史照片的真实色彩",
+        "value": "黑白照片上色，还原历史照片的真实色彩"
+      },
+      "smart": {
+        "label": "智能修复",
+        "description": "AI智能修复",
+        "value": "智能AI修复，自动检测并修复问题"
+      },
+      "denoise": {
+        "label": "降噪处理",
+        "description": "去除照片噪点和颗粒",
+        "value": "高级降噪处理，保持图像细节"
+      },
+      "detail": {
+        "label": "细节增强",
+        "description": "增强图像细节和清晰度",
+        "value": "细节增强，提升图像清晰度和锐度"
+      },
+      "professional": {
+        "label": "专业级",
+        "description": "专业品质修复",
+        "value": "专业级修复，使用先进算法"
+      }
+    }
   },
   "Navigation": {
     "account": "账户",
@@ -231,6 +378,8 @@
     "name": "姓名",
     "password": "密码",
     "profile": "个人资料",
-    "username": "用户名"
+    "username": "用户名",
+    "dashboard": "工作台",
+    "logout": "退出登录"
   }
 }

@@ -12,3 +12,4 @@ next-env.d.ts
 .exe
 .dll
 .env
+git_log_formatted.txt

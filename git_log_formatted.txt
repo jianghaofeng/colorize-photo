@@ -1,3 +1,50 @@
+commit 4f7a1571f5cab9805a81fe2c3380ede3fc19717b
+Author: allen <j316920@gmail.com>
+Date:   Sat Jun 14 16:24:49 2025 +0800
+
+    feat(图片处理): 新增图片处理功能页面及组件
+    
+    实现图片上色和修复功能，包括上传组件、处理面板和历史记录展示
+    添加react-resizable-panels依赖实现可调整面板布局
+    更新国际化配置支持图片处理相关文案
+    重构Supabase存储配置，将默认桶名改为images
+    简化生成类型枚举，合并为colorization和restoration两种
+    优化字体加载方式，使用系统字体堆栈替代Google Fonts
+
+commit def502c48bfe59cb401f7a59bda616b7b728a68e
+Author: allen <j316920@gmail.com>
+Date:   Sat Jun 14 13:06:37 2025 +0800
+
+    feat: 新增文件上传服务和AI图像生成服务
+    
+    新增文件上传服务FileUploadService，支持单文件/批量上传、删除及文件管理功能
+    新增DashscopeImageService，集成阿里云通义万象API，提供图像编辑、表情包视频生成、LivePortrait视频生成等功能
+    添加相关类型定义文件，完善API接口和错误处理
+
+commit 3421f91af1789cfbc62d5fc193f61606509be00e
+Author: allen <j316920@gmail.com>
+Date:   Sat Jun 14 12:42:52 2025 +0800
+
+    feat(tts): 添加文字转语音功能及组件
+    
+    新增TTS功能页面及API路由，支持多语言语音选择和参数调整
+    添加Select和Textarea组件用于TTS功能交互
+    更新header导航添加TTS入口
+    添加node-edge-tts依赖实现语音生成
+
+commit 76b12b8065d7e41f257c56a90c3c30b1c36bccb5
+Author: allen <j316920@gmail.com>
+Date:   Sat Jun 14 11:57:05 2025 +0800
+
+    feat: 添加积分系统和用户中心功能
+    
+    - 新增积分系统核心功能，包括充值、消费和交易记录
+    - 实现用户中心页面，展示积分概览和生成历史
+    - 添加Icon组件和格式化工具函数
+    - 更新数据库schema支持AI生成记录
+    - 优化UI组件样式和布局
+    - 集成多语言支持
+
 commit e6b7a1e6eeb83584b69ca33695f8d67b45f3d3bf
 Author: allen <j316920@gmail.com>
 Date:   Fri Jun 13 18:00:53 2025 +0800

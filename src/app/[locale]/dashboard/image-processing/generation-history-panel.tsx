@@ -1,157 +1,501 @@
-import type { Dispatch, SetStateAction } from "react";
+"use client";
 
-import Image from "next/image";
+import { AnimatePresence, motion } from "framer-motion";
+import {
+  AlertCircle,
+  CheckCircle,
+  Clock,
+  Download,
+  Eye,
+  History,
+  ImageIcon,
+  Loader2,
+  MoreHorizontal,
+  Share2,
+  Sparkles
+} from "lucide-react";
+import { useEffect, useState } from "react";
 
+import { createClient } from "~/lib/supabase/client";
+import { Badge } from "~/ui/primitives/badge";
 import { Button } from "~/ui/primitives/button";
 import {
   Card,
+  CardAction,
   CardContent,
   CardDescription,
+  CardFooter,
   CardHeader,
   CardTitle,
 } from "~/ui/primitives/card";
-
-import type { GeneratedImage } from "./page.client";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "~/ui/primitives/dropdown-menu";
+import { ScrollArea } from "~/ui/primitives/scroll-area";
+import { Skeleton } from "~/ui/primitives/skeleton";
 
 interface GenerationHistoryPanelProps {
-  generatedImages: GeneratedImage[];
-  selectedImage: GeneratedImage | null;
-  setSelectedImage: Dispatch<SetStateAction<GeneratedImage | null>>;
   t: any;
 }
 
+// 数据库记录类型
+interface UserGenerateRecord {
+  completedAt: null | string;
+  createdAt: string;
+  creditConsumed: number;
+  errorMessage: null | string;
+  id: string;
+  inputUrl: string;
+  outputUrl: null | string;
+  parameters: null | string;
+  resultMetadata: null | string;
+  status: "completed" | "failed" | "pending" | "processing";
+  transactionId: null | string;
+  type: "colorization" | "restore";
+  updatedAt: string;
+  userId: string;
+}
+
+// 获取状态对应的图标和颜色
+const getStatusDisplay = (status: string) => {
+  switch (status) {
+    case "completed":
+      return {
+        bgColor: "bg-green-500/10",
+        color: "text-green-500",
+        icon: CheckCircle,
+        label: "已完成",
+      };
+    case "failed":
+      return {
+        bgColor: "bg-red-500/10",
+        color: "text-red-500",
+        icon: AlertCircle,
+        label: "失败",
+      };
+    case "pending":
+      return {
+        bgColor: "bg-yellow-500/10",
+        color: "text-yellow-500",
+        icon: Clock,
+        label: "等待中",
+      };
+    case "processing":
+      return {
+        bgColor: "bg-blue-500/10",
+        color: "text-blue-500",
+        icon: Loader2,
+        label: "处理中",
+      };
+    default:
+      return {
+        bgColor: "bg-gray-500/10",
+        color: "text-gray-500",
+        icon: Clock,
+        label: "未知",
+      };
+  }
+};
+
 export function GenerationHistoryPanel({
-  generatedImages,
-  selectedImage,
-  setSelectedImage,
   t,
 }: GenerationHistoryPanelProps) {
-  return (
-    <Card>
-      <CardHeader>
-        <CardTitle>{t("ImageProcessing.history")}</CardTitle>
-        <CardDescription>
-          {t("ImageProcessing.historyDescription")}
-        </CardDescription>
-      </CardHeader>
-      <CardContent>
-        {generatedImages.length === 0 ? (
-          <div
-            className={`
-              flex h-64 flex-col items-center justify-center text-center
-            `}
-          >
-            <p className="text-muted-foreground">
-              {t("ImageProcessing.noHistory")}
-            </p>
-            <p className="text-sm text-muted-foreground">
-              {t("ImageProcessing.startProcessing")}
-            </p>
-          </div>
-        ) : (
-          <div className="space-y-4">
-            {selectedImage && (
-              <div className="space-y-2">
-                <p className="text-sm font-medium">
-                  {t("ImageProcessing.selectedImage")}
-                </p>
-                <div className="grid grid-cols-2 gap-2">
-                  <div className="space-y-1">
-                    <p className="text-xs text-muted-foreground">
-                      {t("ImageProcessing.original")}
-                    </p>
-                    <div
-                      className={`
-                        relative h-40 w-full overflow-hidden rounded-md
-                      `}
-                    >
-                      <Image
-                        alt={t("ImageProcessing.original")}
-                        className="object-cover"
-                        fill
-                        src={selectedImage.originalUrl}
-                      />
-                    </div>
-                  </div>
-                  <div className="space-y-1">
-                    <p className="text-xs text-muted-foreground">
-                      {t("ImageProcessing.processed")}
-                    </p>
-                    <div
-                      className={`
-                        relative h-40 w-full overflow-hidden rounded-md
-                      `}
-                    >
-                      <Image
-                        alt={t("ImageProcessing.processed")}
-                        className="object-cover"
-                        fill
-                        src={selectedImage.processedUrl}
-                      />
-                    </div>
-                  </div>
-                </div>
-                <div className="flex justify-between">
-                  <p className="text-xs text-muted-foreground">
-                    {selectedImage.timestamp.toLocaleString()}
-                  </p>
-                  <p className="text-xs font-medium">
-                    {selectedImage.type === "colorize"
-                      ? t("ImageProcessing.colorize")
-                      : t("ImageProcessing.restore")}
-                  </p>
-                </div>
-                <div className="flex space-x-2">
-                  <Button
-                    className="flex-1"
-                    onClick={() => {
-                      // 下载处理后的图片
-                      window.open(selectedImage.processedUrl, "_blank");
-                    }}
-                    variant="outline"
-                  >
-                    {t("ImageProcessing.download")}
-                  </Button>
-                  <Button
-                    className="flex-1"
-                    onClick={() => {
-                      // 分享处理后的图片（这里可以实现分享功能）
-                      alert("分享功能待实现");
-                    }}
-                    variant="outline"
-                  >
-                    {t("ImageProcessing.share")}
-                  </Button>
-                </div>
-              </div>
-            )}
+  const [records, setRecords] = useState<UserGenerateRecord[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [selectedImage, setSelectedImage] = useState<null | UserGenerateRecord>(null);
 
-            <div className="space-y-2">
-              <p className="text-sm font-medium">
-                {t("ImageProcessing.recentHistory")}
-              </p>
-              <div className="grid grid-cols-3 gap-2">
-                {generatedImages.map((image) => (
-                  <div
-                    className={`cursor-pointer overflow-hidden rounded-md`}
-                    key={image.id}
-                    onClick={() => setSelectedImage(image)}
-                  >
-                    <div className="relative h-24 w-full">
-                      <Image
-                        alt={t("ImageProcessing.historyItem")}
-                        className="object-cover"
-                        fill
-                        src={image.processedUrl}
-                      />
-                    </div>
-                  </div>
-                ))}
-              </div>
+  // 获取当前用户的生成记录
+  useEffect(() => {
+    const fetchRecords = async () => {
+      try {
+        const supabase = createClient();
+
+        // 获取当前用户
+        const {
+          data: { user },
+          error: authError,
+        } = await supabase.auth.getUser();
+        if (authError || !user) {
+          console.error("获取用户信息失败:", authError);
+          return;
+        }
+
+        // 获取用户的生成记录
+        const { data, error } = await supabase
+          .from("user_generate_records")
+          .select(`
+            id,
+            user_id,
+            type,
+            status,
+            input_url,
+            output_url,
+            parameters,
+            result_metadata,
+            credit_consumed,
+            transaction_id,
+            error_message,
+            created_at,
+            updated_at,
+            completed_at
+          `)
+          .eq("user_id", user.id)
+          .order("created_at", { ascending: false })
+          .limit(20);
+
+        if (error) {
+          console.error("获取生成记录失败:", error);
+        } else {
+          console.log("获取到的记录:", data);
+          // 转换字段名从snake_case到camelCase
+          const transformedData = (data || []).map(record => ({
+            completedAt: record.completed_at,
+            createdAt: record.created_at,
+            creditConsumed: record.credit_consumed,
+            errorMessage: record.error_message,
+            id: record.id,
+            inputUrl: record.input_url,
+            outputUrl: record.output_url,
+            parameters: record.parameters,
+            resultMetadata: record.result_metadata,
+            status: record.status,
+            transactionId: record.transaction_id,
+            type: record.type,
+            updatedAt: record.updated_at,
+            userId: record.user_id
+          }));
+          setRecords(transformedData);
+          setLoading(false)
+        }
+      } catch (error) {
+        console.error("获取记录时发生错误:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchRecords();
+  }, []);
+
+  // 设置Realtime订阅
+  useEffect(() => {
+    const supabase = createClient();
+
+    const getCurrentUserId = async () => {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      return user?.id;
+    };
+
+    const setupRealtimeSubscription = async () => {
+      const userId = await getCurrentUserId();
+      if (!userId) return;
+
+      console.log("设置Realtime订阅，用户ID:", userId);
+
+      const channel = supabase.realtime
+        .channel("user_generate_records_history")
+        .on(
+          "postgres_changes",
+          {
+            event: "*",
+            filter: `user_id=eq.${userId}`,
+            schema: "public",
+            table: "user_generate_records",
+          },
+          (payload) => {
+            console.log("收到Realtime更新:", payload);
+
+            // 转换数据库记录格式
+            const transformRecord = (dbRecord: any): UserGenerateRecord => ({
+              completedAt: dbRecord.completed_at,
+              createdAt: dbRecord.created_at,
+              creditConsumed: dbRecord.credit_consumed,
+              errorMessage: dbRecord.error_message,
+              id: dbRecord.id,
+              inputUrl: dbRecord.input_url,
+              outputUrl: dbRecord.output_url,
+              parameters: dbRecord.parameters,
+              resultMetadata: dbRecord.result_metadata,
+              status: dbRecord.status,
+              transactionId: dbRecord.transaction_id,
+              type: dbRecord.type,
+              updatedAt: dbRecord.updated_at,
+              userId: dbRecord.user_id
+            });
+
+            if (payload.eventType === "INSERT") {
+              const newRecord = transformRecord(payload.new);
+              setRecords((prev) => [newRecord, ...prev.slice(0, 19)]); // 保持最多20条记录
+            } else if (payload.eventType === "UPDATE") {
+              const updatedRecord = transformRecord(payload.new);
+              setRecords((prev) =>
+                prev.map((record) =>
+                  record.id === updatedRecord.id ? updatedRecord : record,
+                ),
+              );
+            } else if (payload.eventType === "DELETE") {
+              const deletedRecord = payload.old as any;
+              setRecords((prev) =>
+                prev.filter((record) => record.id !== deletedRecord.id),
+              );
+            }
+          },
+        )
+        .subscribe((status) => {
+          console.log("Realtime订阅状态:", status);
+        });
+
+      return () => {
+        console.log("清理Realtime订阅");
+        supabase.removeChannel(channel);
+      };
+    };
+
+    const cleanup = setupRealtimeSubscription();
+
+    return () => {
+      cleanup.then((fn) => fn?.());
+    };
+  }, []);
+
+
+  return (
+    <motion.div
+      animate={{ opacity: 1, y: 0 }}
+      className="h-full"
+      initial={{ opacity: 0, y: 20 }}
+      transition={{ delay: 0.2, duration: 0.5 }}
+    >
+      <Card
+        className={`
+          flex h-full flex-col overflow-hidden rounded-2xl border
+          border-border/20 bg-gradient-to-br from-background/80
+          via-background/60 to-accent/10 p-0 shadow-2xl backdrop-blur-xl
+        `}
+      >
+        <CardHeader
+          className={`
+            border-b border-border/10 bg-gradient-to-r from-accent/5
+            to-primary/5 p-6
+          `}
+        >
+          <CardTitle className="flex items-center gap-3 text-xl font-bold">
+            <div
+              className={`
+                rounded-xl bg-gradient-to-br from-primary/20 to-primary/10 p-2
+              `}
+            >
+              <History className="h-6 w-6 text-primary" />
             </div>
-          </div>
-        )}
-      </CardContent>
-    </Card>
+            {t("ImageProcessing.history")}
+            <Badge className="ml-auto" variant="outline">
+              <Clock className="mr-1 h-3 w-3" />
+              {records.length}
+            </Badge>
+          </CardTitle>
+          {/* <CardDescription className="text-muted-foreground/80">
+            {t("ImageProcessing.historyDescription")}
+          </CardDescription> */}
+        </CardHeader>
+        <CardContent className="flex-1 p-1">
+          <AnimatePresence mode="wait">
+            {loading ? (
+              <motion.div
+                animate={{ opacity: 1, scale: 1 }}
+                className={`
+                  flex h-full flex-col items-center justify-center space-y-6
+                  text-center
+                `}
+                exit={{ opacity: 0, scale: 0.9 }}
+                initial={{ opacity: 0, scale: 0.9 }}
+                transition={{ duration: 0.4 }}
+              >
+                <div className="relative">
+                  <div
+                    className={`
+                      flex h-24 w-24 items-center justify-center rounded-2xl
+                      bg-gradient-to-br from-accent/20 to-accent/10
+                      text-muted-foreground shadow-lg
+                    `}
+                  >
+                    <ImageIcon className="h-12 w-12" />
+                  </div>
+                  <div
+                    className={`
+                      absolute -top-2 -right-2 rounded-full bg-gradient-to-r
+                      from-primary/20 to-accent/20 p-2
+                    `}
+                  >
+                    <Sparkles className="h-4 w-4 text-primary" />
+                  </div>
+                </div>
+                <div className="space-y-3">
+                  <h3 className="text-xl font-bold text-foreground">
+                    {t("ImageProcessing.noHistory")}
+                  </h3>
+                  <p className="max-w-sm text-muted-foreground/80">
+                    {t("ImageProcessing.startProcessing")}
+                  </p>
+                </div>
+              </motion.div>
+            ) : (
+              <motion.div
+                animate={{ opacity: 1, y: 0 }}
+                className="flex h-full flex-col space-y-6"
+                initial={{ opacity: 0, y: 20 }}
+                transition={{ duration: 0.5 }}
+              >
+                {/* 数据库记录列表 */}
+                <div className="h-0 flex-1">
+                  {/* 显示所有记录，使用Card组件结构 */}
+                  <ScrollArea className="h-165">
+                    <div className="space-y-2 pr-2">
+                      {records.map((record, index) => {
+                        const statusDisplay = getStatusDisplay(record.status);
+                        const StatusIcon = statusDisplay.icon;
+                        const isCompleted = record.status === "completed" && record.outputUrl;
+
+                        return (
+                          <motion.div
+                            animate={{ opacity: 1, y: 0 }}
+                            className="group"
+                            initial={{ opacity: 0, y: 20 }}
+                            key={record.id}
+                            transition={{ delay: index * 0.05 }}
+                          >
+                            <Card className={`
+                              py-0 transition-all duration-200
+                              hover:shadow-md
+                            `}>
+                              {/* Card Header - 显示记录信息 */}
+                              <CardHeader className="py-3">
+                                <CardTitle>
+                                  <Badge variant="outline">
+                                    {record.type === "colorization" ? "上色" : "修复"}
+                                  </Badge>
+                                </CardTitle>
+                                <CardDescription>{new Date(record.createdAt).toLocaleString()}</CardDescription>
+                                {isCompleted && <CardAction>
+                                  <div className="flex items-center gap-2">
+                                    <StatusIcon
+                                      className={`
+                                        h-4 w-4
+                                        ${record.status === "processing" ? `
+                                          animate-spin
+                                        ` : ""
+                                        }
+                                        ${statusDisplay.color}
+                                      `}
+                                    />
+                                    <span className="text-sm font-medium">
+                                      {statusDisplay.label}
+                                    </span>
+                                    <DropdownMenu>
+                                      <DropdownMenuTrigger asChild>
+                                        <Button
+                                          className="flex-1"
+                                          size="sm"
+                                          variant="outline"
+                                        >
+                                          <MoreHorizontal className="h-4 w-4" />
+                                        </Button>
+                                      </DropdownMenuTrigger>
+                                      <DropdownMenuContent align="end">
+                                        <DropdownMenuItem
+                                          onClick={() => {
+                                            const link = document.createElement('a');
+                                            link.href = record.outputUrl!;
+                                            link.download = `processed-${record.id}.jpg`;
+                                            link.click();
+                                          }}
+                                        >
+                                          <Download className="mr-2 h-4 w-4" />
+                                          下载
+                                        </DropdownMenuItem>
+                                        <DropdownMenuItem
+                                          onClick={() => {
+                                            if (navigator.share) {
+                                              navigator.share({
+                                                title: '处理后的图片',
+                                                url: record.outputUrl!
+                                              });
+                                            } else {
+                                              navigator.clipboard.writeText(record.outputUrl!);
+                                            }
+                                          }}
+                                        >
+                                          <Share2 className="mr-2 h-4 w-4" />
+                                          分享
+                                        </DropdownMenuItem>
+                                      </DropdownMenuContent>
+                                    </DropdownMenu>
+                                  </div>
+                                </CardAction>}
+                              </CardHeader>
+                              {/* Card Content - 左右显示原图和处理后的图片 */}
+                              <CardContent className="p-0">
+                                <div
+                                  className={`
+                                    grid h-full grid-cols-2 gap-0
+                                    overflow-hidden rounded-xl
+                                  `}
+                                >
+                                  <div className="relative h-full w-full">
+                                    <div
+                                      className={`
+                                        absolute top-2 left-2 z-10 rounded
+                                        bg-black/70 px-2 py-1 text-xs
+                                        font-semibold text-white
+                                      `}
+                                    >
+                                      {t("Home.before")}
+                                    </div>
+                                    <img
+                                      alt={`Before`}
+                                      className="object-cover"
+                                      src={record.inputUrl}
+                                    />
+                                  </div>
+                                  <div className="relative h-full w-full">
+                                    <div
+                                      className={`
+                                        absolute top-2 z-10 rounded bg-black/70
+                                        px-2 py-1 text-xs font-semibold
+                                        text-white
+                                      `}
+                                    >
+                                      {t("Home.after")}
+                                    </div>
+                                    {isCompleted ? <img
+                                      alt={`${record.outputUrl} After`}
+                                      className="object-cover"
+                                      src={record.outputUrl!}
+                                    /> : <div>
+                                      <Skeleton className={`
+                                        h-full w-full rounded-full
+                                      `} />
+                                    </div>}
+
+                                  </div>
+                                </div>
+                              </CardContent>
+                            </Card>
+                          </motion.div>
+                        );
+                      })}
+                    </div>
+                  </ScrollArea>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </CardContent>
+      </Card>
+    </motion.div>
   );
 }

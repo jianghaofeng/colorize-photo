@@ -7,11 +7,9 @@ import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 
 import { SEO_CONFIG } from "~/app";
-import { useSupabaseSession } from "~/lib/supabase-auth-client";
+import { supabaseAuth } from "~/lib/supabase-auth-client";
 import { cn } from "~/lib/utils";
-import { Cart } from "~/ui/components/cart";
 import { Button } from "~/ui/primitives/button";
-import { Skeleton } from "~/ui/primitives/skeleton";
 
 import { LanguageSwitcher } from "../language-switcher";
 import { NotificationsWidget } from "../notifications/notifications-widget";
@@ -25,24 +23,23 @@ interface HeaderProps {
 
 export function Header({ showAuth = true }: HeaderProps) {
   const pathname = usePathname();
-  const { loading: supabaseLoading, user } = useSupabaseSession();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [isPending, setIsPending] = useState(true);
+  const [user, setUser] = useState<any>(null);
   const t = useTranslations();
 
-  // 添加超时处理，防止长时间加载
   useEffect(() => {
-    setIsPending(supabaseLoading);
-    
-    // 如果supabaseLoading为true，设置一个5秒的超时
-    if (supabaseLoading) {
-      const timeoutId = setTimeout(() => {
-        setIsPending(false);
-      }, 5000); // 5秒后自动结束加载状态
-      
-      return () => clearTimeout(timeoutId);
-    }
-  }, [supabaseLoading]);
+    const getUser = async () => {
+      try {
+        const { data, error } = await supabaseAuth.getUser();
+        if (!error && data.user) {
+          setUser(data.user);
+        }
+      } catch (error) {
+        console.error("获取用户信息失败:", error);
+      }
+    };
+    getUser();
+  }, []);
 
   const mainNavigation = [
     { href: "/", name: "Home" },
@@ -51,14 +48,14 @@ export function Header({ showAuth = true }: HeaderProps) {
     { href: "/tts", name: "TTS" },
   ];
 
-  const dashboardNavigation = [
-    { href: "/dashboard/stats", name: "Stats" },
-    { href: "/dashboard/profile", name: "Profile" },
-    { href: "/dashboard/settings", name: "Settings" },
-  ];
+  // const dashboardNavigation = [
+  //   { href: "/dashboard/stats", name: "Stats" },
+  //   { href: "/dashboard/profile", name: "Profile" },
+  //   { href: "/dashboard/settings", name: "Settings" },
+  // ];
 
-  const isDashboard = user && pathname.startsWith("/dashboard"); // todo: remove /admin when admin role is implemented
-  const navigation = isDashboard ? dashboardNavigation : mainNavigation;
+  // const isDashboard = user && pathname.startsWith("/dashboard"); // todo: remove /admin when admin role is implemented
+  // const navigation = isDashboard ? dashboardNavigation : mainNavigation;
 
   const renderContent = () => (
     <header
@@ -80,7 +77,6 @@ export function Header({ showAuth = true }: HeaderProps) {
               <span
                 className={cn(
                   "text-xl font-bold",
-                  !isDashboard &&
                   `
                     bg-gradient-to-r from-primary to-primary/70 bg-clip-text
                     tracking-tight text-transparent
@@ -97,53 +93,36 @@ export function Header({ showAuth = true }: HeaderProps) {
               `}
             >
               <ul className="flex items-center gap-6">
-                {isPending
-                  ? Array.from({ length: navigation.length }).map((_, i) => (
-                    <li key={i}>
-                      <Skeleton className="h-6 w-20" />
-                    </li>
-                  ))
-                  : navigation.map((item) => {
-                    const isActive =
-                      pathname === item.href ||
-                      (item.href !== "/" && pathname?.startsWith(item.href));
+                {mainNavigation.map((item) => {
+                  const isActive =
+                    pathname === item.href ||
+                    (item.href !== "/" && pathname?.startsWith(item.href));
 
-                    return (
-                      <li key={item.name}>
-                        <Link
-                          className={cn(
-                            `
-                              text-sm font-medium transition-colors
-                              hover:text-primary
-                            `,
-                            isActive
-                              ? "font-semibold text-primary"
-                              : "text-muted-foreground"
-                          )}
-                          href={item.href}
-                        >
-                          {item.name}
-                        </Link>
-                      </li>
-                    );
-                  })}
+                  return (
+                    <li key={item.name}>
+                      <Link
+                        className={cn(
+                          `
+                            text-sm font-medium transition-colors
+                            hover:text-primary
+                          `,
+                          isActive
+                            ? "font-semibold text-primary"
+                            : "text-muted-foreground"
+                        )}
+                        href={item.href}
+                      >
+                        {item.name}
+                      </Link>
+                    </li>
+                  );
+                })}
               </ul>
             </nav>
           </div>
 
           <div className="flex items-center gap-4">
-            {!isDashboard &&
-              (isPending ? (
-                <Skeleton className={`h-9 w-9 rounded-full`} />
-              ) : (
-                <Cart />
-              ))}
-
-            {isPending ? (
-              <Skeleton className="h-9 w-9 rounded-full" />
-            ) : (
-              <NotificationsWidget />
-            )}
+            <NotificationsWidget />
 
             {showAuth && (
               <div
@@ -154,13 +133,11 @@ export function Header({ showAuth = true }: HeaderProps) {
               >
                 {user ? (
                   <HeaderUserDropdown
-                    isDashboard={!!isDashboard}
+                    isDashboard={false}
                     userEmail={user.email || ""}
                     userImage={""}
                     userName={""}
                   />
-                ) : isPending ? (
-                  <Skeleton className="h-10 w-32" />
                 ) : (
                   <div className="flex items-center gap-2">
                     <Link href="/auth/sign-in">
@@ -176,19 +153,25 @@ export function Header({ showAuth = true }: HeaderProps) {
               </div>
             )}
 
-            {!isDashboard &&
-              (isPending ? (
-                <>
-                  <Skeleton className={`h-9 w-9 rounded-full`} />
-                  <Skeleton className={`h-9 w-9 rounded-full`} />
-                </>
-              ) : (
-                <>
-                  <ThemeToggle />
-                  <LanguageSwitcher />
-                </>
-              ))}
+            <Link className={`
+              hidden
+              md:block
+            `} href="/dashboard/image-processing">
+              <Button size="sm" variant="default">
+                Get Started
+              </Button>
+            </Link>
 
+            <ThemeToggle />
+            <LanguageSwitcher />
+            {user && (
+              <HeaderUserDropdown
+                isDashboard={false}
+                userEmail={user.email || ""}
+                userImage={""}
+                userName={""}
+              />
+            )}
             {/* Mobile menu button */}
             <Button
               className="md:hidden"
@@ -210,36 +193,30 @@ export function Header({ showAuth = true }: HeaderProps) {
       {mobileMenuOpen && (
         <div className="md:hidden">
           <div className="space-y-1 border-b px-4 py-3">
-            {isPending
-              ? Array.from({ length: navigation.length }).map((_, i) => (
-                <div className="py-2" key={i}>
-                  <Skeleton className="h-6 w-32" />
-                </div>
-              ))
-              : navigation.map((item) => {
-                const isActive =
-                  pathname === item.href ||
-                  (item.href !== "/" && pathname?.startsWith(item.href));
+            {mainNavigation.map((item) => {
+              const isActive =
+                pathname === item.href ||
+                (item.href !== "/" && pathname?.startsWith(item.href));
 
-                return (
-                  <Link
-                    className={cn(
-                      "block rounded-md px-3 py-2 text-base font-medium",
-                      isActive
-                        ? "bg-primary/10 text-primary"
-                        : `
-                          text-foreground
-                          hover:bg-muted/50 hover:text-primary
-                        `
-                    )}
-                    href={item.href}
-                    key={item.name}
-                    onClick={() => setMobileMenuOpen(false)}
-                  >
-                    {item.name}
-                  </Link>
-                );
-              })}
+              return (
+                <Link
+                  className={cn(
+                    "block rounded-md px-3 py-2 text-base font-medium",
+                    isActive
+                      ? "bg-primary/10 text-primary"
+                      : `
+                        text-foreground
+                        hover:bg-muted/50 hover:text-primary
+                      `
+                  )}
+                  href={item.href}
+                  key={item.name}
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  {item.name}
+                </Link>
+              );
+            })}
           </div>
 
           {showAuth && !user && (
@@ -263,24 +240,41 @@ export function Header({ showAuth = true }: HeaderProps) {
                 href="/auth/sign-up"
                 onClick={() => setMobileMenuOpen(false)}
               >
-                {t("nav.signup")}
+                {t("Auth.signUp")}
               </Link>
             </div>
           )}
 
+          {/* Get Started 按钮 */}
+          <div className="space-y-1 border-b px-4 py-3">
+            <Link
+              className={`
+                block rounded-md bg-primary px-3 py-2 text-base font-medium
+                text-primary-foreground
+                hover:bg-primary/90
+              `}
+              href="/get-started"
+              onClick={() => setMobileMenuOpen(false)}
+            >
+              Get Started
+            </Link>
+          </div>
+
           {/* 设置选项 */}
           <div className="space-y-1 border-b px-4 py-3">
             <div className="flex items-center justify-between px-3 py-2">
-              <span className="text-base font-medium">{t("common.theme")}</span>
+              <span className="text-base font-medium">{t("Common.theme")}</span>
               <ThemeToggle />
             </div>
             <div className="flex items-center justify-between px-3 py-2">
               <span className="text-base font-medium">
-                {t("common.language")}
+                {t("Settings.language")}
               </span>
               <LanguageSwitcher />
             </div>
           </div>
+
+
         </div>
       )}
     </header>

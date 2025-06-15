@@ -1,7 +1,12 @@
-import { redirect } from "next/navigation";
+import { getCurrentSupabaseUser } from "~/lib/supabase-auth";
 
-import { SYSTEM_CONFIG } from "~/app";
+import { DashboardPageClient } from "./page.client";
 
-export default function DashboardPage() {
-  return redirect(SYSTEM_CONFIG.redirectAfterSignIn);
+export default async function DashboardPage() {
+  const user = await getCurrentSupabaseUser();
+
+  if (!user) {
+    return null;
+  }
+  return <DashboardPageClient user={user} />;
 }

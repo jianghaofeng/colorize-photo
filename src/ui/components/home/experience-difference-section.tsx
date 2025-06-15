@@ -1,10 +1,10 @@
-'use client';
+"use client";
 
-import { useTranslations } from 'next-intl';
-import Image from 'next/image';
-import { useEffect, useRef, useState } from 'react';
+import { useTranslations } from "next-intl";
+import Image from "next/image";
+import { useEffect, useRef, useState } from "react";
 
-import { Card, CardContent } from '~/ui/primitives/card';
+import { Card, CardContent } from "~/ui/primitives/card";
 import {
   Carousel,
   type CarouselApi,
@@ -12,42 +12,52 @@ import {
   CarouselItem,
   CarouselNext,
   CarouselPrevious,
-} from '~/ui/primitives/carousel';
+} from "~/ui/primitives/carousel";
 
 // 对比图片数据
 const beforeAfterImages = [
   {
-    after: 'https://zvcxdyuidlhzvmhsviwc.supabase.co/storage/v1/object/public/images/after-1.png',
-    alt: 'Comparison 1',
-    before: 'https://zvcxdyuidlhzvmhsviwc.supabase.co/storage/v1/object/public/images/before-1.png',
+    after:
+      "https://zvcxdyuidlhzvmhsviwc.supabase.co/storage/v1/object/public/images/after-1.png",
+    alt: "Comparison 1",
+    before:
+      "https://zvcxdyuidlhzvmhsviwc.supabase.co/storage/v1/object/public/images/before-1.png",
   },
   {
-    after: 'https://zvcxdyuidlhzvmhsviwc.supabase.co/storage/v1/object/public/images/after-2.png',
-    alt: 'Comparison 2',
-    before: 'https://zvcxdyuidlhzvmhsviwc.supabase.co/storage/v1/object/public/images/before-2.png',
+    after:
+      "https://zvcxdyuidlhzvmhsviwc.supabase.co/storage/v1/object/public/images/after-2.png",
+    alt: "Comparison 2",
+    before:
+      "https://zvcxdyuidlhzvmhsviwc.supabase.co/storage/v1/object/public/images/before-2.png",
     hasNewPalette: true,
   },
   {
-    after: 'https://zvcxdyuidlhzvmhsviwc.supabase.co/storage/v1/object/public/images/after-3.png',
-    alt: 'Comparison 3',
-    before: 'https://zvcxdyuidlhzvmhsviwc.supabase.co/storage/v1/object/public/images/before-3.png',
+    after:
+      "https://zvcxdyuidlhzvmhsviwc.supabase.co/storage/v1/object/public/images/after-3.png",
+    alt: "Comparison 3",
+    before:
+      "https://zvcxdyuidlhzvmhsviwc.supabase.co/storage/v1/object/public/images/before-3.png",
   },
   {
-    after: 'https://zvcxdyuidlhzvmhsviwc.supabase.co/storage/v1/object/public/images/after-4.png',
-    alt: 'Comparison 4',
-    before: 'https://zvcxdyuidlhzvmhsviwc.supabase.co/storage/v1/object/public/images/before-4.png',
+    after:
+      "https://zvcxdyuidlhzvmhsviwc.supabase.co/storage/v1/object/public/images/after-4.png",
+    alt: "Comparison 4",
+    before:
+      "https://zvcxdyuidlhzvmhsviwc.supabase.co/storage/v1/object/public/images/before-4.png",
     hasNewPalette: true,
   },
   {
-    after: 'https://zvcxdyuidlhzvmhsviwc.supabase.co/storage/v1/object/public/images/after-5.png',
-    alt: 'Comparison 5',
-    before: 'https://zvcxdyuidlhzvmhsviwc.supabase.co/storage/v1/object/public/images/before-5.png',
+    after:
+      "https://zvcxdyuidlhzvmhsviwc.supabase.co/storage/v1/object/public/images/after-5.png",
+    alt: "Comparison 5",
+    before:
+      "https://zvcxdyuidlhzvmhsviwc.supabase.co/storage/v1/object/public/images/before-5.png",
     hasNewPalette: true,
   },
 ];
 
 export function ExperienceDifferenceSection() {
-  const t = useTranslations('Home');
+  const t = useTranslations("Home");
   const [api, setApi] = useState<CarouselApi>();
   const [isPaused, setIsPaused] = useState(false);
   const autoScrollIntervalRef = useRef<NodeJS.Timeout | null>(null);
@@ -95,10 +105,10 @@ export function ExperienceDifferenceSection() {
     };
 
     // 设置循环滚动
-    api.on('select', handleSelect);
+    api.on("select", handleSelect);
 
     return () => {
-      api.off('select', handleSelect);
+      api.off("select", handleSelect);
       if (timeoutId) {
         clearTimeout(timeoutId);
       }
@@ -124,7 +134,7 @@ export function ExperienceDifferenceSection() {
               lg:text-4xl
             `}
           >
-            {t('experienceTheDifference')}
+            {t("experienceTheDifference")}
           </h2>
 
           {/* Category Buttons */}
@@ -147,85 +157,81 @@ export function ExperienceDifferenceSection() {
             onMouseEnter={handleMouseEnter}
             onMouseLeave={handleMouseLeave}
           >
-            <div className={`
-              pointer-events-none absolute top-0 bottom-0 left-0 z-10 w-24
-              bg-gradient-to-r from-background to-transparent
-            `} />
-            <div className={`
-              pointer-events-none absolute top-0 right-0 bottom-0 z-10 w-24
-              bg-gradient-to-l from-background to-transparent
-            `} />
+            <div
+              className={`
+                pointer-events-none absolute top-0 bottom-0 left-0 z-10 w-24
+                bg-gradient-to-r from-background to-transparent
+              `}
+            />
+            <div
+              className={`
+                pointer-events-none absolute top-0 right-0 bottom-0 z-10 w-24
+                bg-gradient-to-l from-background to-transparent
+              `}
+            />
             <Carousel
               className="w-full"
               opts={{
-                align: 'center',
+                align: "center",
                 loop: true,
               }}
               setApi={setApi}
             >
               <CarouselContent className="px-4">
                 {beforeAfterImages.map((item, index) => (
-                  <CarouselItem className={`
-                    md:basis-1/2
-                    lg:basis-1/3
-                    xl:basis-1/4
-                  `} key={index}>
+                  <CarouselItem
+                    className={`
+                      md:basis-1/2
+                      lg:basis-1/3
+                      xl:basis-1/4
+                    `}
+                    key={index}
+                  >
                     <Card
                       className={`
-                        relative p-0 transition-all duration-300
+                        relative aspect-[4/3] min-h-[260px] p-0 transition-all
+                        duration-300
                         hover:z-10 hover:scale-105
                       `}
                     >
-                      <CardContent className="p-2">
+                      <CardContent className="h-full p-0">
                         <div
                           className={`
-                            grid grid-cols-2 gap-0 overflow-hidden rounded-xl
+                            grid h-full grid-cols-2 gap-0 overflow-hidden
+                            rounded-xl
                           `}
                         >
-                          <div className="relative">
+                          <div className="relative h-full w-full">
                             <div
                               className={`
                                 absolute top-2 left-2 z-10 rounded bg-black/70
                                 px-2 py-1 text-xs font-semibold text-white
                               `}
                             >
-                              {t('before')}
+                              {t("before")}
                             </div>
                             <Image
                               alt={`${item.alt} Before`}
-                              className=""
-                              height={300}
+                              className="object-cover"
+                              fill
                               src={item.before}
-                              width={250}
                             />
                           </div>
-                          <div className="relative">
+                          <div className="relative h-full w-full">
                             <div
                               className={`
                                 absolute top-2 left-2 z-10 rounded bg-black/70
                                 px-2 py-1 text-xs font-semibold text-white
                               `}
                             >
-                              {t('after')}
+                              {t("after")}
                             </div>
                             <Image
                               alt={`${item.alt} After`}
-                              className=""
-                              height={300}
+                              className="object-cover"
+                              fill
                               src={item.after}
-                              width={250}
                             />
-                            {/* {item.hasNewPalette && (
-                              <Button
-                                className="absolute right-2 bottom-2 text-xs"
-                                variant="secondary"
-                                size="sm"
-                              >
-                                {t('newPalette')}
-                                {' '}
-                                <span className="ml-1">🪄</span>
-                              </Button>
-                            )} */}
                           </div>
                         </div>
                       </CardContent>
@@ -233,20 +239,26 @@ export function ExperienceDifferenceSection() {
                   </CarouselItem>
                 ))}
               </CarouselContent>
-              <div className={`
-                hidden
-                sm:block
-              `}>
-                <CarouselPrevious className={`
-                  left-2 bg-white/80
-                  hover:bg-white
-                  lg:left-6
-                `} />
-                <CarouselNext className={`
-                  right-2 bg-white/80
-                  hover:bg-white
-                  lg:right-6
-                `} />
+              <div
+                className={`
+                  hidden
+                  sm:block
+                `}
+              >
+                <CarouselPrevious
+                  className={`
+                    left-2 bg-white/80
+                    hover:bg-white
+                    lg:left-6
+                  `}
+                />
+                <CarouselNext
+                  className={`
+                    right-2 bg-white/80
+                    hover:bg-white
+                    lg:right-6
+                  `}
+                />
               </div>
             </Carousel>
           </div>

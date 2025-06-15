@@ -3,6 +3,8 @@ import { useTranslations } from "next-intl";
 import Link from "next/link";
 import { useState } from "react";
 
+import { useRouter } from "~/i18n/i18nConfig";
+import { supabaseAuth } from "~/lib/supabase-auth-client";
 import { cn } from "~/lib/utils";
 import { Icon } from "~/ui/components/Icon";
 import { Avatar, AvatarFallback, AvatarImage } from "~/ui/primitives/avatar";
@@ -40,6 +42,7 @@ export function HeaderUserDropdown({
 }: HeaderUserDropdownProps) {
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
   const t = useTranslations();
+  const route = useRouter()
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -98,9 +101,12 @@ export function HeaderUserDropdown({
         </div>
         <DropdownMenuSeparator />
         <DropdownMenuItem asChild>
-          <Link className="cursor-pointer" href="/profile">
-            <Icon className="mr-2 h-4 w-4 text-primary" icon="heroicons-duotone:user-circle" />
-            {t("User.profile")}
+          <Link className="cursor-pointer" href="/dashboard">
+            <Icon
+              className="mr-2 h-4 w-4 text-primary"
+              icon="heroicons-duotone:user-circle"
+            />
+            {t("User.dashboard")}
           </Link>
         </DropdownMenuItem>
         <DropdownMenuSeparator />
@@ -112,11 +118,14 @@ export function HeaderUserDropdown({
               : `
                 txt-destructive
                 focus:text-destrctive
-              `,
+              `
           )}
           onClick={() => setShowLogoutConfirm(true)}
         >
-          <Icon className="mr-2 h-4 w-4 text-red-500" icon="heroicons-duotone:arrow-right-on-rectangle" />
+          <Icon
+            className="mr-2 h-4 w-4 text-red-500"
+            icon="heroicons-duotone:arrow-right-on-rectangle"
+          />
           {t("User.logout")}
         </DropdownMenuItem>
       </DropdownMenuContent>
@@ -125,9 +134,9 @@ export function HeaderUserDropdown({
       <Dialog onOpenChange={setShowLogoutConfirm} open={showLogoutConfirm}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>{t("User.logoutConfirmTitle")}</DialogTitle>
+            <DialogTitle>{t("Auth.logoutConfirmTitle")}</DialogTitle>
             <DialogDescription>
-              {t("User.logoutConfirmDescription")}
+              {t("Auth.logoutConfirmDescription")}
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
@@ -138,13 +147,18 @@ export function HeaderUserDropdown({
               {t("Common.cancel")}
             </Button>
             <Button
-              onClick={() => {
-                window.location.href = "/auth/sign-out";
+              onClick={async () => {
+                // window.location.href = "/auth/sign-out";
+                await supabaseAuth.signOut();
+                window.location.href = "/auth/sign-in";
               }}
               variant="destructive"
             >
-              <Icon className="mr-2 h-4 w-4" icon="heroicons-duotone:arrow-right-on-rectangle" />
-              {t("User.confirmLogout")}
+              <Icon
+                className="mr-2 h-4 w-4"
+                icon="heroicons-duotone:arrow-right-on-rectangle"
+              />
+              {t("Auth.confirmLogout")}
             </Button>
           </DialogFooter>
         </DialogContent>
