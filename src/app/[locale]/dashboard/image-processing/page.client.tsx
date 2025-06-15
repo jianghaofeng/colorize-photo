@@ -25,34 +25,8 @@ export function ImageProcessingPageClient() {
   };
   return (
     <div
-      className={`
-        min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100
-        dark:from-slate-900 dark:via-slate-800 dark:to-indigo-900
-      `}
+      className={`min-h-screen`}
     >
-      {/* 背景装饰 */}
-      <div className="pointer-events-none absolute inset-0 overflow-hidden">
-        <div
-          className={`
-            absolute -top-40 -right-40 h-80 w-80 rounded-full bg-gradient-to-br
-            from-blue-400/20 to-purple-600/20 blur-3xl
-          `}
-        />
-        <div
-          className={`
-            absolute -bottom-40 -left-40 h-80 w-80 rounded-full
-            bg-gradient-to-tr from-pink-400/20 to-orange-600/20 blur-3xl
-          `}
-        />
-        <div
-          className={`
-            absolute top-1/2 left-1/2 h-96 w-96 -translate-x-1/2
-            -translate-y-1/2 transform rounded-full bg-gradient-to-r
-            from-cyan-400/10 to-blue-600/10 blur-3xl
-          `}
-        />
-      </div>
-
       <div className="relative container mx-auto max-w-7xl px-4 py-8">
         {/* 主要内容区域 */}
         <motion.div
@@ -79,8 +53,6 @@ export function ImageProcessingPageClient() {
             />
           </div>
         </motion.div>
-
-
       </div>
     </div>
   );
