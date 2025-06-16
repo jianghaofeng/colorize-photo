@@ -1,14 +1,22 @@
 import type { Metadata } from "next";
 
+import { AntdRegistry } from '@ant-design/nextjs-registry';
 import { ReactPlugin } from "@stagewise-plugins/react";
 import { StagewiseToolbar } from "@stagewise/toolbar-next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
+import { ConfigProvider } from "antd";
+import enUS from "antd/locale/en_US";
+import zhCN from "antd/locale/zh_CN";
+import '@ant-design/v5-patch-for-react-19';
+
+import "~/css/globals.css";
+
 import { NextIntlClientProvider } from "next-intl";
 import { getMessages } from "next-intl/server";
 
-import "~/css/globals.css";
 // 移除 Google Fonts 导入，使用系统字体堆栈
 import { SEO_CONFIG } from "~/app";
+import { AntdThemeProvider } from "~/ui/components/antd-theme-provider";
 import { CartProvider } from "~/lib/hooks/use-cart";
 import { SupabaseProvider } from "~/lib/supabase/SupabaseProvider";
 import { Footer } from "~/ui/components/footer";
@@ -38,6 +46,9 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   const messages = await getMessages();
+
+  // 根据 locale 选择语言包
+  // const antdLocale = locale === 'zh' ? zhCN : enUS;
   return (
     <html lang="en" suppressHydrationWarning>
       <body
@@ -50,24 +61,28 @@ export default async function RootLayout({
           dark:from-neutral-950 dark:to-neutral-900 dark:text-neutral-100
         `}
       >
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="system"
-          disableTransitionOnChange
-          enableSystem
-        >
-          <SupabaseProvider>
-            <CartProvider>
-              <NextIntlClientProvider messages={messages}>
-                <Header showAuth={false} />
-                <main className={`flex min-h-screen flex-col`}>{children}</main>
-                <Footer />
-                <Toaster />
-                <StagewiseToolbar config={{ plugins: [ReactPlugin] }} />
-              </NextIntlClientProvider>
-            </CartProvider>
-          </SupabaseProvider>
-        </ThemeProvider>
+        <AntdRegistry>
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="dark"
+            disableTransitionOnChange
+            enableSystem
+          >
+            <SupabaseProvider>
+              <CartProvider>
+                <AntdThemeProvider locale={enUS}>
+                  <NextIntlClientProvider messages={messages}>
+                    <Header showAuth={false} />
+                    <main className={`flex min-h-screen flex-col`}>{children}</main>
+                    <Footer />
+                    <Toaster />
+                    <StagewiseToolbar config={{ plugins: [ReactPlugin] }} />
+                  </NextIntlClientProvider>
+                </AntdThemeProvider>
+              </CartProvider>
+            </SupabaseProvider>
+          </ThemeProvider>
+        </AntdRegistry>
         <SpeedInsights />
       </body>
     </html>

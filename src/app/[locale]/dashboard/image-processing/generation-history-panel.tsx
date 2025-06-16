@@ -1,5 +1,6 @@
 "use client";
 
+import { Card, Image } from "antd";
 import { AnimatePresence, motion } from "framer-motion";
 import {
   AlertCircle,
@@ -19,15 +20,7 @@ import { useEffect, useState } from "react";
 import { createClient } from "~/lib/supabase/client";
 import { Badge } from "~/ui/primitives/badge";
 import { Button } from "~/ui/primitives/button";
-import {
-  Card,
-  CardAction,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "~/ui/primitives/card";
+// 移除自定义Card组件导入，使用Ant Design的Card
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -274,17 +267,20 @@ export function GenerationHistoryPanel({
       <Card
         className={`
           flex h-full flex-col overflow-hidden rounded-2xl border
-          border-border/20 bg-gradient-to-br from-background/80
+          border-border/40 dark:border-border/20 bg-gradient-to-br from-background/80
           via-background/60 to-accent/10 p-0 shadow-2xl backdrop-blur-xl
         `}
-      >
-        <CardHeader
-          className={`
-            border-b border-border/10 bg-gradient-to-r from-accent/5
-            to-primary/5 p-6
-          `}
-        >
-          <CardTitle className="flex items-center gap-3 text-xl font-bold">
+        styles={{
+          body: { flex: 1, padding: '4px' },
+          header: {
+            background: 'linear-gradient(to right, rgba(var(--accent), 0.05), rgba(var(--primary), 0.05))',
+            borderBottom: '1px solid rgba(var(--border), 0.1)',
+            padding: '24px'
+          }
+          
+        }}
+        title={
+          <div className="flex items-center gap-3 text-xl font-bold">
             <div
               className={`
                 rounded-xl bg-gradient-to-br from-primary/20 to-primary/10 p-2
@@ -297,100 +293,109 @@ export function GenerationHistoryPanel({
               <Clock className="mr-1 h-3 w-3" />
               {records.length}
             </Badge>
-          </CardTitle>
-          {/* <CardDescription className="text-muted-foreground/80">
-            {t("ImageProcessing.historyDescription")}
-          </CardDescription> */}
-        </CardHeader>
-        <CardContent className="flex-1 p-1">
-          <AnimatePresence mode="wait">
-            {loading ? (
-              <motion.div
-                animate={{ opacity: 1, scale: 1 }}
-                className={`
+          </div>
+        }
+      >
+        <AnimatePresence mode="wait">
+          {loading ? (
+            <motion.div
+              animate={{ opacity: 1, scale: 1 }}
+              className={`
                   flex h-full flex-col items-center justify-center space-y-6
                   text-center
                 `}
-                exit={{ opacity: 0, scale: 0.9 }}
-                initial={{ opacity: 0, scale: 0.9 }}
-                transition={{ duration: 0.4 }}
-              >
-                <div className="relative">
-                  <div
-                    className={`
+              exit={{ opacity: 0, scale: 0.9 }}
+              initial={{ opacity: 0, scale: 0.9 }}
+              transition={{ duration: 0.4 }}
+            >
+              <div className="relative">
+                <div
+                  className={`
                       flex h-24 w-24 items-center justify-center rounded-2xl
                       bg-gradient-to-br from-accent/20 to-accent/10
                       text-muted-foreground shadow-lg
                     `}
-                  >
-                    <ImageIcon className="h-12 w-12" />
-                  </div>
-                  <div
-                    className={`
+                >
+                  <ImageIcon className="h-12 w-12" />
+                </div>
+                <div
+                  className={`
                       absolute -top-2 -right-2 rounded-full bg-gradient-to-r
                       from-primary/20 to-accent/20 p-2
                     `}
-                  >
-                    <Sparkles className="h-4 w-4 text-primary" />
-                  </div>
+                >
+                  <Sparkles className="h-4 w-4 text-primary" />
                 </div>
-                <div className="space-y-3">
-                  <h3 className="text-xl font-bold text-foreground">
-                    {t("ImageProcessing.noHistory")}
-                  </h3>
-                  <p className="max-w-sm text-muted-foreground/80">
-                    {t("ImageProcessing.startProcessing")}
-                  </p>
-                </div>
-              </motion.div>
-            ) : (
-              <motion.div
-                animate={{ opacity: 1, y: 0 }}
-                className="flex h-full flex-col space-y-6"
-                initial={{ opacity: 0, y: 20 }}
-                transition={{ duration: 0.5 }}
-              >
-                {/* 数据库记录列表 */}
-                <div className="h-0 flex-1">
-                  {/* 显示所有记录，使用Card组件结构 */}
-                  <ScrollArea className="h-165">
-                    <div className="space-y-2 pr-2">
-                      {records.map((record, index) => {
-                        const statusDisplay = getStatusDisplay(record.status);
-                        const StatusIcon = statusDisplay.icon;
-                        const isCompleted = record.status === "completed" && record.outputUrl;
+              </div>
+              <div className="space-y-3">
+                <h3 className="text-xl font-bold text-foreground">
+                  {t("ImageProcessing.noHistory")}
+                </h3>
+                <p className="max-w-sm text-muted-foreground/80">
+                  {t("ImageProcessing.startProcessing")}
+                </p>
+              </div>
+            </motion.div>
+          ) : (
+            <motion.div
+              animate={{ opacity: 1, y: 0 }}
+              className="flex h-full flex-col space-y-6"
+              initial={{ opacity: 0, y: 20 }}
+              transition={{ duration: 0.5 }}
+            >
+              {/* 数据库记录列表 */}
+              <div className="h-0 flex-1">
+                {/* 显示所有记录，使用Card组件结构 */}
+                <ScrollArea className="h-165">
+                  <div className="space-y-2 pr-2">
+                    {records.map((record, index) => {
+                      const statusDisplay = getStatusDisplay(record.status);
+                      const StatusIcon = statusDisplay.icon;
+                      const isCompleted = record.status === "completed" && record.outputUrl;
 
-                        return (
-                          <motion.div
-                            animate={{ opacity: 1, y: 0 }}
-                            className="group"
-                            initial={{ opacity: 0, y: 20 }}
-                            key={record.id}
-                            transition={{ delay: index * 0.05 }}
-                          >
-                            <Card className={`
-                              py-0 transition-all duration-200
-                              hover:shadow-md
-                            `}>
-                              {/* Card Header - 显示记录信息 */}
-                              <CardHeader className="py-3">
-                                <CardTitle>
+                      return (
+                        <motion.div
+                          animate={{ opacity: 1, y: 0 }}
+                          className="group"
+                          initial={{ opacity: 0, y: 20 }}
+                          key={record.id}
+                          transition={{ delay: index * 0.05 }}
+                        >
+                          <Card
+                            className={`
+                                py-0 transition-all duration-200 border
+                                border-border/30 dark:border-border/10
+                                hover:shadow-md hover:border-border/50 dark:hover:border-border/20
+                              `}
+                            styles={{
+                              body: { padding: '0' },
+                              header: { padding: '12px' }
+                            }}
+                            title={
+                              <div className={`
+                                  flex items-center justify-between
+                                `}>
+                                <div className="flex flex-col gap-2">
                                   <Badge variant="outline">
                                     {record.type === "colorization" ? "上色" : "修复"}
                                   </Badge>
-                                </CardTitle>
-                                <CardDescription>{new Date(record.createdAt).toLocaleString()}</CardDescription>
-                                {isCompleted && <CardAction>
+                                  <div className={`
+                                      text-sm text-muted-foreground
+                                    `}>
+                                    {new Date(record.createdAt).toLocaleString()}
+                                  </div>
+                                </div>
+                                {isCompleted && (
                                   <div className="flex items-center gap-2">
                                     <StatusIcon
                                       className={`
-                                        h-4 w-4
-                                        ${record.status === "processing" ? `
-                                          animate-spin
-                                        ` : ""
+                                          h-4 w-4
+                                          ${record.status === "processing" ? `
+                                            animate-spin
+                                          ` : ""
                                         }
-                                        ${statusDisplay.color}
-                                      `}
+                                          ${statusDisplay.color}
+                                        `}
                                     />
                                     <span className="text-sm font-medium">
                                       {statusDisplay.label}
@@ -435,66 +440,64 @@ export function GenerationHistoryPanel({
                                       </DropdownMenuContent>
                                     </DropdownMenu>
                                   </div>
-                                </CardAction>}
-                              </CardHeader>
-                              {/* Card Content - 左右显示原图和处理后的图片 */}
-                              <CardContent className="p-0">
-                                <div
-                                  className={`
+                                )}
+                              </div>
+                            }
+                          >
+                            <div
+                              className={`
                                     grid h-full grid-cols-2 gap-0
                                     overflow-hidden rounded-xl
                                   `}
-                                >
-                                  <div className="relative h-full w-full">
-                                    <div
-                                      className={`
+                            >
+                              <div className="relative h-full w-full">
+                                <div
+                                  className={`
                                         absolute top-2 left-2 z-10 rounded
                                         bg-black/70 px-2 py-1 text-xs
                                         font-semibold text-white
                                       `}
-                                    >
-                                      {t("Home.before")}
-                                    </div>
-                                    <img
-                                      alt={`Before`}
-                                      className="object-cover"
-                                      src={record.inputUrl}
-                                    />
-                                  </div>
-                                  <div className="relative h-full w-full">
-                                    <div
-                                      className={`
+                                >
+                                  {t("Home.before")}
+                                </div>
+                                <Image
+                                  alt={`Before`}
+                                  className="object-cover"
+                                  src={record.inputUrl}
+                                />
+                              </div>
+                              <div className="relative h-full w-full">
+                                <div
+                                  className={`
                                         absolute top-2 z-10 rounded bg-black/70
                                         px-2 py-1 text-xs font-semibold
                                         text-white
                                       `}
-                                    >
-                                      {t("Home.after")}
-                                    </div>
-                                    {isCompleted ? <img
-                                      alt={`${record.outputUrl} After`}
-                                      className="object-cover"
-                                      src={record.outputUrl!}
-                                    /> : <div>
-                                      <Skeleton className={`
+                                >
+                                  {t("Home.after")}
+                                </div>
+                                {isCompleted ? <Image
+                                  alt={`${record.outputUrl} After`}
+                                  className="object-cover"
+                                  src={record.outputUrl!}
+                                /> : <div>
+                                  <Skeleton className={`
                                         h-full w-full rounded-full
                                       `} />
-                                    </div>}
+                                </div>}
 
-                                  </div>
-                                </div>
-                              </CardContent>
-                            </Card>
-                          </motion.div>
-                        );
-                      })}
-                    </div>
-                  </ScrollArea>
-                </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </CardContent>
+                              </div>
+                            </div>
+                          </Card>
+                        </motion.div>
+                      );
+                    })}
+                  </div>
+                </ScrollArea>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </Card>
     </motion.div>
   );

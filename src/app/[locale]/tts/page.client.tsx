@@ -1,8 +1,13 @@
 'use client';
 
+import type { GetProp, UploadFile, UploadProps } from 'antd';
+
+import { PlusOutlined } from '@ant-design/icons';
+import { Image, Upload } from 'antd';
 import { useRef, useState } from 'react';
 import { toast } from 'sonner';
 
+import Example from '~/ui/components/upload/example';
 import { Button } from '~/ui/primitives/button';
 import { Label } from '~/ui/primitives/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '~/ui/primitives/select';
@@ -115,6 +120,16 @@ const VOICES = [
   { label: 'Zariyah (女声-沙特)', value: 'ar-SA-ZariyahNeural' },
 ];
 
+type FileType = Parameters<GetProp<UploadProps, 'beforeUpload'>>[0];
+
+const getBase64 = (file: FileType): Promise<string> =>
+  new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = () => resolve(reader.result as string);
+    reader.onerror = (error) => reject(error);
+  });
+
 export default function TTSPage() {
   const [text, setText] = useState('');
   const [voice, setVoice] = useState('zh-CN-XiaoyiNeural');
@@ -124,6 +139,64 @@ export default function TTSPage() {
   const [isGenerating, setIsGenerating] = useState(false);
   const audioRef = useRef<HTMLAudioElement>(null);
   const [audioUrl, setAudioUrl] = useState<null | string>(null);
+
+  const [previewOpen, setPreviewOpen] = useState(false);
+  const [previewImage, setPreviewImage] = useState('');
+  const [fileList, setFileList] = useState<UploadFile[]>([
+    {
+      name: 'image.png',
+      status: 'done',
+      uid: '-1',
+      url: 'https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png',
+    },
+    {
+      name: 'image.png',
+      status: 'done',
+      uid: '-2',
+      url: 'https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png',
+    },
+    {
+      name: 'image.png',
+      status: 'done',
+      uid: '-3',
+      url: 'https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png',
+    },
+    {
+      name: 'image.png',
+      status: 'done',
+      uid: '-4',
+      url: 'https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png',
+    },
+    {
+      name: 'image.png',
+      percent: 50,
+      status: 'uploading',
+      uid: '-xxx',
+      url: 'https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png',
+    },
+    {
+      name: 'image.png',
+      status: 'error',
+      uid: '-5',
+    },
+  ]);
+
+  const handlePreview = async (file: UploadFile) => {
+    if (!file.url && !file.preview) {
+      file.preview = await getBase64(file.originFileObj as FileType);
+    }
+    setPreviewImage(file.url || (file.preview as string));
+    setPreviewOpen(true);
+  };
+
+  const handleChange: UploadProps['onChange'] = ({ fileList: newFileList }) =>
+    setFileList(newFileList);
+
+  const uploadButton = (
+    <button style={{ background: 'none', border: 0 }} type="button">
+      <PlusOutlined />
+      <div style={{ marginTop: 8 }}>Upload</div>
+    </button>)
 
   // 将滑块值转换为TTS参数格式
   const formatParam = (value: number, type: 'pitch' | 'rate' | 'volume') => {
@@ -295,6 +368,26 @@ export default function TTSPage() {
           </div>
         )}
       </div>
+      <Upload
+        action="https://660d2bd96ddfa2943b33731c.mockapi.io/api/upload"
+        fileList={fileList}
+        listType="picture-card"
+        onChange={handleChange}
+        onPreview={handlePreview}
+      >
+        {fileList.length >= 8 ? null : uploadButton}
+      </Upload>
+      {previewImage && (
+        <Image
+          preview={{
+            afterOpenChange: (visible) => !visible && setPreviewImage(''),
+            onVisibleChange: (visible) => setPreviewOpen(visible),
+            visible: previewOpen,
+          }}
+          src={previewImage}
+          wrapperStyle={{ display: 'none' }}
+        />
+      )}
     </div>
   );
 }
