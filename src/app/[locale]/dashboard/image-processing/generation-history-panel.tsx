@@ -488,20 +488,32 @@ export function GenerationHistoryPanel({
                                     src={record.outputUrl!}
                                   />
                                 ) : (
-                                  <div className="flex h-full w-full items-center justify-center bg-muted/30">
-                                    <div className="flex flex-col items-center gap-2 text-center">
+                                  <div className={`
+                                    flex h-full w-full items-center
+                                    justify-center bg-muted/30
+                                  `}>
+                                    <div className={`
+                                      flex flex-col items-center gap-2
+                                      text-center
+                                    `}>
                                       <StatusIcon
                                         className={`
                                           h-8 w-8
-                                          ${record.status === "processing" ? "animate-spin" : ""}
+                                          ${record.status === "processing" ? `
+                                            animate-spin
+                                          ` : ""}
                                           ${statusDisplay.color}
                                         `}
                                       />
-                                      <span className="text-xs text-muted-foreground">
+                                      <span className={`
+                                        text-xs text-muted-foreground
+                                      `}>
                                         {statusDisplay.label}
                                       </span>
                                       {record.status === "failed" && record.errorMessage && (
-                                        <span className="text-xs text-red-500 max-w-20 truncate">
+                                        <span className={`
+                                          max-w-20 truncate text-xs text-red-500
+                                        `}>
                                           {record.errorMessage}
                                         </span>
                                       )}

@@ -53,7 +53,7 @@ export async function addRewardCredits(
 
       // 获取交易后余额
       const newBalance = balance ? balance.balance + amount : amount;
-      
+
       // 创建积分交易记录
       await tx.insert(creditTransactionTable).values({
         amount,
@@ -157,18 +157,24 @@ export async function consumeCredits(
 
       // 计算交易后余额
       const balanceAfter = balance.balance - config.creditsRequired;
-      
+
       // 创建积分交易记录
-      await tx.insert(creditTransactionTable).values({
+      const transactionData: any = {
         amount: -config.creditsRequired,
         balanceAfter,
         createdAt: new Date(),
         description: config.description,
         id: createId(),
-        relatedUploadId: uploadId,
         type: "consumption" as CreditTransactionType,
         userId,
-      });
+      };
+
+      // 只有当 uploadId 存在时才设置 relatedUploadId
+      if (uploadId) {
+        transactionData.relatedUploadId = uploadId;
+      }
+
+      await tx.insert(creditTransactionTable).values(transactionData);
 
       // 如果有上传ID，更新上传记录的消费积分
       if (uploadId) {

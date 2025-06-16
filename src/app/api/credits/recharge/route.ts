@@ -1,6 +1,10 @@
+import { createId } from "@paralleldrive/cuid2";
+import { eq } from "drizzle-orm";
 import { type NextRequest, NextResponse } from "next/server";
 
-import { createCreditRecharge } from "~/app/api/credits/service/credit-service";
+import { db } from "~/db";
+import { creditRechargeTable } from "~/db/schema";
+import { stripe } from "~/lib/stripe";
 import { getCurrentSupabaseUser } from "~/lib/supabase-auth";
 
 export async function POST(request: NextRequest) {
@@ -15,21 +19,56 @@ export async function POST(request: NextRequest) {
     }
 
     const userId = user.id;
-    const { packageId }: any = await request.json();
+    const { credits, currency, packageName, price }: any = await request.json();
 
-    if (!packageId) {
+    if (!credits || !price || !currency || !packageName) {
       return NextResponse.json(
         { error: "缺少必要参数" },
         { status: 400 },
       );
     }
 
-    // 创建积分充值
-    const result = await createCreditRecharge(userId, packageId);
+    // 创建充值记录
+    const rechargeId = createId();
+    const recharge = await db
+      .insert(creditRechargeTable)
+      .values({
+        amount: credits,
+        createdAt: new Date(),
+        currency,
+        id: rechargeId,
+        price,
+        status: "pending",
+        updatedAt: new Date(),
+        userId,
+      })
+      .returning();
+
+    // 创建 Stripe PaymentIntent
+    const paymentIntent = await stripe.paymentIntents.create({
+      amount: price,
+      currency,
+      metadata: {
+        credits: credits.toString(),
+        packageName,
+        rechargeId,
+        type: "credit_recharge",
+        userId,
+      },
+    });
+
+    // 更新充值记录的 PaymentIntent ID
+    await db
+      .update(creditRechargeTable)
+      .set({
+        paymentIntentId: paymentIntent.id,
+        updatedAt: new Date(),
+      })
+      .where(eq(creditRechargeTable.id, rechargeId));
 
     return NextResponse.json({
-      clientSecret: result.clientSecret,
-      rechargeId: result.recharge.id,
+      clientSecret: paymentIntent.client_secret,
+      rechargeId: recharge[0].id,
       success: true,
     });
   } catch (error: any) {

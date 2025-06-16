@@ -1,4 +1,5 @@
 import type { ThemeConfig } from 'antd';
+
 import { theme } from 'antd';
 
 export const getAntdTheme = (isDark: boolean): ThemeConfig => ({

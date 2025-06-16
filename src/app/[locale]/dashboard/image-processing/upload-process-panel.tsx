@@ -8,6 +8,7 @@ import {
   Building,
   Camera,
   Cherry,
+  Coins,
   Film,
   Heart,
   Rainbow,
@@ -135,6 +136,8 @@ export function UploadProcessPanel(props: UploadProcessPanelProps) {
   const [isProcessing, setIsProcessing] = useState<boolean>(false);
   const [currentRecordId, setCurrentRecordId] = useState<null | string>(null);
   const [upscaleFactor, setUpscaleFactor] = useState<number>(1);
+  const [creditBalance, setCreditBalance] = useState<number>(0);
+  const [isLoadingCredits, setIsLoadingCredits] = useState<boolean>(true);
 
   // antd Upload 相关状态
   const [fileList, setFileList] = useState<UploadFile[]>([]);
@@ -194,6 +197,39 @@ export function UploadProcessPanel(props: UploadProcessPanelProps) {
     setUploadedImageUrl('');
   };
 
+  // 获取用户积分余额
+  useEffect(() => {
+    const fetchCreditBalance = async () => {
+      try {
+        setIsLoadingCredits(true);
+        const supabase = createClient();
+        const { data: { user } } = await supabase.auth.getUser();
+
+        if (user) {
+          const { data: balance, error } = await supabase
+            .from('user_credit_balance')
+            .select('balance')
+            .eq('user_id', user.id)
+            .single();
+
+          if (error) {
+            console.error('获取积分余额失败:', error);
+            setCreditBalance(0);
+          } else {
+            setCreditBalance(balance?.balance || 0);
+          }
+        }
+      } catch (error) {
+        console.error('获取积分余额时出错:', error);
+        setCreditBalance(0);
+      } finally {
+        setIsLoadingCredits(false);
+      }
+    };
+
+    fetchCreditBalance();
+  }, []);
+
   // 使用Supabase realtime监控记录状态
   useEffect(() => {
     if (!currentRecordId) return;
@@ -230,6 +266,9 @@ export function UploadProcessPanel(props: UploadProcessPanelProps) {
             setIsProcessing(false);
             setCurrentRecordId(null);
 
+            // 更新积分余额（减少1积分）
+            setCreditBalance(prev => Math.max(0, prev - 1));
+
             // 清除上传的图片和缓存
             setUploadedImageUrl("");
             clearFiles();
@@ -254,6 +293,13 @@ export function UploadProcessPanel(props: UploadProcessPanelProps) {
   // 处理图片处理
   const handleProcessImage = async () => {
     if (!uploadedImageUrl) return;
+
+    // 检查积分是否足够
+    if (creditBalance < 1) {
+      // 这里可以显示积分不足的提示或跳转到充值页面
+      console.error('积分不足，无法处理图片');
+      return;
+    }
 
     setIsProcessing(true);
     try {
@@ -281,7 +327,12 @@ export function UploadProcessPanel(props: UploadProcessPanelProps) {
       });
 
       if (!response.ok) {
-        throw new Error("处理失败");
+        const errorData = await response.json();
+        if (errorData.code === 'INSUFFICIENT_CREDITS') {
+          // 积分不足错误
+          throw new Error('积分不足，请先充值积分');
+        }
+        throw new Error(errorData.error || "处理失败");
       }
 
       const result = (await response.json()) as { id: string; task_id: string };
@@ -358,6 +409,36 @@ export function UploadProcessPanel(props: UploadProcessPanelProps) {
         </CardHeader>
 
         <CardContent className="flex-1 space-y-6 p-6">
+          {/* 积分余额显示 */}
+          <div className={`
+            rounded-xl bg-gradient-to-r from-primary/10 to-accent/10 p-4
+          `}>
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Coins className="h-5 w-5 text-primary" />
+                <span className="text-sm font-medium">{t("ImageProcessing.creditBalance")}</span>
+              </div>
+              <div className="flex items-center gap-2">
+                {isLoadingCredits ? (
+                  <div className="h-4 w-8 animate-pulse rounded bg-muted" />
+                ) : (
+                  <span className={`
+                    text-lg font-bold
+                    ${creditBalance < 1 ? 'text-destructive' : 'text-primary'
+                    }
+                  `}>
+                    {creditBalance}
+                  </span>
+                )}
+              </div>
+            </div>
+            {creditBalance < 1 && (
+              <div className="mt-2 text-xs text-destructive">
+                {t("ImageProcessing.insufficientCredits")}
+              </div>
+            )}
+          </div>
+
           {/* 文件上传区域 */}
           <div className="space-y-4">
             <Label className="text-sm font-medium">
@@ -624,7 +705,7 @@ export function UploadProcessPanel(props: UploadProcessPanelProps) {
                 hover:shadow-xl
                 disabled:opacity-50
               `}
-              disabled={!uploadedImageUrl || isProcessing}
+              disabled={!uploadedImageUrl || isProcessing || creditBalance < 1}
               onClick={handleProcessImage}
             >
               <AnimatePresence mode="wait">

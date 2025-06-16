@@ -198,6 +198,8 @@
     "share": "分享",
     "recentHistory": "最近记录",
     "upscaleFactor": "图像放大倍数",
+    "creditBalance": "积分余额",
+    "insufficientCredits": "积分不足，请先充值积分",
     "upscale1x": "1x (原始尺寸)",
     "upscale1xDesc": "保持原始图像尺寸",
     "upscale2x": "2x (放大2倍)",
@@ -293,6 +295,77 @@
     "signIn": "登录",
     "signOut": "退出",
     "credits": "积分"
+  },
+  "Pricing": {
+    "title": "选择您的积分套餐",
+    "subtitle": "为您的图像处理需求选择完美的方案",
+    "basic": "基础套餐",
+    "standard": "标准套餐",
+    "popular": "热门套餐",
+    "professional": "专业套餐",
+    "basicDescription": "适合偶尔使用的用户",
+    "standardDescription": "最受欢迎的选择，适合常规用户",
+    "popularDescription": "专业用户和小团队的超值选择",
+    "professionalDescription": "专业用户和团队的理想选择",
+    "credits": "积分",
+    "discount": "节省 {percent}%",
+    "mostPopular": "最受欢迎",
+    "bestValue": "最超值",
+    "selectPlan": "选择套餐",
+    "features": {
+      "imageProcessing": "图像处理",
+      "colorization": "照片上色",
+      "restoration": "照片修复",
+      "enhancement": "图像增强",
+      "superResolution": "超分辨率",
+      "noExpiry": "积分永不过期",
+      "prioritySupport": "优先支持",
+      "commercialUse": "允许商业使用",
+      "bulkProcessing": "批量处理",
+      "apiAccess": "API访问"
+    },
+    "usageInstructions": {
+      "title": "如何使用积分",
+      "step1": "1积分 = 处理1张图片",
+      "step2": "上传图片并选择处理类型",
+      "step3": "处理完成后自动扣除积分",
+      "step4": "在仪表板中查看积分余额"
+    },
+    "payment": {
+      "title": "完成购买",
+      "description": "您正在购买 {planName} 套餐，包含 {credits} 积分，价格为 ${price}",
+      "processing": "正在处理支付...",
+      "success": "支付成功！积分已添加到您的账户。",
+      "error": "支付失败，请重试。",
+      "cancel": "取消",
+      "payNow": "立即支付",
+      "creating": "正在创建支付...",
+      "failed": "创建支付失败",
+      "close": "关闭"
+    },
+    "page": {
+      "title": "积分充值",
+      "subtitle": "选择最适合您需求的积分套餐，享受专业的 AI 图像处理服务。我们提供灵活的定价方案，满足个人用户到企业客户的不同需求。"
+    },
+    "faq": {
+      "title": "常见问题",
+      "howToUse": {
+        "question": "积分如何使用？",
+        "answer": "每次使用 AI 功能处理图片时会消耗相应积分。不同功能消耗的积分数量不同，图像上色通常消耗 4-6 积分，图像超分消耗 3-5 积分。"
+      },
+      "expiry": {
+        "question": "积分有有效期吗？",
+        "answer": "是的，积分自购买之日起 12 个月内有效。我们建议您根据实际使用频率选择合适的套餐。"
+      },
+      "paymentMethods": {
+        "question": "支持哪些支付方式？",
+        "answer": "我们支持信用卡、借记卡等多种支付方式，所有支付都通过 Stripe 安全处理，确保您的支付信息安全。"
+      },
+      "refund": {
+        "question": "可以退款吗？",
+        "answer": "如果您对服务不满意，可以在购买后 7 天内申请退款。已使用的积分将按比例扣除。"
+      }
+    }
   },
   "Payment": {
     "addPaymentMethod": "添加支付方式",

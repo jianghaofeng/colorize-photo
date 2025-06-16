@@ -15,11 +15,12 @@ import {
   Users
 } from "lucide-react";
 import { useTranslations } from "next-intl";
-import Link from "next/link";
 import { useEffect, useState } from "react";
 
+import { Link } from "~/i18n/i18nConfig";
 import { useCurrentUserImage } from "~/lib/hooks/use-current-user-image";
 import { useCurrentUserName } from "~/lib/hooks/use-current-user-name";
+import { Starfield } from "~/ui/components/starfield";
 import { Avatar, AvatarFallback, AvatarImage } from "~/ui/primitives/avatar";
 import { Badge } from "~/ui/primitives/badge";
 import { Button } from "~/ui/primitives/button";
@@ -275,6 +276,30 @@ export function ProfilePageClient({ user }: ProfilePageProps) {
     ?.join("")
     ?.toUpperCase();
 
+
+  const header = (
+    <div className="mb-8 flex items-center justify-between">
+      <div>
+        <h1 className={`
+          text-3xl font-bold text-gray-900
+          dark:text-white
+        `}>
+          个人资料
+        </h1>
+        <p className={`
+          text-gray-600
+          dark:text-gray-400
+        `}>
+          管理您的个人信息、作品和设置
+        </p>
+      </div>
+      <Button size="sm" variant="outline">
+        <Edit className="mr-2 h-4 w-4" />
+        编辑资料
+      </Button>
+    </div>
+  )
+
   if (isPending) {
     return (
       <div className={`
@@ -364,12 +389,6 @@ export function ProfilePageClient({ user }: ProfilePageProps) {
                   `}>
                     {userName || "Jenny Klabber"}
                   </h2>
-                  <p className={`
-                    text-sm text-gray-600
-                    dark:text-gray-400
-                  `}>
-                    高级项目经理
-                  </p>
                   <div className={`
                     mt-2 flex items-center text-sm text-gray-500
                     dark:text-gray-400
@@ -377,56 +396,12 @@ export function ProfilePageClient({ user }: ProfilePageProps) {
                     <MapPin className="mr-1 h-4 w-4" />
                     {profile.city}, {profile.country}
                   </div>
-                  <div className="mt-4 flex space-x-4">
-                    <div className="text-center">
-                      <div className={`
-                        text-lg font-semibold text-gray-900
-                        dark:text-white
-                      `}>
-                        {stats.followers}
-                      </div>
-                      <div className={`
-                        text-xs text-gray-500
-                        dark:text-gray-400
-                      `}>
-                        关注者
-                      </div>
-                    </div>
-                    <div className="text-center">
-                      <div className={`
-                        text-lg font-semibold text-gray-900
-                        dark:text-white
-                      `}>
-                        {stats.following}
-                      </div>
-                      <div className={`
-                        text-xs text-gray-500
-                        dark:text-gray-400
-                      `}>
-                        关注中
-                      </div>
-                    </div>
-                    <div className="text-center">
-                      <div className={`
-                        text-lg font-semibold text-gray-900
-                        dark:text-white
-                      `}>
-                        {stats.projects}
-                      </div>
-                      <div className={`
-                        text-xs text-gray-500
-                        dark:text-gray-400
-                      `}>
-                        项目
-                      </div>
-                    </div>
-                  </div>
                 </div>
               </CardContent>
             </Card>
 
             {/* Community Badges */}
-            <Card>
+            {/* <Card>
               <CardHeader>
                 <CardTitle className="text-lg">社区徽章</CardTitle>
               </CardHeader>
@@ -446,10 +421,10 @@ export function ProfilePageClient({ user }: ProfilePageProps) {
                   ))}
                 </div>
               </CardContent>
-            </Card>
+            </Card> */}
 
             {/* About */}
-            <Card>
+            {/* <Card>
               <CardHeader>
                 <CardTitle className="text-lg">关于我</CardTitle>
               </CardHeader>
@@ -518,10 +493,10 @@ export function ProfilePageClient({ user }: ProfilePageProps) {
                   <span className="text-sm font-medium">{profile.email}</span>
                 </div>
               </CardContent>
-            </Card>
+            </Card> */}
 
             {/* Work Experience */}
-            <Card>
+            {/* <Card>
               <CardHeader>
                 <CardTitle className="text-lg">工作经验</CardTitle>
               </CardHeader>
@@ -561,10 +536,10 @@ export function ProfilePageClient({ user }: ProfilePageProps) {
                   查看全部
                 </Button>
               </CardContent>
-            </Card>
+            </Card> */}
 
             {/* Skills */}
-            <Card>
+            {/* <Card>
               <CardHeader>
                 <CardTitle className="text-lg">技能标签</CardTitle>
               </CardHeader>
@@ -577,7 +552,7 @@ export function ProfilePageClient({ user }: ProfilePageProps) {
                   ))}
                 </div>
               </CardContent>
-            </Card>
+            </Card> */}
           </div>
 
           {/* Main Content */}

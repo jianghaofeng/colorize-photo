@@ -198,6 +198,9 @@
     "download": "Download",
     "share": "Share",
     "recentHistory": "Recent History",
+    "upscaleFactor": "Upscale Factor",
+    "creditBalance": "Credit Balance",
+    "insufficientCredits": "Insufficient credits, please recharge first",
     "upscaleFactor": "Image Upscale Factor",
     "upscale1x": "1x (Original Size)",
     "upscale1xDesc": "Keep original image size",
@@ -294,6 +297,77 @@
     "signIn": "Sign In",
     "signOut": "Sign Out",
     "credits": "Credits"
+  },
+  "Pricing": {
+    "title": "Choose Your Credit Package",
+    "subtitle": "Select the perfect plan for your image processing needs",
+    "basic": "Basic",
+    "standard": "Standard",
+    "popular": "Popular",
+    "professional": "Professional",
+    "basicDescription": "Perfect for occasional users",
+    "standardDescription": "Most popular choice for regular users",
+    "popularDescription": "Great value for professionals and small teams",
+    "professionalDescription": "Ideal for professional users and teams",
+    "credits": "Credits",
+    "discount": "Save {percent}%",
+    "mostPopular": "Most Popular",
+    "bestValue": "Best Value",
+    "selectPlan": "Select Plan",
+    "features": {
+      "imageProcessing": "Image processing",
+      "colorization": "Photo colorization",
+      "restoration": "Photo restoration",
+      "enhancement": "Image enhancement",
+      "superResolution": "Super resolution",
+      "noExpiry": "Credits never expire",
+      "prioritySupport": "Priority support",
+      "commercialUse": "Commercial use allowed",
+      "bulkProcessing": "Bulk processing",
+      "apiAccess": "API access"
+    },
+    "usageInstructions": {
+      "title": "How to Use Credits",
+      "step1": "1 credit = 1 image processed",
+      "step2": "Upload your image and select processing type",
+      "step3": "Credits are automatically deducted after processing",
+      "step4": "View your credit balance in the dashboard"
+    },
+    "payment": {
+      "title": "Complete Your Purchase",
+      "description": "You are purchasing {planName}, which includes {credits} credits for ${price}",
+      "processing": "Processing payment...",
+      "success": "Payment successful! Credits have been added to your account.",
+      "error": "Payment failed. Please try again.",
+      "cancel": "Cancel",
+      "payNow": "Pay Now",
+      "creating": "Creating payment...",
+      "failed": "Payment creation failed",
+      "close": "Close"
+    },
+    "page": {
+      "title": "Credit Recharge",
+      "subtitle": "Choose the credit package that best suits your needs and enjoy professional AI image processing services. We offer flexible pricing plans to meet the different needs of individual users to enterprise customers."
+    },
+    "faq": {
+      "title": "Frequently Asked Questions",
+      "howToUse": {
+        "question": "How to use credits?",
+        "answer": "Credits are consumed each time you use AI features to process images. Different features consume different amounts of credits. Image colorization typically consumes 4-6 credits, and image super-resolution consumes 3-5 credits."
+      },
+      "expiry": {
+        "question": "Do credits have an expiration date?",
+        "answer": "Yes, credits are valid for 12 months from the date of purchase. We recommend choosing the right package based on your actual usage frequency."
+      },
+      "paymentMethods": {
+        "question": "What payment methods are supported?",
+        "answer": "We support various payment methods including credit cards and debit cards. All payments are securely processed through Stripe to ensure your payment information is safe."
+      },
+      "refund": {
+        "question": "Can I get a refund?",
+        "answer": "If you are not satisfied with the service, you can apply for a refund within 7 days of purchase. Used credits will be deducted proportionally."
+      }
+    }
   },
   "Payment": {
     "addPaymentMethod": "Add Payment Method",

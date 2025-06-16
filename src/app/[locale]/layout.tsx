@@ -16,9 +16,9 @@ import { getMessages } from "next-intl/server";
 
 // 移除 Google Fonts 导入，使用系统字体堆栈
 import { SEO_CONFIG } from "~/app";
-import { AntdThemeProvider } from "~/ui/components/antd-theme-provider";
 import { CartProvider } from "~/lib/hooks/use-cart";
 import { SupabaseProvider } from "~/lib/supabase/SupabaseProvider";
+import { AntdThemeProvider } from "~/ui/components/antd-theme-provider";
 import { Footer } from "~/ui/components/footer";
 import { Header } from "~/ui/components/header/header";
 import { ThemeProvider } from "~/ui/components/theme-provider";

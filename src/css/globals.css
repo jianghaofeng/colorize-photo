@@ -214,7 +214,10 @@
 }
 
 /* 确保图片预览区域大小一致 */
-.upload-large .ant-upload-list-picture-card .ant-upload-list-item-thumbnail img {
+.upload-large
+  .ant-upload-list-picture-card
+  .ant-upload-list-item-thumbnail
+  img {
   width: 104px !important;
   height: 104px !important;
   object-fit: cover !important;

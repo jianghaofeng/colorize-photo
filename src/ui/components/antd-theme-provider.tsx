@@ -3,6 +3,7 @@
 import { ConfigProvider } from 'antd';
 import { useTheme } from 'next-themes';
 import { useEffect, useState } from 'react';
+
 import { getAntdTheme } from '~/lib/antd-theme';
 
 interface AntdThemeProviderProps {
@@ -11,7 +12,7 @@ interface AntdThemeProviderProps {
 }
 
 export function AntdThemeProvider({ children, locale }: AntdThemeProviderProps) {
-  const { theme, systemTheme } = useTheme();
+  const { systemTheme, theme } = useTheme();
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {

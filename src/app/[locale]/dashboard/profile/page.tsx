@@ -10,7 +10,8 @@ export default async function ProfilePage() {
     return null;
   }
   return <div className="min-h-screen">
-    <Starfield />
+
     <ProfilePageClient user={user} />
+
   </div>
 }

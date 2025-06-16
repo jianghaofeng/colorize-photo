@@ -2,6 +2,7 @@ import { eq } from "drizzle-orm";
 import { nanoid } from "nanoid";
 import { type NextRequest, NextResponse } from "next/server";
 
+import { checkSufficientCredits, consumeCredits } from "~/app/api/credits/service/credit-consumption-service";
 import { DashscopeImageService } from "~/app/api/image/service/DashscopeImageService";
 import { db } from "~/db"; // 你的 drizzle client 实例
 import { userGenerateRecordsTable } from "~/db/schema/generations/tables";
@@ -49,6 +50,17 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "参数缺失" }, { status: 400 });
     }
 
+    // 检查用户积分是否足够
+    const actionType = 'colorize_image'; // 根据实际功能类型设置
+    const hasSufficientCredits = await checkSufficientCredits(userId, actionType);
+
+    if (!hasSufficientCredits) {
+      return NextResponse.json({
+        code: "INSUFFICIENT_CREDITS",
+        error: "积分不足，请先充值积分"
+      }, { status: 402 });
+    }
+
     // 生成唯一ID
     const recordId = nanoid();
 
@@ -58,9 +70,18 @@ export async function POST(request: NextRequest) {
       base_image_url: imageUrl,
       function: functionType,
       parameters,
-      prompt: prompt,  
+      prompt: prompt,
     });
     const task_id = createResp.output.task_id;
+
+    // 消费积分（不传递 recordId，因为它不是 uploads 表的记录）
+    const creditConsumed = await consumeCredits(userId, actionType);
+    if (!creditConsumed) {
+      return NextResponse.json({
+        code: "CREDIT_CONSUMPTION_FAILED",
+        error: "积分扣除失败，请重试"
+      }, { status: 500 });
+    }
 
     // 插入数据库
     await db.insert(userGenerateRecordsTable).values({
