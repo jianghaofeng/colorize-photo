@@ -52,7 +52,7 @@ export function PricingPageClient() {
         throw new Error(t('payment.failed'));
       }
 
-      const data = await response.json();
+      const data: any = await response.json();
       setClientSecret(data.clientSecret);
       setIsPaymentModalOpen(true);
     } catch (error) {

@@ -327,7 +327,7 @@ export function UploadProcessPanel(props: UploadProcessPanelProps) {
       });
 
       if (!response.ok) {
-        const errorData = await response.json();
+        const errorData: any = await response.json();
         if (errorData.code === 'INSUFFICIENT_CREDITS') {
           // 积分不足错误
           throw new Error('积分不足，请先充值积分');
@@ -335,10 +335,6 @@ export function UploadProcessPanel(props: UploadProcessPanelProps) {
         throw new Error(errorData.error || "处理失败");
       }
 
-      const result = (await response.json()) as { id: string; task_id: string };
-
-      // 设置记录ID以开始监控
-      setCurrentRecordId(result.id);
     } catch (error) {
       console.error("处理错误:", error);
       setIsProcessing(false);

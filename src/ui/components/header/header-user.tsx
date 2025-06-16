@@ -102,12 +102,12 @@ export function HeaderUserDropdown({
         </div>
         <DropdownMenuSeparator />
         <DropdownMenuItem asChild>
-          <Link className="cursor-pointer" href="/dashboard">
+          <Link className="cursor-pointer" href="/profile">
             <Icon
               className="mr-2 h-4 w-4 text-primary"
               icon="heroicons-duotone:user-circle"
             />
-            {t("User.dashboard")}
+            {t("User.profile")}
           </Link>
         </DropdownMenuItem>
         <DropdownMenuSeparator />

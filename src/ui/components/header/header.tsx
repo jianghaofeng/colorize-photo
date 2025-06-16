@@ -44,10 +44,10 @@ export function Header({ showAuth = true }: HeaderProps) {
 
   const mainNavigation = [
     { href: "/", name: "Home" },
-    { href: "/products", name: "Products" },
+    // { href: "/products", name: "Products" },
     { href: "/pricing", name: "Pricing" },
-    { href: "/payment-test", name: "Payment" },
-    { href: "/tts", name: "TTS" },
+    // { href: "/payment-test", name: "Payment" },
+    // { href: "/tts", name: "TTS" },
   ];
 
   // const dashboardNavigation = [
@@ -124,7 +124,7 @@ export function Header({ showAuth = true }: HeaderProps) {
           </div>
 
           <div className="flex items-center gap-4">
-            <NotificationsWidget />
+            {/* <NotificationsWidget /> */}
 
             {showAuth && (
               <div
@@ -158,7 +158,7 @@ export function Header({ showAuth = true }: HeaderProps) {
             <Link className={`
               hidden
               md:block
-            `} href="/dashboard/image-processing">
+            `} href="/image-processing">
               <Button size="sm" variant="default">
                 Get Started
               </Button>

@@ -73,6 +73,10 @@ async function updateSession(request: NextRequest) {
     // 没有用户，且不是公共路径，重定向到登录页面
     const url = request.nextUrl.clone()
     url.pathname = '/auth/sign-in'
+    
+    // 保存原始URL作为重定向参数
+    url.searchParams.set('redirect', request.nextUrl.pathname + request.nextUrl.search)
+    
     return NextResponse.redirect(url)
   }
 

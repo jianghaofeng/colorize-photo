@@ -13,7 +13,7 @@ interface SupabaseContextType {
     isLoading: boolean;
     resetPassword: (email: string) => Promise<void>;
     signIn: (email: string, password: string) => Promise<void>;
-    signInWithOAuth: (provider: Provider) => Promise<void>;
+    signInWithOAuth: (provider: Provider, redirectPath?: string) => Promise<void>;
     signInWithPassword: (email: string, password: string) => Promise<void>;
     signOut: () => Promise<void>;
     signUp: (email: string, password: string) => Promise<void>;
@@ -132,11 +132,17 @@ export function SupabaseProvider({children}: { children: ReactNode }) {
     }, [supabase.auth]);
 
     // 第三方登录方法
-    const signInWithOAuth = useCallback(async (provider: Provider) => {
+    const signInWithOAuth = useCallback(async (provider: Provider, redirectPath?: string) => {
         try {
+            // 构建回调URL，包含重定向参数
+            let redirectTo = `${window.location.origin}/auth/callback`;
+            if (redirectPath) {
+                redirectTo += `?redirect=${encodeURIComponent(redirectPath)}`;
+            }
+            
             const {error} = await supabase.auth.signInWithOAuth({
                 options: {
-                    redirectTo: `${window.location.origin}/auth/callback`,
+                    redirectTo,
                 },
                 provider,
             });

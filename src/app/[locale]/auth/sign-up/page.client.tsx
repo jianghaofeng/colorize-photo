@@ -2,7 +2,7 @@
 
 import { useTranslations } from "next-intl";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
 
 import { SEO_CONFIG } from "~/app";
@@ -19,6 +19,7 @@ export function SignUpPageClient() {
   const { signInWithOAuth, signUpWithPassword } = useSupabase();
   const t = useTranslations("Auth");
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [formData, setFormData] = useState({
     email: "",
     name: "",
@@ -26,6 +27,10 @@ export function SignUpPageClient() {
   });
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+
+  // 检查 URL 参数中是否有错误信息和重定向地址
+  const errorFromParams = searchParams.get("error");
+  const redirectPath = searchParams.get("redirect");
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -35,28 +40,21 @@ export function SignUpPageClient() {
     }));
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleEmailSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
     setLoading(true);
 
     try {
-      await signUpWithPassword(
-        formData.email,
-        formData.password,
-        {
-          data: {
-            name: formData.name,
-          },
-        }
-      );
-      router.push("/auth/sign-in?registered=true");
-    } catch (err: any) {
-      if (err.message?.includes("email") || err.message?.includes("Email")) {
-        setError(t("emailAlreadyRegistered"));
-      } else {
-        setError(t("signUpFailed"));
-      }
+      await signUpWithPassword(formData.email, formData.password, {
+        data: {
+          name: formData.name,
+        },
+      });
+      // 如果有重定向路径，则使用它；否则使用默认路径
+      router.push(redirectPath ? `/auth/sign-in?redirect=${encodeURIComponent(redirectPath)}` : "/auth/sign-in?registered=true");
+    } catch (err) {
+      setError(t("Auth.signUpFailed"));
       console.error(err);
     } finally {
       setLoading(false);
@@ -66,9 +64,10 @@ export function SignUpPageClient() {
   const handleGoogleSignUp = async () => {
     setLoading(true);
     try {
-      await signInWithOAuth("google");
+      // 将重定向路径添加到 OAuth 登录的 redirectTo URL 中
+      await signInWithOAuth("google", redirectPath || "/");
     } catch (err) {
-      setError(t("googleSignUpFailed"));
+      setError(t("Auth.googleSignUpFailed"));
       console.error(err);
       setLoading(false);
     }
@@ -151,7 +150,7 @@ export function SignUpPageClient() {
 
           <Card >
             <CardContent className="pt-2">
-              <form className="space-y-4" onSubmit={handleSubmit}>
+              <form className="space-y-4" onSubmit={handleEmailSignUp}>
                 <div className="grid gap-2">
                   <Label className={`
                     text-gray-900

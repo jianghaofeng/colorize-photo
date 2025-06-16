@@ -25,9 +25,10 @@ export function SignInPageClient() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
-  // 检查 URL 参数中是否有错误信息
+  // 检查 URL 参数中是否有错误信息和重定向地址
   const errorFromParams = searchParams.get("error");
   const registered = searchParams.get("registered");
+  const redirectPath = searchParams.get("redirect");
 
   // 如果存在错误参数，设置错误信息
   useState(() => {
@@ -45,7 +46,8 @@ export function SignInPageClient() {
 
     try {
       await signInWithPassword(email, password);
-      router.push(SYSTEM_CONFIG.redirectAfterSignIn);
+      // 如果有重定向路径，则使用它；否则使用默认路径
+      router.push(redirectPath || SYSTEM_CONFIG.redirectAfterSignIn);
     } catch (err) {
       setError(t("Auth.invalidCredentials"));
       console.error(err);
@@ -68,7 +70,8 @@ export function SignInPageClient() {
   const handleGoogleLogin = async () => {
     setLoading(true);
     try {
-      await signInWithOAuth("google");
+      // 将重定向路径添加到 OAuth 登录的 redirectTo URL 中
+      await signInWithOAuth("google", redirectPath || "/");
     } catch (err) {
       setError(t("Auth.googleLoginFailed"));
       console.error(err);
