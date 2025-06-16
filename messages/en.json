@@ -198,6 +198,15 @@
     "download": "Download",
     "share": "Share",
     "recentHistory": "Recent History",
+    "upscaleFactor": "Image Upscale Factor",
+    "upscale1x": "1x (Original Size)",
+    "upscale1xDesc": "Keep original image size",
+    "upscale2x": "2x (2x Larger)",
+    "upscale2xDesc": "Enlarge image to 2x size",
+    "upscale3x": "3x (3x Larger)",
+    "upscale3xDesc": "Enlarge image to 3x size",
+    "upscale4x": "4x (4x Larger)",
+    "upscale4xDesc": "Enlarge image to 4x size",
     "historyItem": "History Item",
     "presets": {
       "custom": {

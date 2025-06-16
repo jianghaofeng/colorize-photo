@@ -180,3 +180,42 @@
 .font-mono {
   font-family: var(--font-geist-mono);
 }
+
+/* 自定义Upload组件样式 - 保持默认大小但确保样式一致 */
+.upload-large .ant-upload-select {
+  width: 104px !important;
+  height: 104px !important;
+}
+
+.upload-large .ant-upload-list-picture-card .ant-upload-list-item {
+  width: 104px !important;
+  height: 104px !important;
+}
+
+.upload-large .ant-upload-list-picture-card-container {
+  width: 104px !important;
+  height: 104px !important;
+}
+
+/* 确保上传列表容器保持固定宽度 */
+.upload-large .ant-upload-list {
+  width: 104px !important;
+}
+
+/* 上传中和已上传状态的样式统一 */
+.upload-large .ant-upload-list-picture-card .ant-upload-list-item-info {
+  width: 104px !important;
+  height: 104px !important;
+}
+
+/* 上传进度条样式 */
+.upload-large .ant-upload-list-picture-card .ant-upload-list-item-progress {
+  width: 104px !important;
+}
+
+/* 确保图片预览区域大小一致 */
+.upload-large .ant-upload-list-picture-card .ant-upload-list-item-thumbnail img {
+  width: 104px !important;
+  height: 104px !important;
+  object-fit: cover !important;
+}

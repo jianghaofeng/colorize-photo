@@ -43,66 +43,8 @@ export class DashscopeImageService {
         prompt: request.prompt,
       },
       model: 'wanx2.1-imageedit',
-      parameters: {},
+      parameters: request.parameters,
     };
-
-    // 根据功能类型添加特定参数
-    if (request.mask_image_url && request.function === 'description_edit_with_mask') {
-      requestBody.input.mask_image_url = request.mask_image_url;
-    }
-
-    // 添加参数
-    if (request.parameters) {
-      // 根据功能类型过滤参数
-      switch (request.function) {
-        case 'description_edit':
-        case 'stylization_all':
-          // 风格化和指令编辑功能需要的参数
-          if (request.parameters.strength !== undefined) {
-            requestBody.parameters.strength = request.parameters.strength;
-          }
-          break;
-        case 'doodle':
-          // 线稿生图功能需要的参数
-          if (request.parameters.is_sketch !== undefined) {
-            requestBody.parameters.is_sketch = request.parameters.is_sketch;
-          }
-          break;
-        case 'expand':
-          // 扩图功能需要的参数
-          if (request.parameters.top_scale !== undefined) {
-            requestBody.parameters.top_scale = request.parameters.top_scale;
-          }
-          if (request.parameters.bottom_scale !== undefined) {
-            requestBody.parameters.bottom_scale = request.parameters.bottom_scale;
-          }
-          if (request.parameters.left_scale !== undefined) {
-            requestBody.parameters.left_scale = request.parameters.left_scale;
-          }
-          if (request.parameters.right_scale !== undefined) {
-            requestBody.parameters.right_scale = request.parameters.right_scale;
-          }
-          break;
-        case 'super_resolution':
-          // 超分功能需要的参数
-          if (request.parameters.upscale_factor !== undefined) {
-            requestBody.parameters.upscale_factor = request.parameters.upscale_factor;
-          }
-          break;
-      }
-
-      // 通用参数
-      if (request.parameters.n !== undefined) {
-        requestBody.parameters.n = request.parameters.n;
-      }
-      if (request.parameters.seed !== undefined) {
-        requestBody.parameters.seed = request.parameters.seed;
-      }
-      if (request.parameters.watermark !== undefined) {
-        requestBody.parameters.watermark = request.parameters.watermark;
-      }
-    }
-
     const response = await fetch(this.baseUrl, {
       body: JSON.stringify(requestBody),
       headers: {

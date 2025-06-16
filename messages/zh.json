@@ -197,6 +197,15 @@
     "download": "下载",
     "share": "分享",
     "recentHistory": "最近记录",
+    "upscaleFactor": "图像放大倍数",
+    "upscale1x": "1x (原始尺寸)",
+    "upscale1xDesc": "保持原始图像尺寸",
+    "upscale2x": "2x (放大2倍)",
+    "upscale2xDesc": "图像尺寸放大至2倍",
+    "upscale3x": "3x (放大3倍)",
+    "upscale3xDesc": "图像尺寸放大至3倍",
+    "upscale4x": "4x (放大4倍)",
+    "upscale4xDesc": "图像尺寸放大至4倍",
     "historyItem": "历史记录项",
     "presets": {
       "custom": {

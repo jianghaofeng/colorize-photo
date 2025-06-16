@@ -47,7 +47,7 @@ interface UserGenerateRecord {
   resultMetadata: null | string;
   status: "completed" | "failed" | "pending" | "processing";
   transactionId: null | string;
-  type: "colorization" | "restore";
+  type: "colorization" | "super_resolution";
   updatedAt: string;
   userId: string;
 }
@@ -98,7 +98,7 @@ export function GenerationHistoryPanel({
 }: GenerationHistoryPanelProps) {
   const [records, setRecords] = useState<UserGenerateRecord[]>([]);
   const [loading, setLoading] = useState(true);
-  const [selectedImage, setSelectedImage] = useState<null | UserGenerateRecord>(null);
+  // const [selectedImage, setSelectedImage] = useState<null | UserGenerateRecord>(null);
 
   // 获取当前用户的生成记录
   useEffect(() => {
@@ -267,8 +267,9 @@ export function GenerationHistoryPanel({
       <Card
         className={`
           flex h-full flex-col overflow-hidden rounded-2xl border
-          border-border/40 dark:border-border/20 bg-gradient-to-br from-background/80
+          border-border/40 bg-gradient-to-br from-background/80
           via-background/60 to-accent/10 p-0 shadow-2xl backdrop-blur-xl
+          dark:border-border/20
         `}
         styles={{
           body: { flex: 1, padding: '4px' },
@@ -277,7 +278,7 @@ export function GenerationHistoryPanel({
             borderBottom: '1px solid rgba(var(--border), 0.1)',
             padding: '24px'
           }
-          
+
         }}
         title={
           <div className="flex items-center gap-3 text-xl font-bold">
@@ -301,9 +302,9 @@ export function GenerationHistoryPanel({
             <motion.div
               animate={{ opacity: 1, scale: 1 }}
               className={`
-                  flex h-full flex-col items-center justify-center space-y-6
-                  text-center
-                `}
+                flex h-full flex-col items-center justify-center space-y-6
+                text-center
+              `}
               exit={{ opacity: 0, scale: 0.9 }}
               initial={{ opacity: 0, scale: 0.9 }}
               transition={{ duration: 0.4 }}
@@ -311,18 +312,18 @@ export function GenerationHistoryPanel({
               <div className="relative">
                 <div
                   className={`
-                      flex h-24 w-24 items-center justify-center rounded-2xl
-                      bg-gradient-to-br from-accent/20 to-accent/10
-                      text-muted-foreground shadow-lg
-                    `}
+                    flex h-24 w-24 items-center justify-center rounded-2xl
+                    bg-gradient-to-br from-accent/20 to-accent/10
+                    text-muted-foreground shadow-lg
+                  `}
                 >
                   <ImageIcon className="h-12 w-12" />
                 </div>
                 <div
                   className={`
-                      absolute -top-2 -right-2 rounded-full bg-gradient-to-r
-                      from-primary/20 to-accent/20 p-2
-                    `}
+                    absolute -top-2 -right-2 rounded-full bg-gradient-to-r
+                    from-primary/20 to-accent/20 p-2
+                  `}
                 >
                   <Sparkles className="h-4 w-4 text-primary" />
                 </div>
@@ -346,7 +347,7 @@ export function GenerationHistoryPanel({
               {/* 数据库记录列表 */}
               <div className="h-0 flex-1">
                 {/* 显示所有记录，使用Card组件结构 */}
-                <ScrollArea className="h-165">
+                <ScrollArea className="h-200">
                   <div className="space-y-2 pr-2">
                     {records.map((record, index) => {
                       const statusDisplay = getStatusDisplay(record.status);
@@ -363,100 +364,105 @@ export function GenerationHistoryPanel({
                         >
                           <Card
                             className={`
-                                py-0 transition-all duration-200 border
-                                border-border/30 dark:border-border/10
-                                hover:shadow-md hover:border-border/50 dark:hover:border-border/20
-                              `}
+                              border border-border/30 py-0 transition-all
+                              duration-200
+                              hover:border-border/50 hover:shadow-md
+                              dark:border-border/10 dark:hover:border-border/20
+                            `}
                             styles={{
                               body: { padding: '0' },
                               header: { padding: '12px' }
                             }}
                             title={
                               <div className={`
-                                  flex items-center justify-between
-                                `}>
+                                flex items-center justify-between
+                              `}>
                                 <div className="flex flex-col gap-2">
                                   <Badge variant="outline">
                                     {record.type === "colorization" ? "上色" : "修复"}
                                   </Badge>
                                   <div className={`
-                                      text-sm text-muted-foreground
-                                    `}>
+                                    text-sm text-muted-foreground
+                                  `}>
                                     {new Date(record.createdAt).toLocaleString()}
                                   </div>
                                 </div>
-                                {isCompleted && (
-                                  <div className="flex items-center gap-2">
-                                    <StatusIcon
-                                      className={`
-                                          h-4 w-4
-                                          ${record.status === "processing" ? `
-                                            animate-spin
-                                          ` : ""
-                                        }
-                                          ${statusDisplay.color}
-                                        `}
-                                    />
-                                    <span className="text-sm font-medium">
-                                      {statusDisplay.label}
-                                    </span>
-                                    <DropdownMenu>
-                                      <DropdownMenuTrigger asChild>
-                                        <Button
-                                          className="flex-1"
-                                          size="sm"
-                                          variant="outline"
-                                        >
-                                          <MoreHorizontal className="h-4 w-4" />
-                                        </Button>
-                                      </DropdownMenuTrigger>
-                                      <DropdownMenuContent align="end">
-                                        <DropdownMenuItem
-                                          onClick={() => {
+                                <div className="flex items-center gap-2">
+                                  <StatusIcon
+                                    className={`
+                                      h-4 w-4
+                                      ${record.status === "processing" ? `
+                                        animate-spin
+                                      ` : ""
+                                      }
+                                      ${statusDisplay.color}
+                                    `}
+                                  />
+                                  <span className="text-sm font-medium">
+                                    {statusDisplay.label}
+                                  </span>
+                                  <DropdownMenu>
+                                    <DropdownMenuTrigger asChild>
+                                      <Button
+                                        className="flex-1"
+                                        size="sm"
+                                        variant="outline"
+                                      >
+                                        <MoreHorizontal className="h-4 w-4" />
+                                      </Button>
+                                    </DropdownMenuTrigger>
+                                    <DropdownMenuContent align="end">
+                                      <DropdownMenuItem
+                                        disabled={!isCompleted}
+                                        onClick={() => {
+                                          if (record.outputUrl) {
                                             const link = document.createElement('a');
-                                            link.href = record.outputUrl!;
+                                            link.href = record.outputUrl;
                                             link.download = `processed-${record.id}.jpg`;
                                             link.click();
-                                          }}
-                                        >
-                                          <Download className="mr-2 h-4 w-4" />
-                                          下载
-                                        </DropdownMenuItem>
-                                        <DropdownMenuItem
-                                          onClick={() => {
+                                          }
+                                        }}
+                                      >
+                                        <Download className="mr-2 h-4 w-4" />
+                                        {isCompleted ? '下载' : '等待完成'}
+                                      </DropdownMenuItem>
+                                      <DropdownMenuItem
+                                        disabled={!isCompleted}
+                                        onClick={() => {
+                                          if (record.outputUrl) {
                                             if (navigator.share) {
                                               navigator.share({
                                                 title: '处理后的图片',
-                                                url: record.outputUrl!
+                                                url: record.outputUrl
                                               });
                                             } else {
-                                              navigator.clipboard.writeText(record.outputUrl!);
+                                              navigator.clipboard.writeText(record.outputUrl);
                                             }
-                                          }}
-                                        >
-                                          <Share2 className="mr-2 h-4 w-4" />
-                                          分享
-                                        </DropdownMenuItem>
-                                      </DropdownMenuContent>
-                                    </DropdownMenu>
-                                  </div>
-                                )}
+                                          }
+                                        }}
+                                      >
+                                        <Share2 className="mr-2 h-4 w-4" />
+                                        {isCompleted ? '分享' : '等待完成'}
+                                      </DropdownMenuItem>
+                                    </DropdownMenuContent>
+                                  </DropdownMenu>
+                                </div>
                               </div>
                             }
                           >
                             <div
                               className={`
-                                    grid h-full grid-cols-2 gap-0
-                                    overflow-hidden rounded-xl
-                                  `}
+                                grid h-full grid-cols-2 gap-0 overflow-hidden
+                                rounded-xl
+                              `}
                             >
                               <div className="relative h-full w-full">
                                 <div
                                   className={`
-                                        absolute top-2 left-2 z-10 rounded
-                                        bg-black/70 px-2 py-1 text-xs
-                                        font-semibold text-white
-                                      `}
+                                    absolute top-2 left-2 z-10 rounded
+                                    bg-black/70 px-2 py-1 text-xs font-semibold
+                                    text-white
+                                  `}
                                 >
                                   {t("Home.before")}
                                 </div>
@@ -469,22 +475,39 @@ export function GenerationHistoryPanel({
                               <div className="relative h-full w-full">
                                 <div
                                   className={`
-                                        absolute top-2 z-10 rounded bg-black/70
-                                        px-2 py-1 text-xs font-semibold
-                                        text-white
-                                      `}
+                                    absolute top-2 z-10 rounded bg-black/70 px-2
+                                    py-1 text-xs font-semibold text-white
+                                  `}
                                 >
                                   {t("Home.after")}
                                 </div>
-                                {isCompleted ? <Image
-                                  alt={`${record.outputUrl} After`}
-                                  className="object-cover"
-                                  src={record.outputUrl!}
-                                /> : <div>
-                                  <Skeleton className={`
-                                        h-full w-full rounded-full
-                                      `} />
-                                </div>}
+                                {isCompleted ? (
+                                  <Image
+                                    alt={`${record.outputUrl} After`}
+                                    className="object-cover"
+                                    src={record.outputUrl!}
+                                  />
+                                ) : (
+                                  <div className="flex h-full w-full items-center justify-center bg-muted/30">
+                                    <div className="flex flex-col items-center gap-2 text-center">
+                                      <StatusIcon
+                                        className={`
+                                          h-8 w-8
+                                          ${record.status === "processing" ? "animate-spin" : ""}
+                                          ${statusDisplay.color}
+                                        `}
+                                      />
+                                      <span className="text-xs text-muted-foreground">
+                                        {statusDisplay.label}
+                                      </span>
+                                      {record.status === "failed" && record.errorMessage && (
+                                        <span className="text-xs text-red-500 max-w-20 truncate">
+                                          {record.errorMessage}
+                                        </span>
+                                      )}
+                                    </div>
+                                  </div>
+                                )}
 
                               </div>
                             </div>

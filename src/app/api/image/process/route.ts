@@ -11,7 +11,7 @@ import { createClient } from "~/lib/supabase/server";
 
 export async function POST(request: NextRequest) {
   try {
-    const { functionType, imageUrl, prompt }: any = await request.json();
+    const { functionType, imageUrl, parameters, prompt }: any = await request.json();
 
     // 从 Supabase 获取当前用户
     const user = await getCurrentSupabaseUser();
@@ -57,8 +57,8 @@ export async function POST(request: NextRequest) {
     const createResp = await service.createEditTask({
       base_image_url: imageUrl,
       function: functionType,
-      parameters: {},
-      prompt: prompt,
+      parameters,
+      prompt: prompt,  
     });
     const task_id = createResp.output.task_id;
 

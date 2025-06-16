@@ -1,5 +1,8 @@
+import type { GetProp, UploadFile, UploadProps } from 'antd';
 import type { useTranslations } from "next-intl";
 
+import { PlusOutlined } from '@ant-design/icons';
+import { Image, Upload } from 'antd';
 import { AnimatePresence, motion } from "framer-motion";
 import {
   Building,
@@ -12,13 +15,12 @@ import {
   Snowflake,
   Sparkles,
   Sunrise,
-  Upload,
+  Upload as UploadIcon,
   Wand2,
 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 
 import { createClient } from "~/lib/supabase/client";
-import { SupabaseFileUpload, type SupabaseFileUploadRef } from "~/ui/components/upload/supabase-file-upload";
 import { Button } from "~/ui/primitives/button";
 import {
   Card,
@@ -36,6 +38,7 @@ import {
   SelectValue,
 } from "~/ui/primitives/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/ui/primitives/tabs";
+import { ToggleGroup, ToggleGroupItem } from "~/ui/primitives/toggle-group";
 
 export interface UploadProcessPanelProps {
   onImageGenerated: (image: any) => void;
@@ -110,35 +113,85 @@ const getRestorePresets = (t: any) => [
   },
 ];
 
+type FileType = Parameters<GetProp<UploadProps, 'beforeUpload'>>[0];
+
+const getBase64 = (file: FileType): Promise<string> =>
+  new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = () => resolve(reader.result as string);
+    reader.onerror = (error) => reject(error);
+  });
+
 export function UploadProcessPanel(props: UploadProcessPanelProps) {
   const { onImageGenerated, t } = props;
 
-  // 文件上传组件的引用
-  const fileUploadRef = useRef<SupabaseFileUploadRef>(null);
-
   // 内部状态管理
-  const [activeTab, setActiveTab] = useState<"colorization" | "restore">(
+  const [activeTab, setActiveTab] = useState<"colorization" | "super_resolution">(
     "colorization"
   );
   const [selectedFilter, setSelectedFilter] = useState<string>("natural");
   const [uploadedImageUrl, setUploadedImageUrl] = useState<string>("");
   const [isProcessing, setIsProcessing] = useState<boolean>(false);
   const [currentRecordId, setCurrentRecordId] = useState<null | string>(null);
+  const [upscaleFactor, setUpscaleFactor] = useState<number>(1);
 
-  // 处理图片上传完成
-  const handleUploadComplete = ({
-    fileUrl,
-  }: {
-    fileKey: string;
-    fileUrl: string;
-  }) => {
-    setUploadedImageUrl(fileUrl);
+  // antd Upload 相关状态
+  const [fileList, setFileList] = useState<UploadFile[]>([]);
+  const [previewOpen, setPreviewOpen] = useState(false);
+  const [previewImage, setPreviewImage] = useState('');
+
+  // 处理antd Upload预览
+  const handlePreview = async (file: UploadFile) => {
+    if (!file.url && !file.preview) {
+      file.preview = await getBase64(file.originFileObj as FileType);
+    }
+    setPreviewImage(file.url || (file.preview as string));
+    setPreviewOpen(true);
   };
 
-  // 处理图片上传错误
-  const handleUploadError = (error: Error) => {
-    console.error("上传错误:", error);
-    // 这里可以添加错误提示
+  // 处理antd Upload变化
+  const handleChange: UploadProps['onChange'] = ({ fileList: newFileList }) => {
+    setFileList(newFileList);
+    // 如果有文件且上传成功，设置URL
+    if (newFileList.length > 0 && newFileList[0].status === 'done' && newFileList[0].response) {
+      setUploadedImageUrl(newFileList[0].response.url);
+    } else if (newFileList.length === 0) {
+      setUploadedImageUrl('');
+    }
+  };
+
+  // 自定义上传函数
+  const customUpload = async (options: any) => {
+    const { file, onError, onSuccess } = options;
+
+    try {
+      const supabase = createClient();
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${Date.now()}.${fileExt}`;
+
+      const { data, error } = await supabase.storage
+        .from('images')
+        .upload(fileName, file);
+
+      if (error) throw error;
+
+      const { data: { publicUrl } } = supabase.storage
+        .from('images')
+        .getPublicUrl(fileName);
+
+      setUploadedImageUrl(publicUrl);
+      onSuccess({ url: publicUrl }, file);
+    } catch (error) {
+      console.error('上传错误:', error);
+      onError(error);
+    }
+  };
+
+  // 清除文件
+  const clearFiles = () => {
+    setFileList([]);
+    setUploadedImageUrl('');
   };
 
   // 使用Supabase realtime监控记录状态
@@ -176,12 +229,10 @@ export function UploadProcessPanel(props: UploadProcessPanelProps) {
             onImageGenerated(newImage);
             setIsProcessing(false);
             setCurrentRecordId(null);
-            
+
             // 清除上传的图片和缓存
             setUploadedImageUrl("");
-            if (fileUploadRef.current) {
-              fileUploadRef.current.clearFiles();
-            }
+            clearFiles();
           } else if (record.status === 'failed') {
             // 生成失败
             console.error('图片处理失败:', record.error_message);
@@ -209,13 +260,19 @@ export function UploadProcessPanel(props: UploadProcessPanelProps) {
       const promptValue =
         activeTab === "colorization"
           ? `Colorize this black and white photo with ${selectedFilter} style`
-          : `Restore this old or damaged photo using ${selectedFilter} technique`;
+          : `图像超分`;
+
+      const parameters = {
+        n: 1,
+        ...(activeTab === "super_resolution" && { upscale_factor: upscaleFactor })
+      };
 
       const response = await fetch("/api/image/process", {
         body: JSON.stringify({
           functionType: activeTab,
           imageUrl: uploadedImageUrl,
-          prompt: promptValue,
+          parameters,
+          prompt: promptValue
         }),
         headers: {
           "Content-Type": "application/json",
@@ -294,7 +351,7 @@ export function UploadProcessPanel(props: UploadProcessPanelProps) {
                 rounded-xl bg-gradient-to-br from-primary/20 to-primary/10 p-2
               `}
             >
-              <Upload className="h-6 w-6 text-primary" />
+              <UploadIcon className="h-6 w-6 text-primary" />
             </div>
             {t("ImageProcessing.uploadAndProcess")}
           </CardTitle>
@@ -306,35 +363,57 @@ export function UploadProcessPanel(props: UploadProcessPanelProps) {
             <Label className="text-sm font-medium">
               {t("ImageProcessing.uploadImage")}
             </Label>
-            <div
-              className={`
-                rounded-xl border-2 border-dashed border-border/20 bg-muted/20
-                p-6
-              `}
-            >
-              <SupabaseFileUpload
-                accept={{ "image/*": [".jpeg", ".jpg", ".png", ".webp"] }}
-                bucketName="images"
-                className="single-upload"
+            <div className="flex justify-start">
+              <Upload
+                accept="image/*"
+                className="upload-large"
+                customRequest={customUpload}
                 disabled={isProcessing}
+                fileList={fileList}
+                listType="picture-card"
                 maxCount={1}
-                maxSize={10} // 10MB
-                onUploadComplete={(files) => {
-                  if (files && files.length > 0) {
-                    handleUploadComplete(files[0]);
-                  }
+                onChange={handleChange}
+                onPreview={handlePreview}
+                showUploadList={{
+                  showDownloadIcon: false,
+                  showPreviewIcon: true,
+                  showRemoveIcon: true,
                 }}
-                onUploadError={handleUploadError}
-                ref={fileUploadRef}
-              />
+              >
+                {fileList.length >= 1 ? null : (
+                  <button
+                    className={`
+                      flex h-full w-full flex-col items-center justify-center
+                      gap-2 transition-colors
+                      hover:bg-primary/5
+                    `}
+                    style={{ background: 'none', border: 0 }}
+                    type="button"
+                  >
+                    <PlusOutlined className="text-2xl text-gray-400" />
+                    <div className="text-sm text-gray-600">{t("ImageProcessing.uploadImage")}</div>
+                  </button>
+                )}
+              </Upload>
             </div>
+            {previewImage && (
+              <Image
+                preview={{
+                  afterOpenChange: (visible) => !visible && setPreviewImage(''),
+                  onVisibleChange: (visible) => setPreviewOpen(visible),
+                  visible: previewOpen,
+                }}
+                src={previewImage}
+                wrapperStyle={{ display: 'none' }}
+              />
+            )}
           </div>
 
           {/* 标签页切换 */}
           <Tabs
             onValueChange={(value) => {
               if (isProcessing) return; // 处理中禁用切换
-              const newTab = value as "colorization" | "restore";
+              const newTab = value as "colorization" | "super_resolution";
               setActiveTab(newTab);
               // 切换标签时设置默认滤镜
               const defaultFilter =
@@ -346,9 +425,8 @@ export function UploadProcessPanel(props: UploadProcessPanelProps) {
             <TabsList
               className={`
                 grid w-full grid-cols-2 rounded-xl bg-muted/50 p-1
-                ${
-                isProcessing ? 'pointer-events-none opacity-50' : ''
-              }
+                ${isProcessing ? 'pointer-events-none opacity-50' : ''
+                }
               `}
             >
               <TabsTrigger
@@ -368,7 +446,7 @@ export function UploadProcessPanel(props: UploadProcessPanelProps) {
                   data-[state=active]:bg-background
                   data-[state=active]:shadow-sm
                 `}
-                value="restore"
+                value="super_resolution"
               >
                 <Wand2 className="mr-2 h-4 w-4" />
                 {t("ImageProcessing.restore")}
@@ -389,8 +467,7 @@ export function UploadProcessPanel(props: UploadProcessPanelProps) {
                     className={`
                       h-auto min-h-[60px] w-full rounded-xl border-border/20
                       bg-background/50
-                      ${
-                        isProcessing ? 'cursor-not-allowed opacity-50' : ''
+                      ${isProcessing ? 'cursor-not-allowed opacity-50' : ''
                       }
                     `}
                   >
@@ -416,94 +493,170 @@ export function UploadProcessPanel(props: UploadProcessPanelProps) {
               </div>
             </TabsContent>
 
-            <TabsContent className="space-y-4" value="restore">
+            <TabsContent className="space-y-4" value="super_resolution">
               <div className="space-y-2">
                 <Label className="text-sm font-medium">
-                  {t("ImageProcessing.selectRestoreMode")}
+                  {t("ImageProcessing.upscaleFactor")}
                 </Label>
-                <Select
+                <ToggleGroup
+                  className="grid w-full grid-cols-4 gap-3"
                   disabled={isProcessing}
-                  onValueChange={setSelectedFilter}
-                  value={selectedFilter}
+                  onValueChange={(value) => value && setUpscaleFactor(Number(value))}
+                  type="single"
+                  value={upscaleFactor.toString()}
                 >
-                  <SelectTrigger
+                  <ToggleGroupItem
                     className={`
-                      h-auto min-h-[60px] w-full rounded-xl border-border/20
-                      bg-background/50
-                      ${
-                        isProcessing ? 'cursor-not-allowed opacity-50' : ''
-                      }
+                      group relative flex h-20 flex-col items-center
+                      justify-center rounded-2xl border-2 border-border/30
+                      bg-gradient-to-br from-background/80 to-background/60 p-4
+                      shadow-sm transition-all duration-200
+                      hover:scale-[1.02] hover:border-border/50
+                      hover:from-background hover:to-background/90
+                      hover:shadow-md
+                      data-[state=on]:scale-[1.02]
+                      data-[state=on]:border-primary/50
+                      data-[state=on]:bg-gradient-to-br
+                      data-[state=on]:from-primary data-[state=on]:to-primary/90
+                      data-[state=on]:text-primary-foreground
+                      data-[state=on]:shadow-lg
+                      ${isProcessing ? 'cursor-not-allowed opacity-50' : `
+                        cursor-pointer
+                      `}
                     `}
+                    value="1"
                   >
-                    <SelectValue>{renderSelectValue()}</SelectValue>
-                  </SelectTrigger>
-                  <SelectContent
+                    <span className={`
+                      text-xl font-bold tracking-tight
+                      group-data-[state=on]:text-primary-foreground
+                    `}>1x</span>
+                  </ToggleGroupItem>
+                  <ToggleGroupItem
                     className={`
-                      rounded-xl border-border/20 bg-background/95
-                      backdrop-blur-xl
+                      group relative flex h-20 flex-col items-center
+                      justify-center rounded-2xl border-2 border-border/30
+                      bg-gradient-to-br from-background/80 to-background/60 p-4
+                      shadow-sm transition-all duration-200
+                      hover:scale-[1.02] hover:border-border/50
+                      hover:from-background hover:to-background/90
+                      hover:shadow-md
+                      data-[state=on]:scale-[1.02]
+                      data-[state=on]:border-primary/50
+                      data-[state=on]:bg-gradient-to-br
+                      data-[state=on]:from-primary data-[state=on]:to-primary/90
+                      data-[state=on]:text-primary-foreground
+                      data-[state=on]:shadow-lg
+                      ${isProcessing ? 'cursor-not-allowed opacity-50' : `
+                        cursor-pointer
+                      `}
                     `}
+                    value="2"
                   >
-                    {getRestorePresets(t).map((preset) => (
-                      <SelectItem
-                        className="rounded-lg"
-                        key={preset.value}
-                        value={preset.value}
-                      >
-                        {renderSelectPreset(preset)}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                    <span className={`
+                      text-xl font-bold tracking-tight
+                      group-data-[state=on]:text-primary-foreground
+                    `}>2x</span>
+                    {/* <span className="text-xs text-muted-foreground group-data-[state=on]:text-primary-foreground/80 mt-0.5">{t("ImageProcessing.upscale2xDesc")}</span> */}
+                  </ToggleGroupItem>
+                  <ToggleGroupItem
+                    className={`
+                      group relative flex h-20 flex-col items-center
+                      justify-center rounded-2xl border-2 border-border/30
+                      bg-gradient-to-br from-background/80 to-background/60 p-4
+                      shadow-sm transition-all duration-200
+                      hover:scale-[1.02] hover:border-border/50
+                      hover:from-background hover:to-background/90
+                      hover:shadow-md
+                      data-[state=on]:scale-[1.02]
+                      data-[state=on]:border-primary/50
+                      data-[state=on]:bg-gradient-to-br
+                      data-[state=on]:from-primary data-[state=on]:to-primary/90
+                      data-[state=on]:text-primary-foreground
+                      data-[state=on]:shadow-lg
+                      ${isProcessing ? 'cursor-not-allowed opacity-50' : `
+                        cursor-pointer
+                      `}
+                    `}
+                    value="3"
+                  >
+                    <span className={`
+                      text-xl font-bold tracking-tight
+                      group-data-[state=on]:text-primary-foreground
+                    `}>3x</span>
+                  </ToggleGroupItem>
+                  <ToggleGroupItem
+                    className={`
+                      group relative flex h-20 flex-col items-center
+                      justify-center rounded-2xl border-2 border-border/30
+                      bg-gradient-to-br from-background/80 to-background/60 p-4
+                      shadow-sm transition-all duration-200
+                      hover:scale-[1.02] hover:border-border/50
+                      hover:from-background hover:to-background/90
+                      hover:shadow-md
+                      data-[state=on]:scale-[1.02]
+                      data-[state=on]:border-primary/50
+                      data-[state=on]:bg-gradient-to-br
+                      data-[state=on]:from-primary data-[state=on]:to-primary/90
+                      data-[state=on]:text-primary-foreground
+                      data-[state=on]:shadow-lg
+                      ${isProcessing ? 'cursor-not-allowed opacity-50' : `
+                        cursor-pointer
+                      `}
+                    `}
+                    value="4"
+                  >
+                    <span className={`
+                      text-xl font-bold tracking-tight
+                      group-data-[state=on]:text-primary-foreground
+                    `}>4x</span>
+                  </ToggleGroupItem>
+                </ToggleGroup>
               </div>
             </TabsContent>
           </Tabs>
-        </CardContent>
 
-        <CardFooter
-          className={`
-            border-t border-border/10 bg-gradient-to-r from-accent/5
-            to-primary/5 p-6
-          `}
-        >
-          <Button
-            className={`
-              w-full rounded-xl bg-gradient-to-r from-primary to-primary/80 py-3
-              text-base font-medium shadow-lg transition-all
-              hover:shadow-xl
-              disabled:opacity-50
-            `}
-            disabled={!uploadedImageUrl || isProcessing || !selectedFilter}
-            onClick={handleProcessImage}
-          >
-            <AnimatePresence mode="wait">
-              {isProcessing ? (
-                <motion.div
-                  animate={{ opacity: 1 }}
-                  className="flex items-center gap-2"
-                  exit={{ opacity: 0 }}
-                  initial={{ opacity: 0 }}
-                  key="processing"
-                >
-                  <RefreshCcw className="h-4 w-4 animate-spin" />
-                  {t("ImageProcessing.processing")}
-                </motion.div>
-              ) : (
-                <motion.div
-                  animate={{ opacity: 1 }}
-                  className="flex items-center gap-2"
-                  exit={{ opacity: 0 }}
-                  initial={{ opacity: 0 }}
-                  key="process"
-                >
-                  <Sparkles className="h-4 w-4" />
-                  {activeTab === "colorization"
-                    ? t("ImageProcessing.startColorization")
-                    : t("ImageProcessing.startRestore")}
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </Button>
-        </CardFooter>
+          {/* 生成按钮 */}
+          <div className="mt-6">
+            <Button
+              className={`
+                w-full rounded-xl bg-gradient-to-r from-primary to-primary/80
+                py-3 text-base font-medium shadow-lg transition-all
+                hover:shadow-xl
+                disabled:opacity-50
+              `}
+              disabled={!uploadedImageUrl || isProcessing}
+              onClick={handleProcessImage}
+            >
+              <AnimatePresence mode="wait">
+                {isProcessing ? (
+                  <motion.div
+                    animate={{ opacity: 1 }}
+                    className="flex items-center gap-2"
+                    exit={{ opacity: 0 }}
+                    initial={{ opacity: 0 }}
+                    key="processing"
+                  >
+                    <RefreshCcw className="h-4 w-4 animate-spin" />
+                    {t("ImageProcessing.processing")}
+                  </motion.div>
+                ) : (
+                  <motion.div
+                    animate={{ opacity: 1 }}
+                    className="flex items-center gap-2"
+                    exit={{ opacity: 0 }}
+                    initial={{ opacity: 0 }}
+                    key="process"
+                  >
+                    <Sparkles className="h-4 w-4" />
+                    {activeTab === "colorization"
+                      ? t("ImageProcessing.startColorization")
+                      : t("ImageProcessing.startRestore")}
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </Button>
+          </div>
+        </CardContent>
       </Card>
     </motion.div>
   );
