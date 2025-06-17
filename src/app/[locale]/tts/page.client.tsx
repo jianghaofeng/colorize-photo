@@ -7,7 +7,6 @@ import { Image, Upload } from 'antd';
 import { useRef, useState } from 'react';
 import { toast } from 'sonner';
 
-import Example from '~/ui/components/upload/example';
 import { Button } from '~/ui/primitives/button';
 import { Label } from '~/ui/primitives/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '~/ui/primitives/select';

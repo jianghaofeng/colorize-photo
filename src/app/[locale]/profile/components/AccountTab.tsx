@@ -206,7 +206,7 @@ export function AccountTab() {
         }
       },
       {
-        event: '*',
+        event: 'UPDATE',
         filter: `user_id=eq.${user.id}`,
         schema: 'public'
       }

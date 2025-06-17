@@ -158,7 +158,7 @@ export function Header({ showAuth = true }: HeaderProps) {
             <Link className={`
               hidden
               md:block
-            `} href="/image-processing">
+            `} href="/generate">
               <Button size="sm" variant="default">
                 Get Started
               </Button>

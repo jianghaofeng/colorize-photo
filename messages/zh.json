@@ -53,7 +53,8 @@
     "submit": "提交",
     "success": "成功",
     "tryAgain": "重试",
-    "upload": "上传"
+    "upload": "上传",
+    "selectLanguage": "选择语言"
   },
   "Error": {
     "generic": "出现错误",

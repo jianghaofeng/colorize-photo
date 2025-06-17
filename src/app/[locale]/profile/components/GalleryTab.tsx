@@ -294,7 +294,6 @@ export function GalleryTab() {
                     <Image
                       alt="原图"
                       className="object-cover"
-                      fill
                       src={selectedImage.input_url}
                     />
                   </div>
@@ -312,7 +311,6 @@ export function GalleryTab() {
                       <Image
                         alt="处理后"
                         className="object-cover"
-                        fill
                         src={selectedImage.output_url}
                       />
                     ) : (
