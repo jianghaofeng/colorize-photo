@@ -346,7 +346,8 @@
       "payNow": "Pay Now",
       "creating": "Creating payment...",
       "failed": "Payment creation failed",
-      "close": "Close"
+      "close": "Close",
+      "loginRequired": "Login Required"
     },
     "page": {
       "title": "Credit Recharge",

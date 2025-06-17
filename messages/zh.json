@@ -346,7 +346,8 @@
       "payNow": "立即支付",
       "creating": "正在创建支付...",
       "failed": "创建支付失败",
-      "close": "关闭"
+      "close": "关闭",
+      "loginRequired": "请先登录再进行支付"
     },
     "page": {
       "title": "积分充值",

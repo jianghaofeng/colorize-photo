@@ -3,9 +3,11 @@
 import { Elements } from "@stripe/react-stripe-js";
 import { loadStripe } from "@stripe/stripe-js";
 import { useTranslations } from "next-intl";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
 
+import { useSupabase } from "~/lib/supabase/SupabaseProvider";
 import { PaymentForm } from "~/ui/components/payments/payment-form";
 import { type PricingPlan, PricingPlans } from "~/ui/components/pricing/pricing-plans";
 import { Button } from "~/ui/primitives/button";
@@ -24,12 +26,21 @@ const stripePromise = loadStripe(
 
 export function PricingPageClient() {
   const t = useTranslations('Pricing');
+  const router = useRouter();
+  const { user } = useSupabase();
   const [selectedPlan, setSelectedPlan] = useState<null | PricingPlan>(null);
   const [clientSecret, setClientSecret] = useState<null | string>(null);
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
   const [isCreatingPayment, setIsCreatingPayment] = useState(false);
 
   const handleSelectPlan = async (plan: PricingPlan) => {
+    // 检查用户是否已登录
+    if (!user) {
+      toast.error(t('payment.loginRequired'));
+      router.push('/auth/sign-in');
+      return;
+    }
+    
     setSelectedPlan(plan);
     setIsCreatingPayment(true);
 
