@@ -61,7 +61,9 @@ export function ProfilePageClient({ user }: ProfilePageProps) {
           bg-opacity-20 absolute inset-0 bg-black
           dark:bg-opacity-40
         `} />
-        <div className="relative z-10 flex h-full items-end justify-center p-8 w-full">
+        <div className={`
+          relative z-10 flex h-full w-full items-end justify-center p-8
+        `}>
           <div className="flex items-center space-x-6">
             {/* 用户头像 */}
             <div className="relative">
@@ -128,7 +130,7 @@ export function ProfilePageClient({ user }: ProfilePageProps) {
           <nav className="flex space-x-8">
             {[
               { icon: '🖼️', key: 'gallery', label: '画廊' },
-              { icon: '💳', key: 'account', label: '账号' },
+              { icon: '💳', key: 'account', label: '账单' },
               { icon: '⚙️', key: 'settings', label: '个人设置' }
             ].map((tab) => (
               <button

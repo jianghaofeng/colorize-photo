@@ -10,12 +10,12 @@ import { useSupabase } from '~/lib/supabase/SupabaseProvider';
 
 interface CreditBalance {
   balance: number;
-  createdAt: string;
+  created_at: string;
   id: string;
-  totalConsumed: number;
-  totalRecharged: number;
-  updatedAt: string;
-  userId: string;
+  total_consumed: number;
+  total_recharged: number;
+  updated_at: string;
+  user_id: string;
 }
 
 interface CreditPackage {
@@ -23,33 +23,33 @@ interface CreditPackage {
   currency: string;
   description: null | string;
   id: string;
-  isActive: number;
-  isPopular: number;
+  is_active: number;
+  is_popular: number;
   name: string;
   price: number;
 }
 
 interface CreditRecharge {
   amount: number;
-  createdAt: string;
+  created_at: string;
   currency: string;
   id: string;
-  paymentMethod: null | string;
+  payment_method: null | string;
   price: number;
   status: 'completed' | 'failed' | 'pending';
-  userId: string;
+  user_id: string;
 }
 
 interface CreditTransaction {
   amount: number;
-  balanceAfter: number;
-  createdAt: string;
+  balance_after: number;
+  created_at: string;
   description: null | string;
   id: string;
-  relatedRechargeId: null | string;
-  relatedUploadId: null | string;
+  related_recharge_id: null | string;
+  related_upload_id: null | string;
   type: 'bonus' | 'consumption' | 'expiration' | 'recharge' | 'refund' | 'subscription';
-  userId: string;
+  user_id: string;
 }
 
 export function AccountTab() {
@@ -307,7 +307,7 @@ export function AccountTab() {
             mb-2 text-3xl font-bold text-green-600
             dark:text-green-400
           `}>
-            {balance?.totalRecharged || 0}
+            {balance?.total_recharged || 0}
           </div>
           <div className={`
             text-gray-600
@@ -322,7 +322,7 @@ export function AccountTab() {
             mb-2 text-3xl font-bold text-red-600
             dark:text-red-400
           `}>
-            {balance?.totalConsumed || 0}
+            {balance?.total_consumed || 0}
           </div>
           <div className={`
             text-gray-600
@@ -419,7 +419,7 @@ export function AccountTab() {
                             text-sm text-gray-500
                             dark:text-gray-400
                           `}>
-                            {new Date(transaction.createdAt).toLocaleDateString('zh-CN')}
+                            {new Date(transaction.created_at).toLocaleDateString('zh-CN')}
                           </div>
                         </div>
                         <div className={`
@@ -460,7 +460,7 @@ export function AccountTab() {
                             text-sm text-gray-500
                             dark:text-gray-400
                           `}>
-                            {new Date(recharge.createdAt).toLocaleDateString('zh-CN')}
+                            {new Date(recharge.created_at).toLocaleDateString('zh-CN')}
                           </div>
                         </div>
                         <span className={`
@@ -557,7 +557,7 @@ export function AccountTab() {
                           px-6 py-4 text-sm whitespace-nowrap text-gray-900
                           dark:text-gray-100
                         `}>
-                          {transaction.balanceAfter}
+                          {transaction.balance_after}
                         </td>
                         <td className={`
                           px-6 py-4 text-sm whitespace-nowrap text-gray-500
@@ -569,7 +569,7 @@ export function AccountTab() {
                           px-6 py-4 text-sm whitespace-nowrap text-gray-500
                           dark:text-gray-400
                         `}>
-                          {new Date(transaction.createdAt).toLocaleString('zh-CN')}
+                          {new Date(transaction.created_at).toLocaleString('zh-CN')}
                         </td>
                       </tr>
                     ))}
@@ -659,13 +659,13 @@ export function AccountTab() {
                           px-6 py-4 text-sm whitespace-nowrap text-gray-500
                           dark:text-gray-400
                         `}>
-                          {recharge.paymentMethod || '-'}
+                          {recharge.payment_method || '-'}
                         </td>
                         <td className={`
                           px-6 py-4 text-sm whitespace-nowrap text-gray-500
                           dark:text-gray-400
                         `}>
-                          {new Date(recharge.createdAt).toLocaleString('zh-CN')}
+                          {new Date(recharge.created_at).toLocaleString('zh-CN')}
                         </td>
                       </tr>
                     ))}
@@ -691,7 +691,7 @@ export function AccountTab() {
                     className={`
                       relative rounded-lg border-2 bg-white p-6
                       dark:bg-gray-800
-                      ${pkg.isPopular ? `
+                      ${pkg.is_popular === 1 ? `
                         border-blue-500
                         dark:border-blue-400
                       ` : `
@@ -702,7 +702,7 @@ export function AccountTab() {
                     `}
                     key={pkg.id}
                   >
-                    {pkg.isPopular === 1 && (
+                    {pkg.is_popular === 1 && (
                       <div className={`
                         absolute -top-3 left-1/2 -translate-x-1/2 transform
                       `}>
@@ -742,7 +742,7 @@ export function AccountTab() {
                         className={`
                           w-full rounded-lg px-4 py-3 font-medium
                           transition-colors
-                          ${pkg.isPopular
+                          ${pkg.is_popular === 1
                             ? `
                               bg-blue-600 text-white
                               hover:bg-blue-700
