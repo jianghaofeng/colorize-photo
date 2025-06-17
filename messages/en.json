@@ -54,7 +54,11 @@
     "success": "Success",
     "tryAgain": "Try Again",
     "upload": "Upload",
-    "selectLanguage": "Select Language"
+    "selectLanguage": "Select Language",
+    "languages": {
+      "english": "English",
+      "chinese": "Chinese"
+    }
   },
   "Error": {
     "generic": "Something went wrong",
@@ -198,7 +202,6 @@
     "download": "Download",
     "share": "Share",
     "recentHistory": "Recent History",
-    "upscaleFactor": "Upscale Factor",
     "creditBalance": "Credit Balance",
     "insufficientCredits": "Insufficient credits, please recharge first",
     "upscaleFactor": "Image Upscale Factor",
@@ -432,7 +435,39 @@
     "consumption": "Consumption",
     "reward": "Reward",
     "creditsDescription": "Credits are used to colorize your photos. Recharge credits to continue using our services.",
-    "tryAgain": "Try Again"
+    "tryAgain": "Try Again",
+    "stripePaymentTest": "Stripe Payment Test",
+    "testCardDescription": "Use test card numbers for payment testing - supports one-time payments and subscriptions",
+    "testCardInfo": "Test Card Information",
+    "successfulPayment": "Successful Payment",
+    "requiresAuthentication": "Requires Authentication",
+    "declined": "Declined",
+    "anyFutureDate": "Any future date",
+    "anyThreeDigits": "Any 3 digits",
+    "postalCode": "Postal Code",
+    "anyFiveDigits": "Any 5 digits",
+    "oneTimePaymentTest": "One-Time Payment Test",
+    "enterAmount": "Enter amount",
+    "testPayment": "Test Payment",
+    "pay": "Pay",
+    "oneTimePaymentSuccess": "One-time payment successful!",
+    "subscriptionPaymentTest": "Subscription Payment Test",
+    "selectSubscriptionPlanForTest": "Select a subscription plan for testing (using test price IDs)",
+    "subscriptionId": "Subscription ID",
+    "basicFeatures": "Basic Features",
+    "fiveProjects": "5 Projects",
+    "emailSupport": "Email Support",
+    "basic": "Basic",
+    "allBasicFeatures": "All Basic Features",
+    "unlimitedProjects": "Unlimited Projects",
+    "prioritySupport": "Priority Support",
+    "advancedAnalytics": "Advanced Analytics",
+    "professional": "Professional",
+    "allProFeatures": "All Pro Features",
+    "teamCollaboration": "Team Collaboration",
+    "apiAccess": "API Access",
+    "dedicatedSupport": "Dedicated Support",
+    "enterprise": "Enterprise"
   },
   "Settings": {
     "account": "Account",
@@ -453,7 +488,69 @@
     "security": "Security",
     "systemDefault": "System Default",
     "theme": "Theme",
-    "twoFactorAuthentication": "Two-Factor Authentication"
+    "twoFactorAuthentication": "Two-Factor Authentication",
+    "tabs": {
+      "profile": "Profile",
+      "password": "Password Settings",
+      "security": "Security Settings"
+    },
+    "profileForm": {
+      "email": "Email",
+      "emailCannotBeChanged": "Email address cannot be changed",
+      "displayName": "Display Name *",
+      "firstName": "First Name",
+      "lastName": "Last Name",
+      "age": "Age",
+      "saving": "Saving...",
+      "profileUpdateSuccess": "Profile updated successfully!",
+      "updateFailed": "Update failed, please try again",
+      "saveChanges": "Save Changes"
+    },
+    "passwordForm": {
+      "title": "Change Password",
+      "currentPassword": "Current Password",
+      "newPassword": "New Password",
+      "confirmNewPassword": "Confirm New Password",
+      "passwordMinLength": "Password must be at least 6 characters",
+      "passwordMismatch": "New password and confirmation do not match",
+      "changing": "Changing...",
+      "changePassword": "Change Password",
+      "passwordChangeSuccess": "Password changed successfully!",
+      "passwordChangeFailed": "Password change failed, please try again",
+      "passwordMinLengthHint": "password Min Length Hint",
+      "confirmPassword": "Confirm Password"
+    },
+    "securitySettings": {
+      "title": "Security Settings",
+      "emailVerification": "Email Verification",
+      "emailVerificationDesc": "Verify your email address to enhance account security",
+      "verified": "Verified",
+      "notVerified": "Not Verified",
+      "twoFactorAuth": "Two-Factor Authentication (2FA)",
+      "twoFactorAuthDesc": "Add extra protection to your account",
+      "enabled": "Enabled",
+      "disabled": "Disabled",
+      "enable": "Enable Two-Factor Authentication",
+      "setting": "Setting up...",
+      "scanQrCode": "Please scan the QR code and enter the verification code to complete setup",
+      "manualKey": "Manual entry key:",
+      "scanQrCodeDesc": "Scan the QR code with an authenticator app, then enter the verification code",
+      "verifying": "Verifying...",
+      "verifyAndEnable": "Verify and Enable",
+      "disabling": "Disabling...",
+      "disable": "Disable Two-Factor Authentication",
+      "enterPassword": "Please enter your password to disable two-factor authentication:",
+      "twoFactorDisabled": "Two-factor authentication has been disabled",
+      "disableFailed": "Disable failed, please try again",
+      "enterVerificationCode": "Please enter the 6-digit verification code:",
+      "twoFactorEnabled": "Two-factor authentication setup successful!",
+      "verificationFailed": "Verification failed, please try again",
+      "enableFailed": "Enable failed, please try again",
+      "unverified": "Unverified",
+      "enableTwoFactor": "Enable Two Factor",
+      "scanQrCodeInstructions": "Scan QrCode Instructions",
+      "disableTwoFactor": "Disable Two Factor"
+    }
   },
   "User": {
     "email": "Email",
@@ -466,5 +563,89 @@
     "login": "Login",
     "dashboard": "Dashboard",
     "logout": "Logout"
+  },
+  "Profile": {
+    "pleaseLogin": "Please login first",
+    "joinedDate": "Joined date",
+    "gallery": "Gallery",
+    "account": "Account",
+    "settings": "Settings",
+    "creditBalance": "Credit Balance",
+    "totalRecharge": "Total Recharge Credits",
+    "totalConsumption": "Total Consumption Credits",
+    "overview": "Overview",
+    "transactionHistory": "Transaction History",
+    "rechargeHistory": "Recharge History",
+    "rechargePackages": "Recharge Packages",
+    "rechargeNow": "Recharge Now",
+    "recentTransactions": "Recent Transactions",
+    "recentRecharges": "Recent Recharges",
+    "credits": "Credits",
+    "type": "Type",
+    "amount": "Amount",
+    "balance": "Balance",
+    "description": "Description",
+    "time": "Time",
+    "currentBalance": "Current Balance",
+    "totalRecharged": "Total Recharged",
+    "totalConsumed": "Total Consumed",
+    "buyNow": "Buy Now",
+    "popular": "Popular",
+    "tabs": {
+      "overview": "Overview",
+      "transactions": "Transactions",
+      "recharges": "Recharges",
+      "packages": "Packages"
+    },
+    "transactionTable": {
+      "type": "Type",
+      "amount": "Amount",
+      "balance": "Balance",
+      "description": "Description",
+      "time": "Time"
+    },
+    "transactionType": {
+      "reward": "Reward",
+      "consumption": "Consumption",
+      "expired": "Expired",
+      "recharge": "Recharge",
+      "refund": "Refund",
+      "subscription": "Subscription Bonus"
+    },
+    "status": {
+      "completed": "Completed",
+      "failed": "Failed",
+      "pending": "Pending"
+    },
+    "rechargeTable": {
+      "creditAmount": "Credit Amount",
+      "paymentAmount": "Payment Amount",
+      "status": "Status",
+      "paymentMethod": "Payment Method",
+      "time": "Time"
+    },
+    "imageType": {
+      "colorize": "Image Colorization",
+      "restore": "Image Restoration"
+    },
+    "processing": "Processing...",
+    "originalImage": "Original Image",
+    "processedImage": "Processed Image",
+    "imageDetails": "Image Details",
+    "createdTime": "Created Time",
+    "completedTime": "Completed Time",
+    "consumedCredits": "Consumed Credits",
+    "noGeneratedImages": "No generated images yet",
+    "startUsingAI": "Start using AI features to generate your first image!",
+    "totalGenerated": "Total Generated",
+    "errors": {
+      "fetchBalanceFailed": "Failed to fetch balance",
+      "fetchTransactionsFailed": "Failed to fetch transactions",
+      "fetchRechargesFailed": "Failed to fetch recharges",
+      "fetchPackagesFailed": "Failed to fetch packages"
+    },
+    "logs": {
+      "purchasePackage": "Purchase package"
+    }
   }
 }

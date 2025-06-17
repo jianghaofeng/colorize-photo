@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 
 import { twoFactor } from "~/lib/supabase-mfa";
@@ -31,6 +32,7 @@ interface UserProfile {
 }
 
 export function SettingsTab() {
+  const t = useTranslations("Settings");
   const [profile, setProfile] = useState<null | UserProfile>(null);
   const [formData, setFormData] = useState<FormData>({
     age: "",
@@ -74,7 +76,7 @@ export function SettingsTab() {
         .single();
 
       if (error) {
-        console.error("获取用户资料失败:", error);
+        console.error(`${t('profileForm.fetchProfileFailed')}:`, error);
         return;
       }
 
@@ -90,7 +92,7 @@ export function SettingsTab() {
         enabled: data.twoFactorEnabled || false,
       }));
     } catch (error) {
-      console.error("获取用户资料失败:", error);
+      console.error(`${t('profileForm.fetchProfileFailed')}:`, error);
     } finally {
       setLoading(false);
     }
@@ -135,11 +137,11 @@ export function SettingsTab() {
         },
       });
 
-      setMessage({ text: "个人资料更新成功！", type: "success" });
+      setMessage({ text: t('profileForm.profileUpdateSuccess'), type: "success" });
       await fetchProfile();
     } catch (error: any) {
-      console.error("更新用户资料失败:", error);
-      setMessage({ text: error.message || "更新失败，请重试", type: "error" });
+      console.error(`${t('profileForm.updateFailed')}:`, error);
+      setMessage({ text: error.message || t('profileForm.updateFailed'), type: "error" });
     } finally {
       setSaving(false);
     }
@@ -150,12 +152,12 @@ export function SettingsTab() {
     e.preventDefault();
 
     if (passwordData.newPassword !== passwordData.confirmPassword) {
-      setMessage({ text: "新密码和确认密码不匹配", type: "error" });
+      setMessage({ text: t('passwordForm.passwordMismatch'), type: "error" });
       return;
     }
 
     if (passwordData.newPassword.length < 6) {
-      setMessage({ text: "新密码长度至少为6位", type: "error" });
+      setMessage({ text: t('passwordForm.passwordMinLength'), type: "error" });
       return;
     }
 
@@ -171,16 +173,16 @@ export function SettingsTab() {
         throw error;
       }
 
-      setMessage({ text: "密码修改成功！", type: "success" });
+      setMessage({ text: t('passwordForm.passwordChangeSuccess'), type: "success" });
       setPasswordData({
         confirmPassword: "",
         currentPassword: "",
         newPassword: "",
       });
     } catch (error: any) {
-      console.error("修改密码失败:", error);
+      console.error(`${t('passwordForm.passwordChangeFailed')}:`, error);
       setMessage({
-        text: error.message || "密码修改失败，请重试",
+        text: error.message || t('passwordForm.passwordChangeFailed'),
         type: "error",
       });
     } finally {
@@ -205,17 +207,17 @@ export function SettingsTab() {
         qrCode: result.qrCode,
         secret: result.secret,
       });
-      setMessage({ text: "请扫描二维码并输入验证码完成设置", type: "success" });
+      setMessage({ text: t('securitySettings.scanQrCode'), type: "success" });
     } catch (error: any) {
-      console.error("启用双因素认证失败:", error);
-      setMessage({ text: error.message || "启用失败，请重试", type: "error" });
+      console.error(`${t('securitySettings.enableFailed')}:`, error);
+      setMessage({ text: error.message || t('securitySettings.enableFailed'), type: "error" });
       setTwoFactorStatus((prev) => ({ ...prev, loading: false }));
     }
   };
 
   // 禁用双因素认证
   const handleDisableTwoFactor = async () => {
-    const password = prompt("请输入您的密码以禁用双因素认证:");
+    const password = prompt(t('securitySettings.enterPassword'));
     if (!password) return;
 
     setTwoFactorStatus((prev) => ({ ...prev, loading: true }));
@@ -224,18 +226,18 @@ export function SettingsTab() {
     try {
       await twoFactor.disable({ password });
       setTwoFactorStatus({ enabled: false, loading: false });
-      setMessage({ text: "双因素认证已禁用", type: "success" });
+      setMessage({ text: t('securitySettings.twoFactorDisabled'), type: "success" });
       await fetchProfile();
     } catch (error: any) {
-      console.error("禁用双因素认证失败:", error);
-      setMessage({ text: error.message || "禁用失败，请重试", type: "error" });
+      console.error(`${t('securitySettings.disableFailed')}:`, error);
+      setMessage({ text: error.message || t('securitySettings.disableFailed'), type: "error" });
       setTwoFactorStatus((prev) => ({ ...prev, loading: false }));
     }
   };
 
   // 验证双因素认证
   const handleVerifyTwoFactor = async () => {
-    const code = prompt("请输入6位验证码:");
+    const code = prompt(t('securitySettings.enterVerificationCode'));
     if (!code) return;
 
     setTwoFactorStatus((prev) => ({ ...prev, loading: true }));
@@ -244,11 +246,11 @@ export function SettingsTab() {
     try {
       await twoFactor.verify({ code, factorId: twoFactorStatus.secret! });
       setTwoFactorStatus({ enabled: true, loading: false });
-      setMessage({ text: "双因素认证设置成功！", type: "success" });
+      setMessage({ text: t('securitySettings.twoFactorEnabled'), type: "success" });
       await fetchProfile();
     } catch (error: any) {
-      console.error("验证双因素认证失败:", error);
-      setMessage({ text: error.message || "验证失败，请重试", type: "error" });
+      console.error(`${t('securitySettings.verificationFailed')}:`, error);
+      setMessage({ text: error.message || t('securitySettings.verificationFailed'), type: "error" });
       setTwoFactorStatus((prev) => ({ ...prev, loading: false }));
     }
   };
@@ -257,8 +259,8 @@ export function SettingsTab() {
     return (
       <div className="space-y-6">
         <div className={`
-          h-64 animate-pulse rounded-lg bg-gray-200
-          dark:bg-gray-700
+          h-64 animate-pulse rounded-lg bg-muted
+          dark:bg-muted
         `} />
       </div>
     );
@@ -273,11 +275,11 @@ export function SettingsTab() {
             rounded-lg p-4
             ${message.type === "success"
               ? `
-                border border-green-200 bg-green-100 text-green-700
+                border border-green-200 bg-green-100/30 text-green-700
                 dark:border-green-800 dark:bg-green-900/30 dark:text-green-400
               `
               : `
-                border border-red-200 bg-red-100 text-red-700
+                border border-red-200 bg-red-100/30 text-red-700
                 dark:border-red-800 dark:bg-red-900/30 dark:text-red-400
               `
             }
@@ -289,37 +291,38 @@ export function SettingsTab() {
 
       {/* Tab导航 */}
       <div className={`
-        rounded-lg border bg-white shadow-sm
-        dark:border-gray-700 dark:bg-gray-800
+        rounded-lg border border-border bg-background shadow-sm
+        dark:border-border dark:bg-background
       `}>
         <div className={`
-          border-b
-          dark:border-gray-700
+          border-b border-border
+          dark:border-border
         `}>
           <nav className="flex space-x-8 px-6">
             {[
-              { key: "profile", label: "个人资料" },
-              { key: "password", label: "密码设置" },
-              { key: "security", label: "安全设置" },
+              { key: "profile", label: t('tabs.profile') },
+              { key: "password", label: t('tabs.password') },
+              { key: "security", label: t('tabs.security') },
             ].map((tab) => (
               <button
                 className={`
                   border-b-2 px-1 py-4 text-sm font-medium
                   ${activeSection === tab.key
                     ? `
-                      border-blue-500 text-blue-600
-                      dark:border-blue-400 dark:text-blue-400
+                      border-primary text-primary
+                      dark:border-primary dark:text-primary
                     `
                     : `
-                      border-transparent text-gray-500
-                      hover:border-gray-300 hover:text-gray-700
-                      dark:text-gray-400 dark:hover:border-gray-600
-                      dark:hover:text-gray-300
+                      border-transparent text-muted-foreground
+                      hover:border-border hover:text-foreground
+                      dark:text-muted-foreground dark:hover:border-border
+                      dark:hover:text-foreground
                     `
                   }
                 `}
                 key={tab.key}
                 onClick={() => setActiveSection(tab.key as any)}
+                type="button"
               >
                 {tab.label}
               </button>
@@ -331,10 +334,10 @@ export function SettingsTab() {
           {activeSection === "profile" && (
             <div className="max-w-2xl">
               <h3 className={`
-                mb-6 text-lg font-semibold
-                dark:text-white
+                mb-6 text-lg font-semibold text-foreground
+                dark:text-foreground
               `}>
-                个人资料
+                {t('profileSettings')}
               </h3>
               <form className="space-y-6" onSubmit={handleUpdateProfile}>
                 <div className={`
@@ -342,42 +345,46 @@ export function SettingsTab() {
                   md:grid-cols-2
                 `}>
                   <div>
-                    <label className={`
-                      mb-2 block text-sm font-medium text-gray-700
-                      dark:text-gray-300
-                    `}>
-                      邮箱
+                    <label
+                      className={`
+                        mb-2 block text-sm font-medium text-foreground
+                        dark:text-foreground
+                      `}
+                      htmlFor="email">
+                      {t('profileForm.email')}
                     </label>
                     <input
                       className={`
                         w-full cursor-not-allowed rounded-lg border
-                        border-gray-300 bg-gray-100 px-3 py-2
-                        dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300
+                        border-input bg-muted px-3 py-2
+                        dark:border-input dark:bg-muted dark:text-muted-foreground
                       `}
                       disabled
                       type="email"
                       value={profile?.email || ""}
                     />
                     <p className={`
-                      mt-1 text-xs text-gray-500
-                      dark:text-gray-400
+                      mt-1 text-xs text-muted-foreground
+                      dark:text-muted-foreground
                     `}>
-                      邮箱地址无法修改
+                      {t('profileForm.emailCannotBeChanged')}
                     </p>
                   </div>
 
                   <div>
-                    <label className={`
-                      mb-2 block text-sm font-medium text-gray-700
-                      dark:text-gray-300
-                    `}>
-                      显示名称 *
+                    <label
+                      className={`
+                        mb-2 block text-sm font-medium text-foreground
+                        dark:text-foreground
+                      `}
+                      htmlFor="name">
+                      {t('profileForm.displayName')} *
                     </label>
                     <input
                       className={`
-                        w-full rounded-lg border border-gray-300 px-3 py-2
-                        focus:border-blue-500 focus:ring-2 focus:ring-blue-500
-                        dark:border-gray-600 dark:bg-gray-700 dark:text-white
+                        w-full rounded-lg border border-input px-3 py-2
+                        focus:border-primary focus:ring-2 focus:ring-primary/20
+                        dark:border-input dark:bg-background dark:text-foreground
                       `}
                       onChange={(e) =>
                         setFormData((prev) => ({
@@ -392,11 +399,13 @@ export function SettingsTab() {
                   </div>
 
                   <div>
-                    <label className={`
-                      mb-2 block text-sm font-medium text-gray-700
-                      dark:text-gray-300
-                    `}>
-                      名字
+                    <label
+                      className={`
+                        mb-2 block text-sm font-medium text-gray-700
+                        dark:text-gray-300
+                      `}
+                      htmlFor="first-name">
+                      {t('profileForm.firstName')}
                     </label>
                     <input
                       className={`
@@ -416,11 +425,13 @@ export function SettingsTab() {
                   </div>
 
                   <div>
-                    <label className={`
-                      mb-2 block text-sm font-medium text-gray-700
-                      dark:text-gray-300
-                    `}>
-                      姓氏
+                    <label
+                      className={`
+                        mb-2 block text-sm font-medium text-gray-700
+                        dark:text-gray-300
+                      `}
+                      htmlFor="last-name">
+                      {t('profileForm.lastName')}
                     </label>
                     <input
                       className={`
@@ -440,11 +451,13 @@ export function SettingsTab() {
                   </div>
 
                   <div>
-                    <label className={`
-                      mb-2 block text-sm font-medium text-gray-700
-                      dark:text-gray-300
-                    `}>
-                      年龄
+                    <label
+                      className={`
+                        mb-2 block text-sm font-medium text-gray-700
+                        dark:text-gray-300
+                      `}
+                      htmlFor="age">
+                      {t('profileForm.age')}
                     </label>
                     <input
                       className={`
@@ -476,7 +489,7 @@ export function SettingsTab() {
                     disabled={saving}
                     type="submit"
                   >
-                    {saving ? "保存中..." : "保存更改"}
+                    {saving ? t('profileForm.saving') : t('profileForm.saveChanges')}
                   </button>
                 </div>
               </form>
@@ -489,15 +502,17 @@ export function SettingsTab() {
                 mb-6 text-lg font-semibold
                 dark:text-white
               `}>
-                修改密码
+                {t('passwordForm.title')}
               </h3>
               <form className="space-y-6" onSubmit={handleChangePassword}>
                 <div>
-                  <label className={`
-                    mb-2 block text-sm font-medium text-gray-700
-                    dark:text-gray-300
-                  `}>
-                    当前密码
+                  <label
+                    className={`
+                      mb-2 block text-sm font-medium text-gray-700
+                      dark:text-gray-300
+                    `}
+                    htmlFor="current-password">
+                    {t('passwordForm.currentPassword')}
                   </label>
                   <input
                     className={`
@@ -518,11 +533,13 @@ export function SettingsTab() {
                 </div>
 
                 <div>
-                  <label className={`
-                    mb-2 block text-sm font-medium text-gray-700
-                    dark:text-gray-300
-                  `}>
-                    新密码
+                  <label
+                    className={`
+                      mb-2 block text-sm font-medium text-gray-700
+                      dark:text-gray-300
+                    `}
+                    htmlFor="new-password">
+                    {t('passwordForm.newPassword')}
                   </label>
                   <input
                     className={`
@@ -545,16 +562,18 @@ export function SettingsTab() {
                     mt-1 text-xs text-gray-500
                     dark:text-gray-400
                   `}>
-                    密码长度至少为6位
+                    {t('passwordForm.passwordMinLengthHint')}
                   </p>
                 </div>
 
                 <div>
-                  <label className={`
-                    mb-2 block text-sm font-medium text-gray-700
-                    dark:text-gray-300
-                  `}>
-                    确认新密码
+                  <label
+                    className={`
+                      mb-2 block text-sm font-medium text-gray-700
+                      dark:text-gray-300
+                    `}
+                    htmlFor="confirm-password">
+                    {t('passwordForm.confirmPassword')}
                   </label>
                   <input
                     className={`
@@ -584,7 +603,7 @@ export function SettingsTab() {
                     disabled={changingPassword}
                     type="submit"
                   >
-                    {changingPassword ? "修改中..." : "修改密码"}
+                    {changingPassword ? t('passwordForm.changing') : t('passwordForm.changePassword')}
                   </button>
                 </div>
               </form>
@@ -597,7 +616,7 @@ export function SettingsTab() {
                 text-lg font-semibold
                 dark:text-white
               `}>
-                安全设置
+                {t('securitySettings.title')}
               </h3>
 
               {/* 邮箱验证状态 */}
@@ -611,13 +630,13 @@ export function SettingsTab() {
                       font-medium text-gray-900
                       dark:text-white
                     `}>
-                      邮箱验证
+                      {t('securitySettings.emailVerification')}
                     </h4>
                     <p className={`
                       text-sm text-gray-600
                       dark:text-gray-400
                     `}>
-                      验证您的邮箱地址以提高账户安全性
+                      {t('securitySettings.emailVerificationDesc')}
                     </p>
                   </div>
                   <div
@@ -635,7 +654,7 @@ export function SettingsTab() {
                       }
                     `}
                   >
-                    {profile?.emailVerified ? "已验证" : "未验证"}
+                    {profile?.emailVerified ? t('securitySettings.verified') : t('securitySettings.unverified')}
                   </div>
                 </div>
               </div>
@@ -651,13 +670,13 @@ export function SettingsTab() {
                       font-medium text-gray-900
                       dark:text-white
                     `}>
-                      双因素认证 (2FA)
+                      {t('securitySettings.twoFactorAuth')}
                     </h4>
                     <p className={`
                       text-sm text-gray-600
                       dark:text-gray-400
                     `}>
-                      为您的账户添加额外的安全保护
+                      {t('securitySettings.twoFactorAuthDesc')}
                     </p>
                   </div>
                   <div
@@ -675,7 +694,7 @@ export function SettingsTab() {
                       }
                     `}
                   >
-                    {twoFactorStatus.enabled ? "已启用" : "未启用"}
+                    {twoFactorStatus.enabled ? t('securitySettings.enabled') : t('securitySettings.disabled')}
                   </div>
                 </div>
 
@@ -688,8 +707,9 @@ export function SettingsTab() {
                     `}
                     disabled={twoFactorStatus.loading}
                     onClick={handleEnableTwoFactor}
+                    type="button"
                   >
-                    {twoFactorStatus.loading ? "设置中..." : "启用双因素认证"}
+                    {twoFactorStatus.loading ? t('securitySettings.setting') : t('securitySettings.enableTwoFactor')}
                   </button>
                 )}
 
@@ -708,13 +728,13 @@ export function SettingsTab() {
                         mb-2 text-sm text-gray-600
                         dark:text-gray-400
                       `}>
-                        请使用认证应用扫描二维码，然后输入验证码
+                        {t('securitySettings.scanQrCodeInstructions')}
                       </p>
                       <p className={`
                         rounded bg-gray-100 p-2 font-mono text-xs text-gray-500
                         dark:bg-gray-700 dark:text-gray-400
                       `}>
-                        手动输入密钥: {twoFactorStatus.secret}
+                        {t('securitySettings.manualKey')}: {twoFactorStatus.secret}
                       </p>
                     </div>
                     <button
@@ -725,8 +745,9 @@ export function SettingsTab() {
                       `}
                       disabled={twoFactorStatus.loading}
                       onClick={handleVerifyTwoFactor}
+                      type="button"
                     >
-                      {twoFactorStatus.loading ? "验证中..." : "验证并启用"}
+                      {twoFactorStatus.loading ? t('securitySettings.verifying') : t('securitySettings.verifyAndEnable')}
                     </button>
                   </div>
                 )}
@@ -740,8 +761,9 @@ export function SettingsTab() {
                     `}
                     disabled={twoFactorStatus.loading}
                     onClick={handleDisableTwoFactor}
+                    type="button"
                   >
-                    {twoFactorStatus.loading ? "禁用中..." : "禁用双因素认证"}
+                    {twoFactorStatus.loading ? t('securitySettings.disabling') : t('securitySettings.disableTwoFactor')}
                   </button>
                 )}
               </div>

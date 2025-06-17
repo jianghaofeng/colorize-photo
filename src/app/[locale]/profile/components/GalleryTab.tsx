@@ -2,11 +2,25 @@
 
 import { Card, Image } from 'antd';
 import { useEffect, useState } from 'react';
-import Masonry, { ResponsiveMasonry } from 'react-responsive-masonry';
+// 移除直接导入
+// import Masonry, { ResponsiveMasonry } from 'react-responsive-masonry';
+import { useTranslations } from 'next-intl';
+import dynamic from 'next/dynamic';
 
 import { createRealtimeSubscription } from '~/lib/supabase-realtime';
 import { createClient } from '~/lib/supabase/client';
 import { useSupabase } from '~/lib/supabase/SupabaseProvider';
+
+// 使用动态导入并禁用 SSR
+const ResponsiveMasonry = dynamic(
+  () => import('react-responsive-masonry').then((mod) => mod.ResponsiveMasonry),
+  { ssr: false }
+);
+
+const Masonry = dynamic(
+  () => import('react-responsive-masonry').then((mod) => mod.default),
+  { ssr: false }
+);
 
 const { Meta } = Card;
 
@@ -23,6 +37,7 @@ interface GenerationRecord {
 }
 
 export function GalleryTab() {
+  const t = useTranslations();
   const [generations, setGenerations] = useState<GenerationRecord[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedImage, setSelectedImage] = useState<GenerationRecord | null>(null);
@@ -113,8 +128,8 @@ export function GalleryTab() {
           {[...Array(6)].map((_, i) => (
             <div
               className={`
-                aspect-square animate-pulse rounded-lg bg-gray-200
-                dark:bg-gray-800
+                aspect-square animate-pulse rounded-lg bg-muted
+                dark:bg-muted/50
               `}
               key={i}
             />
@@ -128,12 +143,12 @@ export function GalleryTab() {
     return (
       <div className="py-12 text-center">
         <div className={`
-          mb-4 text-lg text-gray-500
-          dark:text-gray-300
+          mb-4 text-lg text-muted-foreground
+          dark:text-muted-foreground
         `}>暂无生成的图片</div>
         <p className={`
-          text-gray-400
-          dark:text-gray-600
+          text-muted-foreground/70
+          dark:text-muted-foreground/50
         `}>开始使用AI功能生成您的第一张图片吧！</p>
       </div>
     );
@@ -147,21 +162,21 @@ export function GalleryTab() {
         md:grid-cols-3
       `}>
         <div className={`
-          rounded-lg border border-gray-200 bg-white p-4 shadow-sm
-          dark:border-gray-800 dark:bg-gray-900
+          rounded-lg border border-border bg-card p-4 shadow-sm
+          dark:border-border dark:bg-card
         `}>
           <div className={`
             text-2xl font-bold text-blue-600
             dark:text-blue-400
           `}>{generations.length}</div>
           <div className={`
-            text-gray-600
-            dark:text-gray-300
+            text-foreground/70
+            dark:text-foreground/70
           `}>总生成数量</div>
         </div>
         <div className={`
-          rounded-lg border border-gray-200 bg-white p-4 shadow-sm
-          dark:border-gray-800 dark:bg-gray-900
+          rounded-lg border border-border bg-card p-4 shadow-sm
+          dark:border-border dark:bg-card
         `}>
           <div className={`
             text-2xl font-bold text-green-600
@@ -170,13 +185,13 @@ export function GalleryTab() {
             {generations.filter(g => g.type === 'colorization').length}
           </div>
           <div className={`
-            text-gray-600
-            dark:text-gray-300
+            text-foreground/70
+            dark:text-foreground/70
           `}>图像上色</div>
         </div>
         <div className={`
-          rounded-lg border border-gray-200 bg-white p-4 shadow-sm
-          dark:border-gray-800 dark:bg-gray-900
+          rounded-lg border border-border bg-card p-4 shadow-sm
+          dark:border-border dark:bg-card
         `}>
           <div className={`
             text-2xl font-bold text-purple-600
@@ -185,8 +200,8 @@ export function GalleryTab() {
             {generations.filter(g => g.type === 'restoration').length}
           </div>
           <div className={`
-            text-gray-600
-            dark:text-gray-300
+            text-foreground/70
+            dark:text-foreground/70
           `}>图像修复</div>
         </div>
       </div>
@@ -206,12 +221,13 @@ export function GalleryTab() {
                   />
                 ) : (
                   <div className={`
-                    flex h-full w-full items-center justify-center bg-gray-200
-                    dark:bg-gray-800
+                    flex h-full w-full items-center justify-center
+                    bg-muted
+                    dark:bg-muted/50
                   `}>
                     <span className={`
-                      text-gray-500
-                      dark:text-gray-300
+                      text-muted-foreground
+                      dark:text-muted-foreground
                     `}>处理中...</span>
                   </div>
                 )
@@ -221,22 +237,22 @@ export function GalleryTab() {
               onClick={() => setSelectedImage(generation)}
             >
               <Meta description={<div className={`
-                text-xs text-gray-500
-                dark:text-gray-400
+                text-xs text-muted-foreground
+                dark:text-muted-foreground
               `}>
                 {new Date(generation.completed_at || generation.created_at).toLocaleDateString('zh-CN')}
               </div>} title={<div className={`
                 mb-2 flex items-center justify-between
               `}>
                 <span className={`
-                  text-sm font-medium text-gray-900
-                  dark:text-gray-100
+                  text-sm font-medium text-foreground
+                  dark:text-foreground
                 `}>
                   {getTypeLabel(generation.type)}
                 </span>
                 <span className={`
-                  text-xs text-gray-500
-                  dark:text-gray-400
+                  text-xs text-muted-foreground
+                  dark:text-muted-foreground
                 `}>
                   {generation.credit_consumed} 积分
                 </span>
@@ -253,26 +269,27 @@ export function GalleryTab() {
           bg-black p-4
         `}>
           <div className={`
-            max-h-[90vh] max-w-4xl overflow-auto rounded-lg bg-white
-            dark:bg-gray-900
+            max-h-[90vh] max-w-4xl overflow-auto rounded-lg bg-card
+            dark:bg-card
           `}>
             <div className={`
-              flex items-center justify-between border-b border-gray-200 p-4
-              dark:border-gray-800
+              flex items-center justify-between border-b border-border p-4
+              dark:border-border
             `}>
               <h3 className={`
-                text-lg font-semibold text-gray-900
-                dark:text-gray-100
+                text-lg font-semibold text-foreground
+                dark:text-foreground
               `}>
                 {getTypeLabel(selectedImage.type)} - 详情
               </h3>
               <button
                 className={`
-                  text-gray-500
-                  hover:text-gray-700
-                  dark:text-gray-400 dark:hover:text-gray-200
+                  text-muted-foreground
+                  hover:text-foreground
+                  dark:text-muted-foreground dark:hover:text-foreground
                 `}
                 onClick={() => setSelectedImage(null)}
+                type='button'
               >
                 ✕
               </button>
@@ -285,14 +302,14 @@ export function GalleryTab() {
                 {/* 原图 */}
                 <div>
                   <h4 className={`
-                    mb-2 text-sm font-medium text-gray-700
-                    dark:text-gray-300
-                  `}>原图</h4>
+                    mb-2 text-sm font-medium text-foreground/80
+                    dark:text-foreground/80
+                  `}>{t('originalImage')}</h4>
                   <div className={`
                     relative aspect-square overflow-hidden rounded-lg
                   `}>
                     <Image
-                      alt="原图"
+                      alt={t('originalImage')}
                       className="object-cover"
                       src={selectedImage.input_url}
                     />
@@ -301,27 +318,27 @@ export function GalleryTab() {
                 {/* 处理后 */}
                 <div>
                   <h4 className={`
-                    mb-2 text-sm font-medium text-gray-700
-                    dark:text-gray-300
-                  `}>处理后</h4>
+                    mb-2 text-sm font-medium text-foreground/80
+                    dark:text-foreground/80
+                  `}>{t('processedImage')}</h4>
                   <div className={`
                     relative aspect-square overflow-hidden rounded-lg
                   `}>
                     {selectedImage.output_url ? (
                       <Image
-                        alt="处理后"
+                        alt={t('processedImage')}
                         className="object-cover"
                         src={selectedImage.output_url}
                       />
                     ) : (
                       <div className={`
                         flex h-full w-full items-center justify-center
-                        bg-gray-200
-                        dark:bg-gray-800
+                        bg-muted
+                        dark:bg-muted/50
                       `}>
                         <span className={`
-                          text-gray-500
-                          dark:text-gray-300
+                          text-muted-foreground
+                          dark:text-muted-foreground
                         `}>处理中...</span>
                       </div>
                     )}
@@ -331,44 +348,44 @@ export function GalleryTab() {
               <div className="mt-6 grid grid-cols-2 gap-4 text-sm">
                 <div>
                   <span className={`
-                    text-gray-600
-                    dark:text-gray-400
+                    text-muted-foreground
+                    dark:text-muted-foreground
                   `}>类型：</span>
                   <span className={`
-                    font-medium text-gray-900
-                    dark:text-gray-100
+                    font-medium text-foreground
+                    dark:text-foreground
                   `}>{getTypeLabel(selectedImage.type)}</span>
                 </div>
                 <div>
                   <span className={`
-                    text-gray-600
-                    dark:text-gray-400
+                    text-muted-foreground
+                    dark:text-muted-foreground
                   `}>消耗积分：</span>
                   <span className={`
-                    font-medium text-gray-900
-                    dark:text-gray-100
+                    font-medium text-foreground
+                    dark:text-foreground
                   `}>{selectedImage.credit_consumed}</span>
                 </div>
                 <div>
                   <span className={`
-                    text-gray-600
-                    dark:text-gray-400
+                    text-muted-foreground
+                    dark:text-muted-foreground
                   `}>创建时间：</span>
                   <span className={`
-                    font-medium text-gray-900
-                    dark:text-gray-100
+                    font-medium text-foreground
+                    dark:text-foreground
                   `}>
                     {new Date(selectedImage.created_at).toLocaleString('zh-CN')}
                   </span>
                 </div>
                 <div>
                   <span className={`
-                    text-gray-600
-                    dark:text-gray-400
+                    text-muted-foreground
+                    dark:text-muted-foreground
                   `}>完成时间：</span>
                   <span className={`
-                    font-medium text-gray-900
-                    dark:text-gray-100
+                    font-medium text-foreground
+                    dark:text-foreground
                   `}>
                     {selectedImage.completed_at
                       ? new Date(selectedImage.completed_at).toLocaleString('zh-CN')

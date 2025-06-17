@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 
+import { useTranslations } from "next-intl";
+
 import { PaymentModal } from "~/ui/components/payments/payment-modal";
 import { SubscriptionModal } from "~/ui/components/payments/subscription-modal";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "~/ui/primitives/card";
@@ -9,40 +11,43 @@ import { Input } from "~/ui/primitives/input";
 import { Label } from "~/ui/primitives/label";
 
 // 订阅计划配置
-const subscriptionPlans = [
+const getSubscriptionPlans = (t: any) => [
   {
-    features: ["基础功能", "5个项目", "邮件支持"],
+    features: [t("Payment.basicFeatures"), t("Payment.fiveProjects"), t("Payment.emailSupport")],
     id: "basic",
-    interval: "月",
-    name: "基础版",
+    interval: t("Payment.monthly"),
+    name: t("Payment.basicPlan"),
     price: "$9.99",
     priceId: "price_basic_monthly", // 这里应该是真实的 Stripe Price ID
   },
   {
-    features: ["所有基础功能", "无限项目", "优先支持", "高级分析"],
+    features: [t("Payment.allBasicFeatures"), t("Payment.unlimitedProjects"), t("Payment.prioritySupport"), t("Payment.advancedAnalytics")],
     id: "pro",
-    interval: "月",
-    name: "专业版",
+    interval: t("Payment.monthly"),
+    name: t("Payment.proPlan"),
     price: "$19.99",
     priceId: "price_pro_monthly", // 这里应该是真实的 Stripe Price ID
   },
   {
-    features: ["所有专业功能", "团队协作", "API访问", "专属客服"],
+    features: [t("Payment.allProFeatures"), t("Payment.teamCollaboration"), t("Payment.apiAccess"), t("Payment.dedicatedSupport")],
     id: "enterprise",
-    interval: "月",
-    name: "企业版",
+    interval: t("Payment.monthly"),
+    name: t("Payment.enterprisePlan"),
     price: "$49.99",
     priceId: "price_enterprise_monthly", // 这里应该是真实的 Stripe Price ID
   },
 ];
 
 export default function PaymentTestPage() {
+  const t = useTranslations();
   const [amount, setAmount] = useState(10);
   const [message, setMessage] = useState("");
   const [messageType, setMessageType] = useState<"" | "error" | "success">("");
+  
+  const subscriptionPlans = getSubscriptionPlans(t);
 
   const handlePaymentSuccess = () => {
-    setMessage("一次性支付成功！");
+    setMessage(t("Payment.oneTimePaymentSuccess"));
     setMessageType("success");
     setTimeout(() => {
       setMessage("");
@@ -51,7 +56,7 @@ export default function PaymentTestPage() {
   };
 
   const handlePaymentError = (error: string) => {
-    setMessage(`支付失败: ${error}`);
+    setMessage(`${t("Payment.paymentFailed")}: ${error}`);
     setMessageType("error");
     setTimeout(() => {
       setMessage("");
@@ -60,7 +65,7 @@ export default function PaymentTestPage() {
   };
 
   const handleSubscriptionSuccess = (subscriptionId: string) => {
-    setMessage(`订阅创建成功！订阅ID: ${subscriptionId}`);
+    setMessage(`${t("Payment.subscriptionCreated")}! ${t("Payment.subscriptionId")}: ${subscriptionId}`);
     setMessageType("success");
     setTimeout(() => {
       setMessage("");
@@ -69,7 +74,7 @@ export default function PaymentTestPage() {
   };
 
   const handleSubscriptionError = (error: string) => {
-    setMessage(`订阅失败: ${error}`);
+    setMessage(`${t("Payment.subscriptionFailed")}: ${error}`);
     setMessageType("error");
     setTimeout(() => {
       setMessage("");
@@ -81,10 +86,10 @@ export default function PaymentTestPage() {
     <div className="container mx-auto max-w-4xl py-8">
       <div className="mb-8 text-center">
         <h1 className="text-3xl font-bold text-foreground">
-          Stripe 支付测试
+          {t("Payment.stripePaymentTest")}
         </h1>
         <p className="mt-2 text-muted-foreground">
-          使用测试卡号进行支付测试 - 支持一次性支付和订阅支付
+          {t("Payment.testCardDescription")}
         </p>
       </div>
 
@@ -115,7 +120,7 @@ export default function PaymentTestPage() {
         {/* 测试卡信息 */}
         <Card>
           <CardHeader>
-            <CardTitle>测试卡信息</CardTitle>
+            <CardTitle>{t("Payment.testCardInfo")}</CardTitle>
           </CardHeader>
           <CardContent className="space-y-2">
             <div className={`
@@ -123,22 +128,22 @@ export default function PaymentTestPage() {
               md:grid-cols-2
             `}>
               <div>
-                <strong>成功支付:</strong> 4242 4242 4242 4242
+                <strong>{t("Payment.successfulPayment")}:</strong> 4242 4242 4242 4242
               </div>
               <div>
-                <strong>需要验证:</strong> 4000 0025 0000 3155
+                <strong>{t("Payment.requiresAuthentication")}:</strong> 4000 0025 0000 3155
               </div>
               <div>
-                <strong>被拒绝:</strong> 4000 0000 0000 0002
+                <strong>{t("Payment.declined")}:</strong> 4000 0000 0000 0002
               </div>
               <div>
-                <strong>过期日期:</strong> 任何未来日期
+                <strong>{t("Payment.expirationDate")}:</strong> {t("Payment.anyFutureDate")}
               </div>
               <div>
-                <strong>CVC:</strong> 任何3位数字
+                <strong>CVC:</strong> {t("Payment.anyThreeDigits")}
               </div>
               <div>
-                <strong>邮编:</strong> 任何5位数字
+                <strong>{t("Payment.postalCode")}:</strong> {t("Payment.anyFiveDigits")}
               </div>
             </div>
           </CardContent>
@@ -147,16 +152,16 @@ export default function PaymentTestPage() {
         {/* 一次性支付测试 */}
         <Card>
           <CardHeader>
-            <CardTitle>一次性支付测试</CardTitle>
+            <CardTitle>{t("Payment.oneTimePaymentTest")}</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="amount">金额 (USD)</Label>
+              <Label htmlFor="amount">{t("Payment.amount")} (USD)</Label>
               <Input
                 id="amount"
                 min="0.5"
                 onChange={(e) => setAmount(Number(e.target.value))}
-                placeholder="输入金额"
+                placeholder={t("Payment.enterAmount")}
                 step="0.01"
                 type="number"
                 value={amount}
@@ -165,10 +170,10 @@ export default function PaymentTestPage() {
 
             <PaymentModal
               amount={amount}
-              description={`测试支付 - $${amount}`}
+              description={`${t("Payment.testPayment")} - $${amount}`}
               onError={handlePaymentError}
               onSuccess={handlePaymentSuccess}
-              triggerText={`支付 $${amount}`}
+              triggerText={`${t("Payment.pay")} $${amount}`}
             />
           </CardContent>
         </Card>
@@ -176,9 +181,9 @@ export default function PaymentTestPage() {
         {/* 订阅支付测试 */}
         <Card>
           <CardHeader>
-            <CardTitle>订阅支付测试</CardTitle>
+            <CardTitle>{t("Payment.subscriptionPaymentTest")}</CardTitle>
             <CardDescription>
-              选择一个订阅计划进行测试（使用测试价格ID）
+              {t("Payment.selectSubscriptionPlanForTest")}
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -220,7 +225,7 @@ export default function PaymentTestPage() {
                     planName={plan.name}
                     price={plan.price}
                     priceId={plan.priceId}
-                    triggerText={`订阅 ${plan.name}`}
+                    triggerText={`${t("Payment.subscribe")} ${plan.name}`}
                   />
                 </div>
               ))}

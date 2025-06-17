@@ -54,7 +54,11 @@
     "success": "成功",
     "tryAgain": "重试",
     "upload": "上传",
-    "selectLanguage": "选择语言"
+    "selectLanguage": "选择语言",
+    "languages": {
+      "english": "英文",
+      "chinese": "中文"
+    }
   },
   "Error": {
     "generic": "出现错误",
@@ -431,7 +435,39 @@
     "consumption": "消费",
     "reward": "奖励",
     "creditsDescription": "积分用于为您的照片上色。充值积分以继续使用我们的服务。",
-    "tryAgain": "重试"
+    "tryAgain": "重试",
+    "stripePaymentTest": "Stripe 支付测试",
+    "testCardDescription": "使用测试卡号进行支付测试 - 支持一次性支付和订阅支付",
+    "testCardInfo": "测试卡信息",
+    "successfulPayment": "成功支付",
+    "requiresAuthentication": "需要验证",
+    "declined": "被拒绝",
+    "anyFutureDate": "任何未来日期",
+    "anyThreeDigits": "任何3位数字",
+    "postalCode": "邮编",
+    "anyFiveDigits": "任何5位数字",
+    "oneTimePaymentTest": "一次性支付测试",
+    "enterAmount": "输入金额",
+    "testPayment": "测试支付",
+    "pay": "支付",
+    "oneTimePaymentSuccess": "一次性支付成功！",
+    "subscriptionPaymentTest": "订阅支付测试",
+    "selectSubscriptionPlanForTest": "选择一个订阅计划进行测试（使用测试价格ID）",
+    "subscriptionId": "订阅ID",
+    "basicFeatures": "基础功能",
+    "fiveProjects": "5个项目",
+    "emailSupport": "邮件支持",
+    "basic": "基础版",
+    "allBasicFeatures": "所有基础功能",
+    "unlimitedProjects": "无限项目",
+    "prioritySupport": "优先支持",
+    "advancedAnalytics": "高级分析",
+    "professional": "专业版",
+    "allProFeatures": "所有专业功能",
+    "teamCollaboration": "团队协作",
+    "apiAccess": "API访问",
+    "dedicatedSupport": "专属客服",
+    "enterprise": "企业版"
   },
   "Settings": {
     "account": "账户",
@@ -452,7 +488,62 @@
     "security": "安全",
     "systemDefault": "系统默认",
     "theme": "主题",
-    "twoFactorAuthentication": "两步验证"
+    "twoFactorAuthentication": "两步验证",
+    "tabs": {
+      "profile": "个人资料",
+      "password": "密码设置",
+      "security": "安全设置"
+    },
+    "profileForm": {
+      "email": "邮箱",
+      "emailCannotBeChanged": "邮箱地址无法修改",
+      "displayName": "显示名称 *",
+      "firstName": "名字",
+      "lastName": "姓氏",
+      "age": "年龄",
+      "saving": "保存中...",
+      "profileUpdateSuccess": "个人资料更新成功！",
+      "updateFailed": "更新失败，请重试"
+    },
+    "passwordForm": {
+      "title": "修改密码",
+      "currentPassword": "当前密码",
+      "newPassword": "新密码",
+      "confirmNewPassword": "确认新密码",
+      "passwordMinLength": "密码长度至少为6位",
+      "passwordMismatch": "新密码和确认密码不匹配",
+      "changing": "修改中...",
+      "changePassword": "修改密码",
+      "passwordChangeSuccess": "密码修改成功！",
+      "passwordChangeFailed": "密码修改失败，请重试"
+    },
+    "securitySettings": {
+      "title": "安全设置",
+      "emailVerification": "邮箱验证",
+      "emailVerificationDesc": "验证您的邮箱地址以提高账户安全性",
+      "verified": "已验证",
+      "notVerified": "未验证",
+      "twoFactorAuth": "双因素认证 (2FA)",
+      "twoFactorAuthDesc": "为您的账户添加额外的安全保护",
+      "enabled": "已启用",
+      "disabled": "未启用",
+      "enable": "启用双因素认证",
+      "setting": "设置中...",
+      "scanQrCode": "请扫描二维码并输入验证码完成设置",
+      "manualKey": "手动输入密钥:",
+      "scanQrCodeDesc": "请使用认证应用扫描二维码，然后输入验证码",
+      "verifying": "验证中...",
+      "verifyAndEnable": "验证并启用",
+      "disabling": "禁用中...",
+      "disable": "禁用双因素认证",
+      "enterPassword": "请输入您的密码以禁用双因素认证:",
+      "twoFactorDisabled": "双因素认证已禁用",
+      "disableFailed": "禁用失败，请重试",
+      "enterVerificationCode": "请输入6位验证码:",
+      "twoFactorEnabled": "双因素认证设置成功！",
+      "verificationFailed": "验证失败，请重试",
+      "enableFailed": "启用失败，请重试"
+    }
   },
   "User": {
     "email": "邮箱",
@@ -464,5 +555,89 @@
     "username": "用户名",
     "dashboard": "工作台",
     "logout": "退出登录"
+  },
+  "Profile": {
+    "pleaseLogin": "请先登录",
+    "joinedDate": "加入时间",
+    "gallery": "画廊",
+    "account": "账单",
+    "settings": "个人设置",
+    "creditBalance": "当前积分余额",
+    "totalRecharge": "累计充值积分",
+    "totalConsumption": "累计消费积分",
+    "overview": "概览",
+    "transactionHistory": "交易记录",
+    "rechargeHistory": "充值记录",
+    "rechargePackages": "充值套餐",
+    "rechargeNow": "立即充值",
+    "recentTransactions": "最近交易",
+    "recentRecharges": "最近充值",
+    "credits": "积分",
+    "type": "类型",
+    "amount": "金额",
+    "balance": "余额",
+    "description": "描述",
+    "time": "时间",
+    "currentBalance": "当前积分余额",
+    "totalRecharged": "累计充值积分",
+    "totalConsumed": "累计消费积分",
+    "buyNow": "立即购买",
+    "popular": "热门",
+    "tabs": {
+      "overview": "概览",
+      "transactions": "交易记录",
+      "recharges": "充值记录",
+      "packages": "充值套餐"
+    },
+    "transactionTable": {
+      "type": "类型",
+      "amount": "金额",
+      "balance": "余额",
+      "description": "描述",
+      "time": "时间"
+    },
+    "transactionType": {
+      "reward": "奖励",
+      "consumption": "消费",
+      "expired": "过期",
+      "recharge": "充值",
+      "refund": "退款",
+      "subscription": "订阅赠送"
+    },
+    "status": {
+      "completed": "已完成",
+      "failed": "失败",
+      "pending": "待支付"
+    },
+    "rechargeTable": {
+      "creditAmount": "积分数量",
+      "paymentAmount": "支付金额",
+      "status": "状态",
+      "paymentMethod": "支付方式",
+      "time": "时间"
+    },
+    "imageType": {
+      "colorize": "图像上色",
+      "restore": "图像修复"
+    },
+    "processing": "处理中...",
+    "originalImage": "原图",
+    "processedImage": "处理后",
+    "imageDetails": "详情",
+    "createdTime": "创建时间",
+    "completedTime": "完成时间",
+    "consumedCredits": "消耗积分",
+    "noGeneratedImages": "暂无生成的图片",
+    "startUsingAI": "开始使用AI功能生成您的第一张图片吧！",
+    "totalGenerated": "总生成数量",
+    "errors": {
+      "fetchBalanceFailed": "获取积分余额失败",
+      "fetchTransactionsFailed": "获取交易记录失败",
+      "fetchRechargesFailed": "获取充值记录失败",
+      "fetchPackagesFailed": "获取充值套餐失败"
+    },
+    "logs": {
+      "purchasePackage": "购买套餐"
+    }
   }
 }

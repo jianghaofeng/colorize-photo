@@ -16,17 +16,18 @@ import {
   DropdownMenuTrigger,
 } from "~/ui/primitives/dropdown-menu";
 
-const languageNames: Record<Locale, string> = {
-  en: "English",
-  zh: "中文",
-};
-
 export function LanguageSwitcher({ className }: { className?: string }) {
   const t = useTranslations();
   const router = useRouter();
   const [mounted, setMounted] = React.useState(false);
   const [currentLocale, setCurrentLocale] = React.useState<Locale>("en");
   const [, startTransition] = useTransition();
+  
+  // 定义语言名称，使用国际化翻译
+  const languageNames: Record<Locale, string> = {
+    en: t("Common.languages.english") || "English",
+    zh: t("Common.languages.chinese") || "中文",
+  };
 
   // 获取当前语言
   React.useEffect(() => {

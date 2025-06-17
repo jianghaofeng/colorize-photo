@@ -1,6 +1,6 @@
 'use client';
 
-import { Button } from 'antd';
+import { useTranslations } from 'next-intl';
 import { useEffect, useState } from 'react';
 
 import { useRouter } from '~/i18n/i18nConfig';
@@ -53,6 +53,7 @@ interface CreditTransaction {
 }
 
 export function AccountTab() {
+  const t = useTranslations('Profile');
   const [balance, setBalance] = useState<CreditBalance | null>(null);
   const [transactions, setTransactions] = useState<CreditTransaction[]>([]);
   const [recharges, setRecharges] = useState<CreditRecharge[]>([]);
@@ -62,7 +63,7 @@ export function AccountTab() {
   const { user } = useSupabase();
   const supabase = createClient();
   const router = useRouter();
-  // 获取积分余额
+  // Fetch credit balance
   const fetchBalance = async () => {
     if (!user) return;
 
@@ -74,17 +75,17 @@ export function AccountTab() {
         .single();
 
       if (error && error.code !== 'PGRST116') {
-        console.error('获取积分余额失败:', error);
+        console.error(`${t('errors.fetchBalanceFailed')}:`, error);
         return;
       }
 
       setBalance(data);
     } catch (error) {
-      console.error('获取积分余额失败:', error);
+      console.error(`${t('errors.fetchBalanceFailed')}:`, error);
     }
   };
 
-  // 获取交易记录
+  // Fetch transaction records
   const fetchTransactions = async () => {
     if (!user) return;
 
@@ -97,17 +98,17 @@ export function AccountTab() {
         .limit(50);
 
       if (error) {
-        console.error('获取交易记录失败:', error);
+        console.error(`${t('errors.fetchTransactionsFailed')}:`, error);
         return;
       }
 
       setTransactions(data || []);
     } catch (error) {
-      console.error('获取交易记录失败:', error);
+      console.error(`${t('errors.fetchTransactionsFailed')}:`, error);
     }
   };
 
-  // 获取充值记录
+  // Fetch recharge records
   const fetchRecharges = async () => {
     if (!user) return;
 
@@ -120,17 +121,17 @@ export function AccountTab() {
         .limit(20);
 
       if (error) {
-        console.error('获取充值记录失败:', error);
+        console.error(`${t('errors.fetchRechargesFailed')}:`, error);
         return;
       }
 
       setRecharges(data || []);
     } catch (error) {
-      console.error('获取充值记录失败:', error);
+      console.error(`${t('errors.fetchRechargesFailed')}:`, error);
     }
   };
 
-  // 获取积分套餐
+  // Fetch credit packages
   const fetchPackages = async () => {
     try {
       const { data, error } = await supabase
@@ -140,13 +141,13 @@ export function AccountTab() {
         .order('sort_order', { ascending: true });
 
       if (error) {
-        console.error('获取积分套餐失败:', error);
+        console.error(`${t('errors.fetchPackagesFailed')}:`, error);
         return;
       }
 
       setPackages(data || []);
     } catch (error) {
-      console.error('获取积分套餐失败:', error);
+      console.error(`${t('errors.fetchPackagesFailed')}:`, error);
     }
   };
 
@@ -164,7 +165,7 @@ export function AccountTab() {
     loadData();
   }, [user]);
 
-  // 设置实时订阅
+  // Set up realtime subscriptions
   useEffect(() => {
     if (!user) return;
 
@@ -221,21 +222,21 @@ export function AccountTab() {
 
   const getTransactionTypeLabel = (type: string) => {
     const labels = {
-      bonus: '奖励',
-      consumption: '消费',
-      expiration: '过期',
-      recharge: '充值',
-      refund: '退款',
-      subscription: '订阅赠送'
+      bonus: t('transactionType.bonus'),
+      consumption: t('transactionType.consumption'),
+      expiration: t('transactionType.expiration'),
+      recharge: t('transactionType.recharge'),
+      refund: t('transactionType.refund'),
+      subscription: t('transactionType.subscription')
     };
     return labels[type as keyof typeof labels] || type;
   };
 
   const getStatusLabel = (status: string) => {
     const labels = {
-      completed: '已完成',
-      failed: '失败',
-      pending: '待支付'
+      completed: t('status.completed'),
+      failed: t('status.failed'),
+      pending: t('status.pending')
     };
     return labels[status as keyof typeof labels] || status;
   };
@@ -250,9 +251,9 @@ export function AccountTab() {
   };
 
   const handlePurchase = async (packageId: string) => {
-    // 这里应该调用支付API
-    console.log('购买套餐:', packageId);
-    // TODO: 实现支付逻辑
+    // Call payment API here
+    console.log(`${t('logs.purchasePackage')}:`, packageId);
+    // TODO: Implement payment logic
   };
 
   if (loading) {
@@ -285,86 +286,86 @@ export function AccountTab() {
         md:grid-cols-3
       `}>
         <div className={`
-          rounded-lg border border-gray-200 bg-white p-6 shadow-sm
-          dark:border-gray-700 dark:bg-gray-800
+          rounded-lg border border-border bg-card p-6 shadow-sm
+          dark:border-border dark:bg-card
         `}>
           <div className={`
-            mb-2 text-3xl font-bold text-blue-600
-            dark:text-blue-400
+            mb-2 text-3xl font-bold text-[oklch(0.488_0.243_264.376)]
+            dark:text-[oklch(0.488_0.243_264.376)]
           `}>
             {balance?.balance || 0}
           </div>
           <div className={`
-            text-gray-600
-            dark:text-gray-300
-          `}>当前积分余额</div>
+            text-muted-foreground
+            dark:text-muted-foreground
+          `}>{t('currentBalance')}</div>
         </div>
         <div className={`
-          rounded-lg border border-gray-200 bg-white p-6 shadow-sm
-          dark:border-gray-700 dark:bg-gray-800
+          rounded-lg border border-border bg-card p-6 shadow-sm
+          dark:border-border dark:bg-card
         `}>
           <div className={`
-            mb-2 text-3xl font-bold text-green-600
-            dark:text-green-400
+            mb-2 text-3xl font-bold text-[oklch(0.696_0.17_162.48)]
+            dark:text-[oklch(0.696_0.17_162.48)]
           `}>
             {balance?.total_recharged || 0}
           </div>
           <div className={`
-            text-gray-600
-            dark:text-gray-300
-          `}>累计充值积分</div>
+            text-muted-foreground
+            dark:text-muted-foreground
+          `}>{t('totalRecharged')}</div>
         </div>
         <div className={`
-          rounded-lg border border-gray-200 bg-white p-6 shadow-sm
-          dark:border-gray-700 dark:bg-gray-800
+          rounded-lg border border-border bg-card p-6 shadow-sm
+          dark:border-border dark:bg-card
         `}>
           <div className={`
-            mb-2 text-3xl font-bold text-red-600
-            dark:text-red-400
+            mb-2 text-3xl font-bold text-[oklch(0.645_0.246_16.439)]
+            dark:text-[oklch(0.645_0.246_16.439)]
           `}>
             {balance?.total_consumed || 0}
           </div>
           <div className={`
-            text-gray-600
-            dark:text-gray-300
-          `}>累计消费积分</div>
+            text-muted-foreground
+            dark:text-muted-foreground
+          `}>{t('totalConsumed')}</div>
         </div>
       </div>
 
       {/* Tab导航 */}
       <div className={`
-        rounded-lg border border-gray-200 bg-white shadow-sm
-        dark:border-gray-700 dark:bg-gray-800
+        rounded-lg border border-border bg-card shadow-sm
+        dark:border-border dark:bg-card
       `}>
         <div className={`
-          border-b border-gray-200
-          dark:border-gray-700
+          border-b border-border
+          dark:border-border
         `}>
           <nav className="flex space-x-8 px-6">
             {[
-              { key: 'overview', label: '概览' },
-              { key: 'transactions', label: '交易记录' },
-              { key: 'recharges', label: '充值记录' },
-              { key: 'packages', label: '充值套餐' }
+              { key: 'overview', label: t('tabs.overview') },
+              { key: 'transactions', label: t('tabs.transactions') },
+              { key: 'recharges', label: t('tabs.recharges') },
             ].map((tab) => (
               <button
                 className={`
                   border-b-2 px-1 py-4 text-sm font-medium
                   ${activeTab === tab.key
                     ? `
-                      border-blue-500 text-blue-600
-                      dark:text-blue-400
+                      border-[oklch(0.488_0.243_264.376)] text-[oklch(0.488_0.243_264.376)]
+                      dark:text-[oklch(0.488_0.243_264.376)]
                     `
                     : `
-                      border-transparent text-gray-500
-                      hover:border-gray-300 hover:text-gray-700
-                      dark:text-gray-400 dark:hover:border-gray-600
-                      dark:hover:text-gray-200
+                      border-transparent text-muted-foreground
+                      hover:border-border hover:text-foreground
+                      dark:text-muted-foreground dark:hover:border-muted
+                      dark:hover:text-foreground
                     `
                   }
                 `}
                 key={tab.key}
                 onClick={() => setActiveTab(tab.key as any)}
+                type='button'
               >
                 {tab.label}
               </button>
@@ -377,19 +378,20 @@ export function AccountTab() {
             <div className="space-y-6">
               <div className="py-8 text-center">
                 <div className={`
-                  mb-4 text-6xl font-bold text-blue-600
-                  dark:text-blue-400
+                  mb-4 text-6xl font-bold text-[oklch(0.488_0.243_264.376)]
+                  dark:text-[oklch(0.488_0.243_264.376)]
                 `}>
                   {balance?.balance || 0}
                 </div>
                 <div className={`
-                  mb-6 text-xl text-gray-600
-                  dark:text-gray-300
-                `}>当前积分余额</div>
+                  mb-6 text-xl text-muted-foreground
+                  dark:text-muted-foreground
+                `}>{t('currentBalance')}</div>
                 <button
                   onClick={() => router.push('/pricing')}
+                  type='button'
                 >
-                  立即充值
+                  {t('rechargeNow')}
                 </button>
               </div>
 
@@ -398,28 +400,28 @@ export function AccountTab() {
                 md:grid-cols-2
               `}>
                 <div className={`
-                  rounded-lg bg-gray-50 p-4
-                  dark:bg-gray-700
+                  rounded-lg bg-muted p-4
+                  dark:bg-muted
                 `}>
                   <h3 className={`
-                    mb-4 text-lg font-semibold text-gray-900
-                    dark:text-gray-100
-                  `}>最近交易</h3>
+                    mb-4 text-lg font-semibold text-foreground
+                    dark:text-foreground
+                  `}>{t('recentTransactions')}</h3>
                   <div className="space-y-3">
                     {transactions.slice(0, 5).map((transaction) => (
                       <div className="flex items-center justify-between" key={transaction.id}>
                         <div>
                           <div className={`
-                            font-medium text-gray-900
-                            dark:text-gray-100
+                            font-medium text-foreground
+                            dark:text-foreground
                           `}>
                             {getTransactionTypeLabel(transaction.type)}
                           </div>
                           <div className={`
-                            text-sm text-gray-500
-                            dark:text-gray-400
+                            text-sm text-muted-foreground
+                            dark:text-muted-foreground
                           `}>
-                            {new Date(transaction.created_at).toLocaleDateString('zh-CN')}
+                            {new Date(transaction.created_at).toLocaleDateString()}
                           </div>
                         </div>
                         <div className={`
@@ -441,26 +443,26 @@ export function AccountTab() {
                 </div>
 
                 <div className={`
-                  rounded-lg bg-gray-50 p-4
-                  dark:bg-gray-700
+                  rounded-lg bg-muted p-4
+                  dark:bg-muted
                 `}>
                   <h3 className={`
-                    mb-4 text-lg font-semibold text-gray-900
-                    dark:text-gray-100
-                  `}>最近充值</h3>
+                    mb-4 text-lg font-semibold text-foreground
+                    dark:text-foreground
+                  `}>{t('recentRecharges')}</h3>
                   <div className="space-y-3">
                     {recharges.slice(0, 5).map((recharge) => (
                       <div className="flex items-center justify-between" key={recharge.id}>
                         <div>
                           <div className={`
-                            font-medium text-gray-900
-                            dark:text-gray-100
-                          `}>{recharge.amount} 积分</div>
+                            font-medium text-foreground
+                            dark:text-foreground
+                          `}>{recharge.amount} {t('credits')}</div>
                           <div className={`
-                            text-sm text-gray-500
-                            dark:text-gray-400
+                            text-sm text-muted-foreground
+                            dark:text-muted-foreground
                           `}>
-                            {new Date(recharge.created_at).toLocaleDateString('zh-CN')}
+                            {new Date(recharge.created_at).toLocaleDateString()}
                           </div>
                         </div>
                         <span className={`
@@ -481,62 +483,66 @@ export function AccountTab() {
           {activeTab === 'transactions' && (
             <div className="space-y-4">
               <h3 className={`
-                text-lg font-semibold text-gray-900
-                dark:text-gray-100
-              `}>交易记录</h3>
+                text-lg font-semibold text-foreground
+                dark:text-foreground
+              `}>{t('tabs.transactions')}</h3>
               <div className="overflow-x-auto">
                 <table className={`
-                  min-w-full divide-y divide-gray-200
-                  dark:divide-gray-700
+                  min-w-full divide-y divide-border
+                  dark:divide-border
                 `}>
                   <thead className={`
-                    bg-gray-50
-                    dark:bg-gray-700
+                    bg-muted
+                    dark:bg-muted
                   `}>
                     <tr>
                       <th className={`
                         px-6 py-3 text-left text-xs font-medium tracking-wider
-                        text-gray-500 uppercase
-                        dark:text-gray-300
+                        text-muted-foreground uppercase
+                        dark:text-muted-foreground
                       `}>
-                        类型
+                        {t('transactionTable.type')}
                       </th>
                       <th className={`
                         px-6 py-3 text-left text-xs font-medium tracking-wider
-                        text-gray-500 uppercase
+                        text-muted-foreground uppercase
+                        dark:text-muted-foreground
                       `}>
-                        金额
+                        {t('transactionTable.amount')}
                       </th>
                       <th className={`
                         px-6 py-3 text-left text-xs font-medium tracking-wider
-                        text-gray-500 uppercase
+                        text-muted-foreground uppercase
+                        dark:text-muted-foreground
                       `}>
-                        余额
+                        {t('transactionTable.balance')}
                       </th>
                       <th className={`
                         px-6 py-3 text-left text-xs font-medium tracking-wider
-                        text-gray-500 uppercase
+                        text-muted-foreground uppercase
+                        dark:text-muted-foreground
                       `}>
-                        描述
+                        {t('transactionTable.description')}
                       </th>
                       <th className={`
                         px-6 py-3 text-left text-xs font-medium tracking-wider
-                        text-gray-500 uppercase
+                        text-muted-foreground uppercase
+                        dark:text-muted-foreground
                       `}>
-                        时间
+                        {t('transactionTable.time')}
                       </th>
                     </tr>
                   </thead>
                   <tbody className={`
-                    divide-y divide-gray-200 bg-white
-                    dark:divide-gray-700 dark:bg-gray-800
+                    divide-y divide-border bg-background
+                    dark:divide-border dark:bg-background
                   `}>
                     {transactions.map((transaction) => (
                       <tr key={transaction.id}>
                         <td className={`
                           px-6 py-4 text-sm font-medium whitespace-nowrap
-                          text-gray-900
-                          dark:text-gray-100
+                          text-foreground
+                          dark:text-foreground
                         `}>
                           {getTransactionTypeLabel(transaction.type)}
                         </td>
@@ -554,22 +560,22 @@ export function AccountTab() {
                           {transaction.amount > 0 ? '+' : ''}{transaction.amount}
                         </td>
                         <td className={`
-                          px-6 py-4 text-sm whitespace-nowrap text-gray-900
-                          dark:text-gray-100
+                          px-6 py-4 text-sm whitespace-nowrap text-foreground
+                          dark:text-foreground
                         `}>
                           {transaction.balance_after}
                         </td>
                         <td className={`
-                          px-6 py-4 text-sm whitespace-nowrap text-gray-500
-                          dark:text-gray-400
+                          px-6 py-4 text-sm whitespace-nowrap text-muted-foreground
+                          dark:text-muted-foreground
                         `}>
                           {transaction.description || '-'}
                         </td>
                         <td className={`
-                          px-6 py-4 text-sm whitespace-nowrap text-gray-500
-                          dark:text-gray-400
+                          px-6 py-4 text-sm whitespace-nowrap text-muted-foreground
+                          dark:text-muted-foreground
                         `}>
-                          {new Date(transaction.created_at).toLocaleString('zh-CN')}
+                          {new Date(transaction.created_at).toLocaleString()}
                         </td>
                       </tr>
                     ))}
@@ -582,67 +588,72 @@ export function AccountTab() {
           {activeTab === 'recharges' && (
             <div className="space-y-4">
               <h3 className={`
-                text-lg font-semibold text-gray-900
-                dark:text-gray-100
-              `}>充值记录</h3>
+                text-lg font-semibold text-foreground
+                dark:text-foreground
+              `}>{t('tabs.recharges')}</h3>
               <div className="overflow-x-auto">
                 <table className={`
-                  min-w-full divide-y divide-gray-200
-                  dark:divide-gray-700
+                  min-w-full divide-y divide-border
+                  dark:divide-border
                 `}>
                   <thead className={`
-                    bg-gray-50
-                    dark:bg-gray-700
+                    bg-muted
+                    dark:bg-muted
                   `}>
                     <tr>
                       <th className={`
                         px-6 py-3 text-left text-xs font-medium tracking-wider
-                        text-gray-500 uppercase
+                        text-muted-foreground uppercase
+                        dark:text-muted-foreground
                       `}>
-                        积分数量
+                        {t('rechargeTable.creditAmount')}
                       </th>
                       <th className={`
                         px-6 py-3 text-left text-xs font-medium tracking-wider
-                        text-gray-500 uppercase
+                        text-muted-foreground uppercase
+                        dark:text-muted-foreground
                       `}>
-                        支付金额
+                        {t('rechargeTable.paymentAmount')}
                       </th>
                       <th className={`
                         px-6 py-3 text-left text-xs font-medium tracking-wider
-                        text-gray-500 uppercase
+                        text-muted-foreground uppercase
+                        dark:text-muted-foreground
                       `}>
-                        状态
+                        {t('rechargeTable.status')}
                       </th>
                       <th className={`
                         px-6 py-3 text-left text-xs font-medium tracking-wider
-                        text-gray-500 uppercase
+                        text-muted-foreground uppercase
+                        dark:text-muted-foreground
                       `}>
-                        支付方式
+                        {t('rechargeTable.paymentMethod')}
                       </th>
                       <th className={`
                         px-6 py-3 text-left text-xs font-medium tracking-wider
-                        text-gray-500 uppercase
+                        text-muted-foreground uppercase
+                        dark:text-muted-foreground
                       `}>
-                        时间
+                        {t('rechargeTable.time')}
                       </th>
                     </tr>
                   </thead>
                   <tbody className={`
-                    divide-y divide-gray-200 bg-white
-                    dark:divide-gray-700 dark:bg-gray-800
+                    divide-y divide-border bg-background
+                    dark:divide-border dark:bg-background
                   `}>
                     {recharges.map((recharge) => (
                       <tr key={recharge.id}>
                         <td className={`
                           px-6 py-4 text-sm font-medium whitespace-nowrap
-                          text-gray-900
-                          dark:text-gray-100
+                          text-foreground
+                          dark:text-foreground
                         `}>
-                          {recharge.amount} 积分
+                          {recharge.amount} {t('credits')}
                         </td>
                         <td className={`
-                          px-6 py-4 text-sm whitespace-nowrap text-gray-900
-                          dark:text-gray-100
+                          px-6 py-4 text-sm whitespace-nowrap text-foreground
+                          dark:text-foreground
                         `}>
                           ${(recharge.price / 100).toFixed(2)}
                         </td>
@@ -656,113 +667,21 @@ export function AccountTab() {
                           </span>
                         </td>
                         <td className={`
-                          px-6 py-4 text-sm whitespace-nowrap text-gray-500
-                          dark:text-gray-400
+                          px-6 py-4 text-sm whitespace-nowrap text-muted-foreground
+                          dark:text-muted-foreground
                         `}>
                           {recharge.payment_method || '-'}
                         </td>
                         <td className={`
-                          px-6 py-4 text-sm whitespace-nowrap text-gray-500
-                          dark:text-gray-400
+                          px-6 py-4 text-sm whitespace-nowrap text-muted-foreground
+                          dark:text-muted-foreground
                         `}>
-                          {new Date(recharge.created_at).toLocaleString('zh-CN')}
+                          {new Date(recharge.created_at).toLocaleString()}
                         </td>
                       </tr>
                     ))}
                   </tbody>
                 </table>
-              </div>
-            </div>
-          )}
-
-          {activeTab === 'packages' && (
-            <div className="space-y-4">
-              <h3 className={`
-                text-lg font-semibold text-gray-900
-                dark:text-gray-100
-              `}>充值套餐</h3>
-              <div className={`
-                grid grid-cols-1 gap-6
-                md:grid-cols-2
-                lg:grid-cols-3
-              `}>
-                {packages.map((pkg) => (
-                  <div
-                    className={`
-                      relative rounded-lg border-2 bg-white p-6
-                      dark:bg-gray-800
-                      ${pkg.is_popular === 1 ? `
-                        border-blue-500
-                        dark:border-blue-400
-                      ` : `
-                        border-gray-200
-                        dark:border-gray-700
-                      `
-                      }
-                    `}
-                    key={pkg.id}
-                  >
-                    {pkg.is_popular === 1 && (
-                      <div className={`
-                        absolute -top-3 left-1/2 -translate-x-1/2 transform
-                      `}>
-                        <span className={`
-                          rounded-full bg-blue-500 px-3 py-1 text-xs font-medium
-                          text-white
-                          dark:bg-blue-400
-                        `}>
-                          热门
-                        </span>
-                      </div>
-                    )}
-                    <div className="text-center">
-                      <h4 className={`
-                        mb-2 text-xl font-bold text-gray-900
-                        dark:text-gray-100
-                      `}>{pkg.name}</h4>
-                      <div className={`
-                        mb-2 text-3xl font-bold text-blue-600
-                        dark:text-blue-400
-                      `}>
-                        {pkg.credits} 积分
-                      </div>
-                      <div className={`
-                        mb-4 text-lg text-gray-600
-                        dark:text-gray-300
-                      `}>
-                        ${(pkg.price / 100).toFixed(2)}
-                      </div>
-                      {pkg.description && (
-                        <p className={`
-                          mb-6 text-sm text-gray-500
-                          dark:text-gray-400
-                        `}>{pkg.description}</p>
-                      )}
-                      <button
-                        className={`
-                          w-full rounded-lg px-4 py-3 font-medium
-                          transition-colors
-                          ${pkg.is_popular === 1
-                            ? `
-                              bg-blue-600 text-white
-                              hover:bg-blue-700
-                              dark:bg-blue-500 dark:hover:bg-blue-600
-                            `
-                            : `
-                              bg-gray-100 text-gray-900
-                              hover:bg-gray-200
-                              dark:bg-gray-700 dark:text-gray-100
-                              dark:hover:bg-gray-600
-                            `
-                          }
-                        `}
-                        onClick={() => handlePurchase(pkg.id)}
-                      >
-                        立即购买
-                      </button>
-                    </div>
-                  </div>
-                ))}
               </div>
             </div>
           )}

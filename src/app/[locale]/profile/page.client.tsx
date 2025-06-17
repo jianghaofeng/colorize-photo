@@ -2,6 +2,7 @@
 
 import type { User } from '@supabase/supabase-js';
 
+import { useTranslations } from 'next-intl';
 import Image from 'next/image';
 import { useState } from 'react';
 
@@ -18,6 +19,7 @@ interface ProfilePageProps {
 export function ProfilePageClient({ user }: ProfilePageProps) {
   const [activeTab, setActiveTab] = useState<'account' | 'gallery' | 'settings'>('gallery');
   const { user: currentUser } = useSupabase();
+  const t = useTranslations('Profile');
 
   // 使用传入的user或者从context获取的user
   const profileUser = user || currentUser;
@@ -41,7 +43,7 @@ export function ProfilePageClient({ user }: ProfilePageProps) {
           <div className={`
             text-lg text-gray-500
             dark:text-gray-300
-          `}>请先登录</div>
+          `}>{t('pleaseLogin')}</div>
         </div>
       </div>
     );
@@ -54,8 +56,8 @@ export function ProfilePageClient({ user }: ProfilePageProps) {
     `}>
       {/* 顶部图片布局 */}
       <div className={`
-        relative h-64 bg-gradient-to-r from-blue-600 to-purple-600
-        dark:from-blue-800 dark:to-purple-800
+        relative h-64 bg-gradient-to-r from-[oklch(0.488_0.243_264.376)] to-[oklch(0.627_0.265_303.9)]
+        dark:from-[oklch(0.488_0.243_264.376)] dark:to-[oklch(0.627_0.265_303.9)]
       `}>
         <div className={`
           bg-opacity-20 absolute inset-0 bg-black
@@ -81,17 +83,17 @@ export function ProfilePageClient({ user }: ProfilePageProps) {
               ) : (
                 <div className={`
                   flex h-32 w-32 items-center justify-center rounded-full
-                  border-4 border-white bg-white text-4xl font-bold
-                  text-blue-600 shadow-lg
-                  dark:border-gray-800 dark:bg-gray-900 dark:text-blue-400
+                  border-4 border-background bg-background text-4xl font-bold
+                  text-[oklch(0.488_0.243_264.376)] shadow-lg
+                  dark:border-[oklch(0.274_0.006_286.033)] dark:bg-[oklch(0.21_0.006_285.885)] dark:text-[oklch(0.488_0.243_264.376)]
                 `}>
                   {getInitials(profileUser.user_metadata?.full_name || profileUser.email || 'U')}
                 </div>
               )}
               <div className={`
                 absolute right-2 bottom-2 h-8 w-8 rounded-full border-4
-                border-white bg-green-500
-                dark:border-gray-800 dark:bg-green-500
+                border-background bg-[oklch(0.696_0.17_162.48)]
+                dark:border-[oklch(0.274_0.006_286.033)] dark:bg-[oklch(0.696_0.17_162.48)]
               `} />
             </div>
 
@@ -101,16 +103,16 @@ export function ProfilePageClient({ user }: ProfilePageProps) {
                 {profileUser.user_metadata?.full_name || profileUser.email}
               </h1>
               <p className={`
-                text-lg text-blue-100
-                dark:text-blue-200
+                text-lg text-[oklch(0.967_0.001_286.375)]
+                dark:text-[oklch(0.967_0.001_286.375)]
               `}>
                 {profileUser.email}
               </p>
               <p className={`
-                mt-1 text-sm text-blue-200
-                dark:text-blue-300
+                mt-1 text-sm text-[oklch(0.967_0.001_286.375)/0.8]
+                dark:text-[oklch(0.967_0.001_286.375)/0.8]
               `}>
-                加入时间: {new Date(profileUser.created_at).toLocaleDateString('zh-CN')}
+                {t('joinedDate')}: {new Date(profileUser.created_at).toLocaleDateString()}
               </p>
             </div>
           </div>
@@ -119,8 +121,8 @@ export function ProfilePageClient({ user }: ProfilePageProps) {
 
       {/* Tab导航 */}
       <div className={`
-        sticky top-0 z-20 border-b bg-white
-        dark:border-gray-800 dark:bg-gray-900
+        sticky top-0 z-20 border-b bg-background
+        dark:border-border dark:bg-card
       `}>
         <div className={`
           mx-auto max-w-7xl px-4
@@ -129,9 +131,9 @@ export function ProfilePageClient({ user }: ProfilePageProps) {
         `}>
           <nav className="flex space-x-8">
             {[
-              { icon: '🖼️', key: 'gallery', label: '画廊' },
-              { icon: '💳', key: 'account', label: '账单' },
-              { icon: '⚙️', key: 'settings', label: '个人设置' }
+              { icon: '🖼️', key: 'gallery', label: t('gallery') },
+              { icon: '💳', key: 'account', label: t('account') },
+              { icon: '⚙️', key: 'settings', label: t('settings') }
             ].map((tab) => (
               <button
                 className={`
@@ -139,19 +141,20 @@ export function ProfilePageClient({ user }: ProfilePageProps) {
                   font-medium transition-colors
                   ${activeTab === tab.key
                     ? `
-                      border-blue-500 text-blue-600
-                      dark:border-blue-500 dark:text-blue-400
+                      border-[oklch(0.488_0.243_264.376)] text-[oklch(0.488_0.243_264.376)]
+                      dark:border-[oklch(0.488_0.243_264.376)] dark:text-[oklch(0.488_0.243_264.376)]
                     `
                     : `
-                      border-transparent text-gray-500
-                      hover:border-gray-300 hover:text-gray-700
-                      dark:text-gray-400 dark:hover:border-gray-700
-                      dark:hover:text-gray-200
+                      border-transparent text-muted-foreground
+                      hover:border-border hover:text-foreground
+                      dark:text-muted-foreground dark:hover:border-muted
+                      dark:hover:text-foreground
                     `
                   }
                 `}
                 key={tab.key}
                 onClick={() => setActiveTab(tab.key as any)}
+                type="button"
               >
                 <span>{tab.icon}</span>
                 <span>{tab.label}</span>
